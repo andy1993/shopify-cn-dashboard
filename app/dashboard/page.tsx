@@ -14,6 +14,7 @@ import TrendAnalysisPanel from "./components/TrendAnalysisPanel";
 import MultiStoreAggregator from "./components/MultiStoreAggregator";
 import GatewayFinancePanel from "./components/GatewayFinancePanel";
 import FunnelRetentionPanel from "./components/FunnelRetentionPanel";
+import AdPerformancePanel from "./components/AdPerformancePanel";
 
 // ─── Types ────────────────────────────────────────────
 
@@ -308,7 +309,24 @@ export default function DashboardPage() {
         />
       )}
       {activeMenu === "ai" && (
-        <AiDiagnosePanel shopName={data.shopName} isDemo={!!currentStore?.isDemo} handleStartDiagnosis={handleStartDiagnosis} diagnosing={diagnosing} diagnosis={diagnosis} typewriterText={typewriterText} diagnosisError={diagnosisError} />
+        <AiDiagnosePanel
+          shopName={data.shopName}
+          isDemo={!!currentStore?.isDemo}
+          shopId={currentStore?.id}
+          gmv={data.gmv}
+          orderCount={data.orderCount}
+          conversionRate={data.conversionRate}
+          exchangeRate={data.exchangeRate}
+          currency={data.currency}
+          products={data.products}
+          refundRate={refundRate}
+          refundedCount={refundedOrders.length}
+          refundAmount={refundAmount}
+          cogsRate={cogsRate}
+          shippingRate={shippingRate}
+          marketingRate={marketingRate}
+          orders={data.orders}
+        />
       )}
       {activeMenu === "finance" && (
         <FinancePanel shopName={data.shopName} currency={data.currency} exchangeRate={data.exchangeRate} gmv={data.gmv}
@@ -346,6 +364,15 @@ export default function DashboardPage() {
           shopName={data.shopName}
           exchangeRate={data.exchangeRate}
           currency={data.currency}
+        />
+      )}
+      {activeMenu === "ad" && (
+        <AdPerformancePanel
+          orders={data.orders}
+          exchangeRate={data.exchangeRate}
+          currency={data.currency}
+          isDemo={!!currentStore?.isDemo}
+          shopName={data.shopName}
         />
       )}
     </div>

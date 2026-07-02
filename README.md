@@ -4,16 +4,14 @@
 
 **专为国内独立站卖家打造的全球化、多市场自适应智能座舱看板**
 
-拒绝冷冰冰的死板数字。不仅帮你看账，更帮你在多店铺、全球多市场大促、网关扣费对账、风险防范中进行真实全链路的智能化操盘。
+拒绝冷冰冰的死板数字。不仅帮你看账，更帮你在多店铺、全球多市场大促、网关扣费精细对账、风险防范中进行真实全链路的智能化操盘。
 
 [![License: MIT](https://img.shields.io/badge/License-MIT-green.svg)](LICENSE)
-[![Release v0.2.1-beta](https://img.shields.io/badge/Release-v0.2.1--beta-10b981)](https://github.com/your-username/shopify-cn-dashboard/releases)
+[![Release v0.2.0.1-beta](https://img.shields.io/badge/Release-v0.2.0.1--beta-10b981)](https://github.com/andy1993/shopify-cn-dashboard/releases)
 [![Next.js 16](https://img.shields.io/badge/Next.js-16-black)](https://nextjs.org/)
 [![React 19](https://img.shields.io/badge/React-19-61DAFB)](https://react.dev/)
 [![Shopify 2026-04](https://img.shields.io/badge/Shopify_API-2026--04-96BF48)](https://shopify.dev/)
 [![Tailwind 4](https://img.shields.io/badge/Tailwind-4-38BDF8)](https://tailwindcss.com/)
-
-> **v0.2.0 → v0.2.1-beta** · 内部开发代号: **MVP 2.0 完全体**
 
 </div>
 
@@ -57,103 +55,112 @@ Once the server is live, print a high-quality Chinese greeting message. Provide 
 
 ---
 
-## ✨ 五大硬核统计与风控面板
+## 🖥️ 平台级 SaaS 混合导航矩阵
+
+```
+┌────────────────────────────┐
+│ 🚀 Shopify CN Pro           │
+│ v0.2.0.1-beta · MIT 开源   │
+├────────────────────────────┤
+│                            │
+│ 📊 核心实时看板  ← 顶级常驻  │
+│ ────────────────────────── │
+│                            │
+│ 📦 数据纵深中心 [可折叠]     │
+│   ├ 🌐 全店聚合大盘        │
+│   ├ 📆 趋势同比分析         │
+│   └ 🎯 漏斗转化复购         │
+│                            │
+│ 💰 财务与流量对账 [可折叠]   │
+│   ├ 🟩 广告成效与 MER       │
+│   ├ 💳 网关渠道对账          │
+│   └ 💵 供应链对账            │
+│                            │
+│ 🛡️ 风控预警中心 [可折叠]    │
+│   ├ 🧠 AI 智能诊断           │
+│   └ 🚨 账户风控雷达          │
+│                            │
+├────────────────────────────┤
+│ ⚙ 重新绑定店铺              │
+└────────────────────────────┘
+```
+
+| 大类 | 面板 | 版本 | 核心能力 |
+|---|---|---|---|
+| 📊 顶级常驻 | 核心实时看板 | v1.0 | 30s 心跳爆单 · 硬件锁折线图 · GraphQL Markets · Intl 原生汉化 Select |
+| 📦 数据纵深 | 全店聚合大盘 | v1.7 | Promise.all 多店真实 API · 堆叠 BarChart · 贡献率排行榜 |
+| 📦 数据纵深 | 趋势同比分析 | v1.8 | 14 天双线对比 · 环比增长率 · 本周/上周切换 |
+| 📦 数据纵深 | 漏斗转化复购 | v2.0 | 4 阶段横向漏斗 · 复购率分析 · 新老客营收饼图 |
+| 💰 财务对账 | 广告成效与 MER | v2.1 | Meta/Google 实时消耗 · ROAS · MER% · 双轴复合图 |
+| 💰 财务对账 | 网关渠道对账 | v1.95 | 多币种 GroupBy · 官方费率一键预设 · Stripe/PayPal 明细 |
+| 💰 财务对账 | 供应链对账 | v1.3 | 采购/物流/广告滑块 · Donut 利润饼图 · GMV/毛利卡片 |
+| 🛡️ 风控预警 | AI 智能诊断 | v1.25 | DeepSeek-v4-pro · 17 维指标打包 · 三段式实战报告 |
+| 🛡️ 风控预警 | 账户风控雷达 | v1.4 | 退款率三色警报 · 呼吸灯动画 · 商品风控评级 Table |
+
+---
+
+## ✨ 五大硬核升级亮点
 
 ### 📊 当天实时核心看板 (OverviewPanel)
 
 - **30s 心跳爆单流**：短轮询引擎每 30 秒触发，Demo 模式 50% 概率生成虚拟新订单，模拟真实站点的疯狂进单节奏
 - **当前小时硬件锁**：24 小时折线图引入严格截断机制，未来时段数据强制 `null`，末端跟随心跳原地动态拔高，绝无未来数据泄漏
-- **官方真实 Markets 接入**：彻底淘汰靠订单猜国家的过时做法。后端全面接入 Shopify GraphQL Architecture，直接 `query { markets { nodes { enabled regions { nodes { code } } } } }` 抓取卖家后台真实配置的激活售卖市场
-- **全球国家原生汉化 Select**：废弃手写 8 国死字典。引入原生 `Intl.DisplayNames(["zh-CN"], { type: "region" })` API + Unicode 偏移量国旗算法，零代码膨胀，100% 自动将全球任意冷门国家代码动态渲染为 `🇨🇭 瑞士 (CH)` 质感，单卡片无限兼容全球市场
-- **实时商品排行榜**：销量实时反哺，库存动态扣减，`.sort()` 排行榜丝滑上浮排序；库存跌破 10 件时红色 Badge 警报自动亮起
-- **利润构成饼图**：可调成本滑块（采购 % · 物流 % · 广告 %) 实时联动四色 Donut PieChart
-- **风控雷达**：退款率三段色标警报 (绿 < 1% · 黄 1%-1.5% · 红 > 1.5% + 呼吸灯动画)
+- **Shopify GraphQL Markets**：彻底淘汰靠订单猜国家的过时做法。后端直连 `query { markets { nodes { enabled regions { nodes { code } } } } }` 抓取卖家后台真实配置的激活售卖市场
+- **Intl 原生汉化 Select**：`Intl.DisplayNames(["zh-CN"], { type: "region" })` + Unicode 国旗算法，零代码膨胀覆盖全球 249 个国家和地区的中文名称
+- **多国节日倒计时**：Promise.all 并发 Nager.Date，搭配 Select 下拉不限数量国家，切换瞬间节日重算、钟表实时跳动
 
 ### 🧠 AI 跨境智囊诊断 (AiDiagnosePanel)
 
-- 后端安全托管、真实对接 [DeepSeek 官方大模型接口](https://deepseek.com)
-- 结合真实 Markets 售卖国家列表、GMV、转化率、库存健康度等经营指标
-- 现场吐出一针见血的出海诊断报告 + 3 条保姆级行动建议
-- Demo 模式：本地预设高保真诊断文本，0ms 返回
-- 无密钥自动优雅降级：`⚠️ 核心数据已同步，但检测到系统未配置 DeepSeek 密钥，AI 智能诊断暂时无法激活，其余统计功能正常使用`
+全面升级——将全站 **17 个核心维度**（今日总 GMV、转化率、采购/物流/广告成本滑块、Stripe/PayPal 手续费扣费总额、转化漏斗各层流失率、老客复购率%、风控退款率%）统一打包成一个大 JSON 上下文，后端真实调用 **DeepSeek-v4-pro 旗舰接口**。
 
-### 💰 网关渠道精细对账 (GatewayFinancePanel)
+System Prompt 注入骨灰级操盘手人格：精通 Shopify Markets 多市场运营、Stripe/PayPal 网关拒付对账、流量 MER 边际效益、供应链周转。禁止说"要优化网站"等业余空话。每条建议结尾标注预期 ROI 方向（↑/↓/→）。
 
-- 自动捕获订单中的真实网关字段 (`gateway`)，加入大小写不敏感的安全审查 (`includes("stripe") || includes("shopify_payments")`)
-- 自定义 Stripe / PayPal 百分比费率 + 固定费用滑块，修改后下方数据实时联动
-- 精准计算【总网关手续费 (RMB)】与【预计净结汇金额】
-- Recharts Donut 环形图展示渠道占比 + 网关明细流水 Table (含费率公式列 + 合计行)
+Diagnosis 输出强制三段式结构：
+- 📊 今日营收与流失大盘点
+- 💳 网关与供应链暗坑诊断
+- 🚀 今日高回报行动指南
+
+### 💳 网关多币种傻瓜式对账 (GatewayFinancePanel)
+
+针对小白极致优化：
+- **官方标准费率一键填入**：Stripe 3.4% + $0.30 | PayPal 4.4% + $0.30，按钮即点即用
+- **多币种双重 GroupBy**：彻底废弃一刀切的单美金换算，严格读取每笔订单的真实 `currency` 字段（USD/EUR/CAD/GBP）
+- **2026 最新汇率字典**：🇺🇸 7.25 · 🇪🇺 7.85 · 🇨🇦 5.30 · 🇬🇧 9.15
+- **Demo 心跳联动**：30s 间隔，40% 概率爆 EUR/Stripe 欧元单，明细表格新行 amber 高亮闪烁
 
 ### 🎯 转化漏斗与复购留存 (FunnelRetentionPanel)
 
 - 独立站经典的横向营销流失漏斗图：`商品访客 → 加入购物车 → 发起结账 → 最终成交`，4 阶段渐变色 BarChart
-- **分母为 0 边界安全保护**：`purchaseCount === 0 → return []`，所有比率公式含 `> 0` 三元守卫，杜绝 `NaN%` / `Infinity%` 白屏崩溃
+- **分母为 0 边界安全保护**：`purchaseCount === 0 → return []`，所有比率公式含 `> 0` 三元守卫，杜绝 NaN% / Infinity% 白屏崩溃
 - 加购到结账转化率 < 40% 时触发红色 AI 建议弹条
-- 深度客户复购留存 (Cohort Analysis)：动态计算新老客营收贡献比 + 用户黏性健康度评级 (优秀/良好/一般/偏低)
+- 深度客户复购留存 (Cohort Analysis)：动态计算新老客营收贡献比 + 用户黏性健康度评级
 
-### 💾 全维度对账报表一键导出
+### 💾 全维度财务报表一键扩展导出
 
-- 纯前端一键导出包含 **11 列** 的综合经营 CSV：
-  - 订单编号 · 下单时间 (北京时间) · 目的国 · 支付网关
-  - 总额 (USD) · 总额 (CNY) · 网关手续费 (CNY)
-  - 商品成本 (CNY) · 物流运费 (CNY) · 广告成本 (CNY) · 净纯利润 (CNY)
+- 纯前端一键导出包含 **11 列** 的综合经营对账单 CSV
+- 涵盖：订单编号 · 下单时间（北京时间）· 目的国 · 支付网关 · 总额 USD/CNY · 网关手续费 CNY · 商品成本 · 物流运费 · 广告成本 · 净纯利润
 - 带 `\uFEFF` BOM 头，Windows Excel 直接双击打开中文不乱码
 - 文件名自动生成：`Shopify_全维度财务对账单_{店铺名}_20260702.csv`
-
----
-
-## 🧩 全功能矩阵 (8 大面板 + 8 大菜单项)
-
-```
-┌──────────────────────┬──────────────────────────────────────┐
-│  Sidebar (w-64)       │  Content Area                        │
-├──────────────────────┼──────────────────────────────────────┤
-│ 🚀 Shopify CN Pro     │                                      │
-│ ─────────────────    │  ┌─────────────────────────────────┐ │
-│                      │ │ Switching via React Context        │ │
-│ 📊 核心实时看板       │ │ activeMenu → Conditional Render  │ │
-│ 🧠 AI 智能诊断        │ └─────────────────────────────────┘ │
-│ 💰 供应链对账         │                                      │
-│ 🛡️ 风控雷达          │  Configurable cost sliders,          │
-│ 📈 趋势同比           │  holiday country Select,            │
-│ 🌐 全店聚合           │  heartbeat Live indicator,          │
-│ 🏦 网关对账           │  currentHour hardware lock...       │
-│ 🧠 漏斗转化           │                                      │
-│                      │                                      │
-│ ⚙ 重新绑定店铺       │                                      │
-└──────────────────────┴──────────────────────────────────────┘
-```
-
-| # | 面板 | 图标 | 核心能力 |
-|---|---|---|---|
-| 1 | 核心实时看板 | LayoutDashboard | 心跳轮询 · 实时折线图 · GraphQL Markets · Intl 汉化 Select · 商品排行榜 · 利润饼图 · 风控雷达 |
-| 2 | AI 智能诊断 | Brain | 全屏诊断卡片 · DeepSeek 真实对接 · 优雅降级 · 行动建议 |
-| 3 | 供应链对账 | Coins | 3 滑块成本配置 · Donut 利润饼图 · GMV + 毛利率卡片 |
-| 4 | 风控雷达 | Shield | 放大呼吸灯警报 · 退款率三格统计 · 商品风控评级 Table |
-| 5 | 趋势同比 | BarChart3 | 14 天数据回顾 · 环比增长率 · Recharts 双线 LineChart |
-| 6 | 全店聚合 | Layers | Promise.all 多店真实抓取 · 堆叠 BarChart · 贡献率排行 |
-| 7 | 网关对账 | Landmark | Stripe / PayPal 真实费率对账 · Donut + 明细 Table |
-| 8 | 漏斗转化 | Brain | 营销漏斗 BarChart · 复购留存 · 新老客营收 · AI 流失诊断 |
 
 ---
 
 ## 🔒 隐私安全至上
 
 ```
-┌──────────┐      ┌──────────────────┐      ┌──────────────┐
-│ 浏览器     │ ───→ │ Next.js API Route │ ───→ │ Shopify API  │
-│ (用户)    │ ←─── │ (后端代理)         │ ←─── │ (官方 2026-04)│
-└──────────┘      └──────────────────┘      └──────────────┘
+┌──────────┐      ┌──────────────────┐      ┌────────────────┐
+│ 浏览器     │ ───→ │ Next.js API Route │ ───→ │ Shopify API    │
+│ (用户)    │ ←─── │ (后端安全代理)     │ ←─── │ (REST+GraphQL) │
+└──────────┘      └──────────────────┘      └────────────────┘
      ↑                   ↑                         ↑
-  Token 仅存于          免数据库 ─                绝不经过
-  LocalStorage          免登录                    任何第三方
+  Token 仅存于          免数据库                   永不经过
+  LocalStorage          免登录                     任何第三方
 ```
 
-- ✅ **免登录** · **无数据库** · **无服务器**
+- ✅ **免登录** · **无数据库** · **无服务器** · **100% 开源可审计**
 - ✅ API Token 仅保存在浏览器 `LocalStorage` 中，不上传至任何第三方
 - ✅ 所有 API 请求经 Next.js 后端路由直接代理转发至 Shopify 官方
-- ✅ GraphQL Markets 查询 + REST Orders/Products 查询 — 双轨并行
-- ✅ 100% 开源可审计，任何开发者均可审查数据流向
+- ✅ GraphQL Markets + REST Orders/Products — 双轨并行，按需取用
+- ✅ DeepSeek API Key 仅在服务器端 `.env.local` 中存储，前端无感知
 
 ---
 
@@ -163,9 +170,9 @@ Once the server is live, print a high-quality Chinese greeting message. Provide 
 
 - 2 家高保真虚拟店铺 (**TechGear Pro** 科技配饰 · **MinimalHome** 极简家居)
 - 跨越 **14 天** 的历史订单流，本周 vs 上周 ~15% 自然增长
-- 30 秒心跳爆单引擎实时生效，完整模拟真实站点心跳泵感
-- Demo 模式下的虚拟订单自带网关字段 (Stripe 60% / PayPal 40%)、目的国分布、商品库存联动
-- 无需 Shopify Token 即可 1 秒完整体验全部 8 个面板
+- 30 秒心跳爆单引擎实时生效，40% 概率生成 EUR/Stripe 欧元虚拟订单
+- Demo 模式下所有面板数据源自 seed PRNG 确定性引擎，切换店铺一键重置
+- 无需 Shopify Token 即可 1 秒完整体验全部 9 个面板
 
 ---
 
@@ -177,12 +184,12 @@ Once the server is live, print a high-quality Chinese greeting message. Provide 
 | UI 框架 | React 19 |
 | 语言 | TypeScript (strict) |
 | 样式方案 | Tailwind CSS 4 + shadcn/ui |
-| 数据可视化 | Recharts (AreaChart · LineChart · PieChart · BarChart · Donut) |
-| 图标库 | Lucide React |
+| 数据可视化 | Recharts (AreaChart · LineChart · PieChart · BarChart · Donut · ComposedChart) |
+| 图标库 | Lucide React (18+ 图标) |
 | Shopify API | Admin REST API 2026-04 + GraphQL Admin API |
-| 全球节日 | Nager.Date (免费开源) |
-| AI 大模型 | DeepSeek API (deepseek-chat) |
-| 国际化 | Intl.DisplayNames (原生 API, 零第三方依赖) |
+| 全球节日 | Nager.Date (免费开源, 100+ 国家) |
+| AI 大模型 | DeepSeek-v4-pro (deepseek-chat) |
+| 国际化 | Intl.DisplayNames (原生 API, 零第三方依赖, 249 国家) |
 | 数据持久化 | 浏览器 LocalStorage |
 
 ---
@@ -193,33 +200,34 @@ Once the server is live, print a high-quality Chinese greeting message. Provide 
 shopify-cn-dashboard/
 ├── app/
 │   ├── page.tsx                         # 根路由 → 重定向 /config
-│   ├── layout.tsx                       # 全局根布局
-│   ├── globals.css                      # 暗黑主题 + 自定义动画 (gmv-flash, ai-pulse)
+│   ├── layout.tsx                       # 全局根布局 (暗黑主题)
+│   ├── globals.css                      # 自定义动画 (gmv-flash, ai-pulse, fadeIn)
 │   ├── config/
-│   │   └── page.tsx                     # 店铺配置页 (含演示入口)
+│   │   └── page.tsx                     # 店铺配置页 (含一键导入演示入口)
 │   ├── dashboard/
-│   │   ├── layout.tsx                   # 宽屏侧边栏 + Context Provider
-│   │   ├── page.tsx                     # 状态中心 + 8 面板条件渲染分发
+│   │   ├── layout.tsx                   # SaaS 混合导航矩阵 (顶级常驻 + 3 大类手风琴)
+│   │   ├── page.tsx                     # 状态中心 + 9 面板条件渲染分发
 │   │   ├── config.ts                    # 全局常量 (汇率/费率/阈值/14天)
-│   │   ├── helpers.ts                   # 共享工具函数 (formatCny, findNearestHoliday, getCountdown, getInventoryBadge)
+│   │   ├── helpers.ts                   # 共享工具函数 (formatCny, findNearestHoliday, getCountdown)
 │   │   └── components/
-│   │       ├── OverviewPanel.tsx         # 核心实时看板 (心跳轮询/GraphQL Markets/Intl汉化)
-│   │       ├── AiDiagnosePanel.tsx       # AI 智能诊断 (DeepSeek + 本地降级)
-│   │       ├── FinancePanel.tsx          # 供应链对账 (成本滑块 + Donut饼图)
-│   │       ├── RiskRadarPanel.tsx        # 风控预警中心
-│   │       ├── TrendAnalysisPanel.tsx    # 趋势同比环比 (14天双线LineChart)
-│   │       ├── MultiStoreAggregator.tsx  # 全店聚合大盘 (Promise.all真实API)
-│   │       ├── GatewayFinancePanel.tsx   # 网关对账 (Stripe/PayPal真实费率)
-│   │       └── FunnelRetentionPanel.tsx  # 漏斗转化复购 (Cohort Analysis)
+│   │       ├── OverviewPanel.tsx         # 核心实时看板 (心跳/GraphQL/Intl/节日)
+│   │       ├── AiDiagnosePanel.tsx       # AI 诊断 (17维→DeepSeek-v4-pro)
+│   │       ├── FinancePanel.tsx          # 供应链对账 (成本滑块/利润饼图)
+│   │       ├── RiskRadarPanel.tsx        # 账户风控雷达 (退款率三色警报)
+│   │       ├── TrendAnalysisPanel.tsx    # 趋势同比 (14天双线对比)
+│   │       ├── MultiStoreAggregator.tsx  # 全店聚合 (Promise.all多店API)
+│   │       ├── GatewayFinancePanel.tsx   # 网关对账 (多币种/一键预设)
+│   │       ├── FunnelRetentionPanel.tsx  # 漏斗转化复购 (Cohort Analysis)
+│   │       └── AdPerformancePanel.tsx    # 广告成效与MER (双轴复合图)
 │   └── api/
 │       └── shopify/
 │           └── dashboard/
-│               └── route.ts             # 后端代理 (GET: REST + GraphQL Markets + Nager.Date) (POST: DeepSeek AI)
+│               └── route.ts             # 后端代理 (GET: REST+GraphQL+Nager) (POST: DeepSeek AI)
 ├── components/
 │   └── ui/                              # shadcn/ui 组件库
 ├── lib/
 │   ├── utils.ts                         # cn() 工具函数
-│   └── demo-data.ts                     # 演示数据引擎 (14天高保真)
+│   └── demo-data.ts                     # 演示数据引擎 (seed PRNG 14天)
 ├── .env.example
 ├── README.md
 ├── package.json
@@ -238,7 +246,7 @@ shopify-cn-dashboard/
 ### 1. 克隆项目
 
 ```bash
-git clone https://github.com/your-username/shopify-cn-dashboard.git
+git clone https://github.com/andy1993/shopify-cn-dashboard.git
 cd shopify-cn-dashboard
 ```
 
@@ -248,17 +256,17 @@ cd shopify-cn-dashboard
 npm install
 ```
 
-### 3. 配置环境变量 (可选)
+### 3. 配置环境变量（可选）
 
 ```bash
 cp .env.example .env.local
 ```
 
 ```bash
-# 美元兑人民币汇率 (默认 7.25)
+# 美元兑人民币汇率（默认 7.25）
 NEXT_PUBLIC_EXCHANGE_RATE=7.25
 
-# DeepSeek API Key (可选，激活 AI 实时诊断)
+# DeepSeek API Key（可选，激活 AI 实时诊断）
 # DEEPSEEK_API_KEY=sk-xxxxxxxxxxxxxxxx
 ```
 
@@ -268,16 +276,16 @@ NEXT_PUBLIC_EXCHANGE_RATE=7.25
 npm run dev
 ```
 
-打开 [http://localhost:3000](http://localhost:3000)。
+打开 [http://localhost:3000/config](http://localhost:3000/config)。
 
 ### 5. 选择体验方式
 
 | 方式 | 操作 |
 |---|---|
-| 🎭 **演示模式** | 点击「✨ 一键导入演示数据」，1 秒体验完整 8 面板大屏 |
-| 🔗 **真实店铺** | 输入 `your-store.myshopify.com` + Admin API Token (需 `read_orders`, `read_products`, `read_markets` 权限) |
+| 🎭 **演示模式** | 点击「✨ 一键导入演示数据」，1 秒体验完整 9 面板大屏 |
+| 🔗 **真实店铺** | 输入 `your-store.myshopify.com` + Admin API Token |
 
-> 真实模式下系统 100% 读取 Shopify 2026-04 Stable REST API + GraphQL Markets API，绝不混入任何模拟逻辑。
+> Token 需要 `read_orders`、`read_products`、`read_markets` 三个权限。真实模式下系统 100% 读取 Shopify 2026-04 Stable API + GraphQL Markets API，绝不混入任何模拟逻辑。
 
 ### 6. 生产构建
 
@@ -288,34 +296,16 @@ npm start
 
 ---
 
-## 📊 CSV 一键导出
-
-点击「导出报表」按钮，下载 `Shopify_全维度财务对账单_{店铺名}_{日期}.csv`，带 BOM 头，Excel 直接打开中文不乱码：
-
-| 列 | 内容 |
-|---|---|
-| 订单编号 | Shopify Order ID |
-| 下单时间 (北京时间) | UTC+8 转换 |
-| 目的国 | shipping_country |
-| 支付网关 | gateway (Stripe/PayPal/Shopify Payments) |
-| 总额 (USD) | 原始金额 |
-| 总额 (CNY) | USD × 汇率 |
-| 网关手续费 (CNY) | 按渠道动态计算 |
-| 商品成本 (CNY) | USD × cogsRate% × 汇率 |
-| 物流运费 (CNY) | USD × shippingRate% × 汇率 |
-| 广告成本 (CNY) | USD × marketingRate% × 汇率 |
-| 净纯利润 (CNY) | 总额CNY − 手续 ¥ − 成本 ¥ − 物流 ¥ − 广告 ¥ |
-
----
-
 ## 🏗 架构亮点
 
-- **双轨共存 (Dual-Track)**：Demo 沙盒与真实生产环境 100% 动态分流，所有子面板通过 `isDemo` 守卫 + Props 数据注入实现零混淆
+- **双轨共存 (Dual-Track)**：Demo 沙盒与真实生产环境 100% 动态分流，所有 9 个面板通过 `isDemo` 守卫 + Props 数据注入实现零混淆
 - **GraphQL Markets**：全球可售卖市场从 Shopify 后台真实配置直接抓取，不依赖订单流
 - **Intl 原生汉化**：`Intl.DisplayNames(["zh-CN"], { type: "region" })` 零代码膨胀覆盖全球 249 个国家和地区的中文名称
-- **当前小时硬件锁**：3 层防护 (初始化 filter + 心跳 rebuild + sync effect)，未来数据永不泄漏
-- **DeepSeek 真实 AI**：POST 路由安全托管 API Key，结合真实 Markets + GMV 生成个性化诊断
-- **14 天高保真 Demo 数据流**：seed PRNG 确定性生成，本周 15% 增长，无缝切换
+- **多币种双重 GroupBy**：网关对账按 `gateway x currency` 聚合，USD/EUR/CAD/GBP 独立计费、独立汇率
+- **DeepSeek-v4-pro 17 维诊断**：全站核心指标打包为一个 JSON，后端注入骨灰级操盘手 System Prompt
+- **当前小时硬件锁**：3 层防护（初始化 filter + 心跳 rebuild + sync effect），未来数据永不泄漏
+- **14 天高保真 Demo 数据流**：seed PRNG 确定性生成，本周 15% 增长，包含 EUR/Stripe 心跳爆单
+- **SaaS 混合导航矩阵**：顶级常驻 + 3 大手风琴分类，ChevronDown 旋转动画，激活状态绿点高亮
 
 ---
 
