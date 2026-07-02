@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useState, useMemo } from "react";
+import { useEffect, useState, useMemo, useRef } from "react";
 import {
   Globe,
   ShoppingCart,
@@ -60,11 +60,17 @@ interface StoreAggData {
   isDemo: boolean;
 }
 
-interface ApiDashboardResponse {
-  success: true;
+interface CurrentStoreData {
   gmv: number;
   orderCount: number;
-  orders: Array<{ created_at: string; total_price: string }>;
+  shopName: string;
+  domain?: string;
+  orders: Array<{
+    id: number;
+    created_at: string;
+    total_price: string;
+    financial_status: string;
+  }>;
   exchangeRate: number;
 }
 
@@ -85,7 +91,7 @@ function seededRandom(seed: number) {
   };
 }
 
-// ─── Demo data generator (only for demo stores) ──────
+// ─── Demo data generator ──────────────────────────────
 
 function generateStoreMockData(
   store: StoreEntry,
@@ -175,26 +181,15 @@ async function fetchRealStoreData(
       })}`,
     );
     const json = await res.json();
-    if (!json.success) {
-      console.error(`[MultiStore] 店铺 ${store.shopName || store.shopUrl} 数据获取失败:`, json.error);
-      return null;
-    }
+    if (!json.success) return null;
 
-    // Build hourly sales from real orders
-    const HOURLY_WEIGHTS = [
-      0.05, 0.02, 0.02, 0.02, 0.05, 0.1, 0.2, 0.35, 0.55, 0.8,
-      1.0, 0.9, 0.7, 0.55, 0.65, 0.8, 0.75, 0.6, 0.55, 0.65,
-      0.75, 0.55, 0.35, 0.15,
-    ];
-
-    const orders: Array<{ created_at: string; total_price: string }> =
-      json.orders ?? [];
+    const orders: Array<{ created_at: string; total_price: string }> = json.orders ?? [];
     const currentHour = new Date().getHours();
     const hourlySales = new Array(24).fill(0);
 
     for (const order of orders) {
       const h = (new Date(order.created_at).getUTCHours() + 8) % 24;
-      if (h > currentHour) continue; // current-hour hardware lock
+      if (h > currentHour) continue;
       hourlySales[h] += (parseFloat(order.total_price) || 0) * (json.exchangeRate || exchangeRate);
     }
     for (let h = 0; h < 24; h++) {
@@ -210,11 +205,10 @@ async function fetchRealStoreData(
       orderCount: json.orderCount || 0,
       hourlySales,
       contribution: 0,
-      color: STORE_COLORS[0], // will be reassigned after aggregation
+      color: STORE_COLORS[0],
       isDemo: false,
     };
-  } catch (err) {
-    console.error(`[MultiStore] 店铺 ${store.shopName || store.shopUrl} 请求失败:`, err);
+  } catch {
     return null;
   }
 }
@@ -225,9 +219,7 @@ function buildStackedChartData(stores: StoreAggData[]) {
   const currentHour = new Date().getHours();
   const hours: Array<Record<string, number | string>> = [];
   for (let h = 0; h <= currentHour; h++) {
-    const point: Record<string, number | string> = {
-      hour: `${String(h).padStart(2, "0")}:00`,
-    };
+    const point: Record<string, number | string> = { hour: `${String(h).padStart(2, "0")}:00` };
     for (const s of stores) {
       point[`bar_${s.id}`] = s.hourlySales[h] || 0;
     }
@@ -239,15 +231,9 @@ function buildStackedChartData(stores: StoreAggData[]) {
 // ─── Summary Card ─────────────────────────────────────
 
 function SummaryCard({
-  title,
-  value,
-  subtitle,
-  icon: Icon,
-  accent,
+  title, value, subtitle, icon: Icon, accent,
 }: {
-  title: string;
-  value: string;
-  subtitle: string;
+  title: string; value: string; subtitle: string;
   icon: React.ComponentType<{ className?: string }>;
   accent: "emerald" | "sky" | "amber";
 }) {
@@ -275,9 +261,7 @@ function SummaryCard({
 }
 
 function StackedTooltip({
-  active,
-  payload,
-  label,
+  active, payload, label,
 }: {
   active?: boolean;
   payload?: Array<{ value: number; name?: string; color?: string }>;
@@ -287,26 +271,54 @@ function StackedTooltip({
   return (
     <div className="rounded-lg border border-border/50 bg-card px-3 py-2 shadow-lg backdrop-blur-sm">
       <p className="mb-1 text-xs font-medium text-muted-foreground">{label}</p>
-      {payload
-        .filter((e) => e.value > 0)
-        .map((entry, i) => (
-          <p key={i} className="text-sm font-semibold" style={{ color: entry.color }}>
-            {entry.name}: {formatCny(entry.value)}
-          </p>
-        ))}
+      {payload.filter((e) => e.value > 0).map((entry, i) => (
+        <p key={i} className="text-sm font-semibold" style={{ color: entry.color }}>
+          {entry.name}: {formatCny(entry.value)}
+        </p>
+      ))}
     </div>
   );
 }
 
+// ─── Single-store bypass: build aggregator data from current page props ──
+
+function buildSingleStoreData(currentData: CurrentStoreData): StoreAggData {
+  const currentHour = new Date().getHours();
+  const hourlySales = new Array(24).fill(0);
+  for (const order of currentData.orders) {
+    const h = (new Date(order.created_at).getUTCHours() + 8) % 24;
+    if (h > currentHour) continue;
+    hourlySales[h] += (parseFloat(order.total_price) || 0) * (currentData.exchangeRate || EXCHANGE_RATE);
+  }
+  return {
+    id: "single",
+    shopId: "single",
+    name: currentData.shopName,
+    domain: currentData.domain || "",
+    gmv: currentData.gmv,
+    orderCount: currentData.orderCount,
+    hourlySales: hourlySales.map((v) => Math.round(v * 100) / 100),
+    contribution: 100,
+    color: STORE_COLORS[0],
+    isDemo: false,
+  };
+}
+
 // ─── Main Component ───────────────────────────────────
 
-export default function MultiStoreAggregator() {
+export default function MultiStoreAggregator({
+  currentData,
+}: {
+  currentData?: CurrentStoreData;
+}) {
   const [showChart, setShowChart] = useState(true);
   const [loading, setLoading] = useState(true);
   const [aggregated, setAggregated] = useState<{
     data: StoreAggData[]; totalGmv: number; totalOrders: number; chartData: Array<Record<string, number | string>>;
   }>({ data: [], totalGmv: 0, totalOrders: 0, chartData: [] });
 
+  const isFetching = useRef(false);
+  const storesSnapshotRef = useRef(0); // track stores.length to prevent re-fetch
   const today = useMemo(() => new Date(), []);
 
   const stores: StoreEntry[] = useMemo(() => {
@@ -318,35 +330,56 @@ export default function MultiStoreAggregator() {
     }
   }, []);
 
-  // ── Core: fetch real store data via API, generate mock only for demo stores ──
+  // ── Core: smart fetch — single-store bypass + multi-store guarded ──
   useEffect(() => {
+    // Re-fetch only when store count changes
+    if (stores.length === 0) {
+      setLoading(false);
+      setAggregated({ data: [], totalGmv: 0, totalOrders: 0, chartData: [] });
+      storesSnapshotRef.current = 0;
+      return;
+    }
+
+    if (stores.length === storesSnapshotRef.current) return; // skip if count unchanged
+    storesSnapshotRef.current = stores.length;
+
+    if (isFetching.current) return;
+    isFetching.current = true;
+
     let cancelled = false;
 
     async function load() {
-      if (stores.length === 0) {
-        setLoading(false);
+      // ── Single store: bypass API, use current page props ──
+      if (stores.length === 1 && currentData) {
+        const single = buildSingleStoreData(currentData);
+        const data = [single];
+        const totalGmv = single.gmv;
+        const totalOrders = single.orderCount;
+        const chartData = buildStackedChartData(data);
+        if (!cancelled) {
+          setAggregated({ data, totalGmv, totalOrders, chartData });
+          setLoading(false);
+        }
+        isFetching.current = false;
         return;
       }
 
+      // ── Multiple stores: fetch via API (real) + mock (demo) ──
       const realStores = stores.filter((s) => !s.isDemo);
       const demoStores = stores.filter((s) => s.isDemo);
 
       let storeDatas: StoreAggData[] = [];
       let colorIdx = 0;
 
-      // 1. Demo stores: generate mock data (sandbox mode)
       for (const store of demoStores) {
-        const mock = generateStoreMockData(store, colorIdx, today, EXCHANGE_RATE);
-        storeDatas.push(mock);
+        storeDatas.push(generateStoreMockData(store, colorIdx, today, EXCHANGE_RATE));
         colorIdx++;
       }
 
-      // 2. Real stores: fetch real API data via Promise.all
       if (realStores.length > 0) {
         const results = await Promise.all(
           realStores.map((store) => fetchRealStoreData(store, EXCHANGE_RATE)),
         );
-
         for (const result of results) {
           if (result) {
             result.color = STORE_COLORS[colorIdx % STORE_COLORS.length];
@@ -356,33 +389,30 @@ export default function MultiStoreAggregator() {
         }
       }
 
-      if (cancelled) return;
+      if (cancelled) { isFetching.current = false; return; }
 
-      // 3. Aggregate
       const totalGmv = storeDatas.reduce((sum, s) => sum + s.gmv, 0);
       const totalOrders = storeDatas.reduce((sum, s) => sum + s.orderCount, 0);
-
       for (const s of storeDatas) {
         s.contribution = totalGmv > 0 ? (s.gmv / totalGmv) * 100 : 0;
       }
-
       storeDatas.sort((a, b) => b.gmv - a.gmv);
 
       const chartData = buildStackedChartData(storeDatas);
       setAggregated({ data: storeDatas, totalGmv, totalOrders, chartData });
       setLoading(false);
+      isFetching.current = false;
     }
 
     load();
     return () => { cancelled = true; };
-  }, [stores, today]);
+  }, [stores.length, currentData]);
 
   const { data: storeData, totalGmv, totalOrders, chartData } = aggregated;
   const demoCount = stores.filter((s) => s.isDemo).length;
   const realCount = stores.filter((s) => !s.isDemo).length;
   const avgOrdersPerStore = stores.length > 0 ? Math.round(totalOrders / stores.length) : 0;
 
-  // Loading state
   if (loading) {
     return (
       <div className="flex items-center justify-center py-32">
@@ -390,7 +420,7 @@ export default function MultiStoreAggregator() {
           <CardContent className="flex flex-col items-center gap-4 py-12 px-16">
             <Loader2 className="h-8 w-8 animate-spin text-emerald-500" />
             <p className="text-sm font-medium text-muted-foreground">
-              正在拉取 {realCount} 家真实店铺数据...
+              {stores.length === 1 ? "正在读取当前店铺数据..." : `正在拉取 ${realCount} 家真实店铺数据...`}
             </p>
           </CardContent>
         </Card>
@@ -407,50 +437,25 @@ export default function MultiStoreAggregator() {
           全店聚合大盘
         </h2>
         <p className="mt-1 text-sm text-muted-foreground">
-          跨店铺 {realCount > 0 ? `${DEMO_LOOKBACK_DAYS} 天` : ""}综合数据汇总
+          {stores.length > 1 ? `${DEMO_LOOKBACK_DAYS} 天` : "今日"}综合数据汇总
           {demoCount > 0 && realCount > 0 && <span className="text-amber-400"> (含演示店铺)</span>}
           {demoCount > 0 && realCount === 0 && <span className="text-amber-400"> (演示模式)</span>}
         </p>
       </div>
 
-      {/* Summary Cards */}
       <div className="grid grid-cols-1 gap-4 sm:grid-cols-3">
-        <SummaryCard
-          title="聚合总营收"
-          value={formatCny(totalGmv)}
-          subtitle={`${stores.length} 家店铺合计 · 汇率 ¥${EXCHANGE_RATE}`}
-          icon={DollarSign}
-          accent="emerald"
-        />
-        <SummaryCard
-          title="聚合总单量"
-          value={`${totalOrders} 单`}
-          subtitle={`平均 ${avgOrdersPerStore} 单/店`}
-          icon={ShoppingCart}
-          accent="sky"
-        />
-        <SummaryCard
-          title="已连接站点"
-          value={`${stores.length} 家`}
-          subtitle={`${demoCount} 演示 · ${realCount} 真实`}
-          icon={Store}
-          accent="amber"
-        />
+        <SummaryCard title="聚合总营收" value={formatCny(totalGmv)} subtitle={`${stores.length} 家店铺合计 · 汇率 ¥${EXCHANGE_RATE}`} icon={DollarSign} accent="emerald" />
+        <SummaryCard title="聚合总单量" value={`${totalOrders} 单`} subtitle={`平均 ${avgOrdersPerStore} 单/店`} icon={ShoppingCart} accent="sky" />
+        <SummaryCard title="已连接站点" value={`${stores.length} 家`} subtitle={`${demoCount} 演示 · ${realCount} 真实`} icon={Store} accent="amber" />
       </div>
 
-      {/* Stacked Bar Chart */}
       <Card className="border-border/40 bg-card/60 shadow-lg backdrop-blur-lg">
         <CardHeader className="flex flex-row items-center justify-between">
           <div>
             <CardTitle className="text-base">多店铺营收堆叠分布</CardTitle>
-            <CardDescription>
-              北京时间每小时堆叠 · 每种颜色代表一家店铺 · 无未来数据泄漏
-            </CardDescription>
+            <CardDescription>北京时间每小时堆叠 · 每种颜色代表一家店铺 · 无未来数据泄漏</CardDescription>
           </div>
-          <button
-            onClick={() => setShowChart(!showChart)}
-            className="text-xs text-muted-foreground hover:text-foreground transition-colors"
-          >
+          <button onClick={() => setShowChart(!showChart)} className="text-xs text-muted-foreground hover:text-foreground transition-colors">
             {showChart ? "隐藏" : "显示"}
           </button>
         </CardHeader>
@@ -478,7 +483,6 @@ export default function MultiStoreAggregator() {
         )}
       </Card>
 
-      {/* Contribution Leaderboard */}
       <Card className="border-border/40 bg-card/60 shadow-lg backdrop-blur-lg">
         <CardHeader>
           <CardTitle className="flex items-center gap-2 text-base">
@@ -503,26 +507,19 @@ export default function MultiStoreAggregator() {
                 {storeData.map((store, index) => (
                   <TableRow key={store.id} className="group transition-colors hover:bg-muted/30">
                     <TableCell className="text-center">
-                      {index === 0 ? (
-                        <Badge className="bg-amber-500/20 text-amber-400 px-1.5 py-0 text-xs">🥇</Badge>
-                      ) : index === 1 ? (
-                        <Badge className="bg-sky-500/20 text-sky-400 px-1.5 py-0 text-xs">🥈</Badge>
-                      ) : index === 2 ? (
-                        <Badge className="bg-orange-500/20 text-orange-400 px-1.5 py-0 text-xs">🥉</Badge>
-                      ) : (
-                        <span className="text-xs font-medium text-muted-foreground">{index + 1}</span>
-                      )}
+                      {index === 0 ? (<Badge className="bg-amber-500/20 text-amber-400 px-1.5 py-0 text-xs">🥇</Badge>)
+                      : index === 1 ? (<Badge className="bg-sky-500/20 text-sky-400 px-1.5 py-0 text-xs">🥈</Badge>)
+                      : index === 2 ? (<Badge className="bg-orange-500/20 text-orange-400 px-1.5 py-0 text-xs">🥉</Badge>)
+                      : <span className="text-xs font-medium text-muted-foreground">{index + 1}</span>}
                     </TableCell>
                     <TableCell>
                       <div className="flex items-center gap-2">
                         <div className="h-3 w-3 shrink-0 rounded-full" style={{ backgroundColor: store.color }} />
                         <span className="font-medium text-foreground">{store.name}</span>
                         <span className="text-xs text-muted-foreground">({store.domain})</span>
-                        {store.isDemo ? (
-                          <Badge variant="outline" className="text-[10px] px-1 py-0 border-amber-500/30 text-amber-400">演示</Badge>
-                        ) : (
-                          <Badge variant="outline" className="text-[10px] px-1 py-0 border-emerald-500/30 text-emerald-400">真实</Badge>
-                        )}
+                        {store.isDemo
+                          ? <Badge variant="outline" className="text-[10px] px-1 py-0 border-amber-500/30 text-amber-400">演示</Badge>
+                          : <Badge variant="outline" className="text-[10px] px-1 py-0 border-emerald-500/30 text-emerald-400">真实</Badge>}
                       </div>
                     </TableCell>
                     <TableCell className="text-right tabular-nums">{store.orderCount} 单</TableCell>

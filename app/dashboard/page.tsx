@@ -346,7 +346,16 @@ export default function DashboardPage() {
         />
       )}
       {activeMenu === "aggregator" && (
-        <MultiStoreAggregator />
+        <MultiStoreAggregator
+          currentData={{
+            gmv: data.gmv,
+            orderCount: data.orderCount,
+            shopName: data.shopName,
+            domain: data.domain,
+            orders: data.orders,
+            exchangeRate: data.exchangeRate,
+          }}
+        />
       )}
       {activeMenu === "gateway" && (
         <GatewayFinancePanel
