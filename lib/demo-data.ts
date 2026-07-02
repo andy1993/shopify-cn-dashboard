@@ -6,6 +6,9 @@ interface DemoOrder {
   created_at: string;
   total_price: string;
   financial_status: string;
+  gateway?: string;
+  customer?: { orders_count: number } | null;
+  shipping_address?: { country_code: string } | null;
   line_items: Array<{
     id: number;
     product_id: number;

@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, useMemo } from "react";
+import { useEffect, useState, useMemo } from "react";
 import {
   Globe,
   ShoppingCart,
@@ -8,6 +8,7 @@ import {
   Store,
   TrendingUp,
   Layers,
+  Loader2,
 } from "lucide-react";
 import {
   BarChart,
@@ -59,6 +60,14 @@ interface StoreAggData {
   isDemo: boolean;
 }
 
+interface ApiDashboardResponse {
+  success: true;
+  gmv: number;
+  orderCount: number;
+  orders: Array<{ created_at: string; total_price: string }>;
+  exchangeRate: number;
+}
+
 // ─── Color palette ────────────────────────────────────
 
 const STORE_COLORS = [
@@ -76,13 +85,8 @@ function seededRandom(seed: number) {
   };
 }
 
-// ─── 14-Day Demo Data Generator ──────────────────────
+// ─── Demo data generator (only for demo stores) ──────
 
-/**
- * Generate 14 days of per-store mock sales data.
- * Week 2 (most recent 7 days) boosted by DEMO_GROWTH_FACTOR (~15%).
- * Each data point tagged with shopId for traceability.
- */
 function generateStoreMockData(
   store: StoreEntry,
   colorIndex: number,
@@ -93,28 +97,22 @@ function generateStoreMockData(
   const seed = store.id.split("").reduce((a, c) => a + c.charCodeAt(0), 0);
   const rand = seededRandom(seed);
 
-  // Realistic e-commerce hourly weights
   const HOURLY_WEIGHTS = [
     0.05, 0.02, 0.02, 0.02, 0.05, 0.1, 0.2, 0.35, 0.55, 0.8,
     1.0, 0.9, 0.7, 0.55, 0.65, 0.8, 0.75, 0.6, 0.55, 0.65,
     0.75, 0.55, 0.35, 0.15,
   ];
 
-  // Generate daily data for 14 days, aggregate to 24-hour buckets
   const dailyGmv: number[] = new Array(DEMO_LOOKBACK_DAYS).fill(0);
   const dailyOrders: number[] = new Array(DEMO_LOOKBACK_DAYS).fill(0);
-
   const baseRevenue = 500 + rand() * 2000;
 
   for (let d = 0; d < DEMO_LOOKBACK_DAYS; d++) {
-    // Week 2 (days 7-13, most recent) gets growth boost
     const isRecent = d >= DEMO_LOOKBACK_DAYS / 2;
     const growthFactor = isRecent ? DEMO_GROWTH_FACTOR : 1.0;
-    // Weekend factor
     const dayOfWeek = (today.getDay() - (DEMO_LOOKBACK_DAYS - 1 - d) + 7) % 7;
     const isWeekend = dayOfWeek === 0 || dayOfWeek === 6;
     const weekendFactor = isWeekend ? 0.7 : 1.0;
-
     let dayGmv = 0;
     let dayOrders = 0;
     for (let h = 0; h < 24; h++) {
@@ -129,47 +127,96 @@ function generateStoreMockData(
     dailyOrders[d] = dayOrders;
   }
 
-  // Aggregate latest 7 days into 24-hour buckets for the stacked chart
   const hourlySales: number[] = new Array(24).fill(0);
   let totalGmv = 0;
   let totalOrders = 0;
-
   const currentHour = new Date().getHours();
-
-  // Use most recent 7 days for the hourly stack
   const startDay = Math.max(0, DEMO_LOOKBACK_DAYS - 7);
+
   for (let d = startDay; d < DEMO_LOOKBACK_DAYS; d++) {
     const dayGmv = dailyGmv[d];
     const dayOrders = dailyOrders[d];
     const isToday = d === DEMO_LOOKBACK_DAYS - 1;
-
     for (let h = 0; h < 24; h++) {
-      // For today: only include hours ≤ current real-world hour (no future data)
       if (isToday && h > currentHour) break;
-
       const weight = HOURLY_WEIGHTS[h];
       const hourFraction = weight / HOURLY_WEIGHTS.reduce((a, b) => a + b, 0);
       hourlySales[h] += Math.round(dayGmv * hourFraction * 100) / 100;
     }
-    // Pro-rate totalGmv for today (only partially through the day)
     totalGmv += isToday ? dayGmv * ((currentHour + 1) / 24) : dayGmv;
     totalOrders += isToday ? Math.round(dayOrders * ((currentHour + 1) / 24)) : dayOrders;
   }
-
-  totalGmv = Math.round(totalGmv * 100) / 100;
 
   return {
     id: store.id,
     shopId: store.id,
     name: store.shopName || store.shopUrl.replace(".myshopify.com", ""),
     domain: store.shopUrl,
-    gmv: totalGmv,
+    gmv: Math.round(totalGmv * 100) / 100,
     orderCount: totalOrders,
     hourlySales,
     contribution: 0,
     color,
-    isDemo: !!store.isDemo,
+    isDemo: true,
   };
+}
+
+// ─── Real store data fetcher ──────────────────────────
+
+async function fetchRealStoreData(
+  store: StoreEntry,
+  exchangeRate: number,
+): Promise<StoreAggData | null> {
+  try {
+    const res = await fetch(
+      `/api/shopify/dashboard?${new URLSearchParams({
+        shopUrl: store.shopUrl,
+        accessToken: store.accessToken,
+      })}`,
+    );
+    const json = await res.json();
+    if (!json.success) {
+      console.error(`[MultiStore] 店铺 ${store.shopName || store.shopUrl} 数据获取失败:`, json.error);
+      return null;
+    }
+
+    // Build hourly sales from real orders
+    const HOURLY_WEIGHTS = [
+      0.05, 0.02, 0.02, 0.02, 0.05, 0.1, 0.2, 0.35, 0.55, 0.8,
+      1.0, 0.9, 0.7, 0.55, 0.65, 0.8, 0.75, 0.6, 0.55, 0.65,
+      0.75, 0.55, 0.35, 0.15,
+    ];
+
+    const orders: Array<{ created_at: string; total_price: string }> =
+      json.orders ?? [];
+    const currentHour = new Date().getHours();
+    const hourlySales = new Array(24).fill(0);
+
+    for (const order of orders) {
+      const h = (new Date(order.created_at).getUTCHours() + 8) % 24;
+      if (h > currentHour) continue; // current-hour hardware lock
+      hourlySales[h] += (parseFloat(order.total_price) || 0) * (json.exchangeRate || exchangeRate);
+    }
+    for (let h = 0; h < 24; h++) {
+      hourlySales[h] = Math.round(hourlySales[h] * 100) / 100;
+    }
+
+    return {
+      id: store.id,
+      shopId: store.id,
+      name: json.shopName || store.shopName || store.shopUrl.replace(".myshopify.com", ""),
+      domain: store.shopUrl,
+      gmv: json.gmv || 0,
+      orderCount: json.orderCount || 0,
+      hourlySales,
+      contribution: 0,
+      color: STORE_COLORS[0], // will be reassigned after aggregation
+      isDemo: false,
+    };
+  } catch (err) {
+    console.error(`[MultiStore] 店铺 ${store.shopName || store.shopUrl} 请求失败:`, err);
+    return null;
+  }
 }
 
 // ─── Build stacked chart data ─────────────────────────
@@ -227,8 +274,6 @@ function SummaryCard({
   );
 }
 
-// ─── Stacked Tooltip ──────────────────────────────────
-
 function StackedTooltip({
   active,
   payload,
@@ -257,11 +302,13 @@ function StackedTooltip({
 
 export default function MultiStoreAggregator() {
   const [showChart, setShowChart] = useState(true);
+  const [loading, setLoading] = useState(true);
+  const [aggregated, setAggregated] = useState<{
+    data: StoreAggData[]; totalGmv: number; totalOrders: number; chartData: Array<Record<string, number | string>>;
+  }>({ data: [], totalGmv: 0, totalOrders: 0, chartData: [] });
 
-  // Dynamic today
   const today = useMemo(() => new Date(), []);
 
-  // Read stores from localStorage
   const stores: StoreEntry[] = useMemo(() => {
     try {
       const raw = localStorage.getItem("shopify_stores");
@@ -271,34 +318,85 @@ export default function MultiStoreAggregator() {
     }
   }, []);
 
-  // Generate aggregated data from 14-day demo flow
-  const aggregated = useMemo(() => {
-    if (stores.length === 0) {
-      return { data: [] as StoreAggData[], totalGmv: 0, totalOrders: 0, chartData: [] };
+  // ── Core: fetch real store data via API, generate mock only for demo stores ──
+  useEffect(() => {
+    let cancelled = false;
+
+    async function load() {
+      if (stores.length === 0) {
+        setLoading(false);
+        return;
+      }
+
+      const realStores = stores.filter((s) => !s.isDemo);
+      const demoStores = stores.filter((s) => s.isDemo);
+
+      let storeDatas: StoreAggData[] = [];
+      let colorIdx = 0;
+
+      // 1. Demo stores: generate mock data (sandbox mode)
+      for (const store of demoStores) {
+        const mock = generateStoreMockData(store, colorIdx, today, EXCHANGE_RATE);
+        storeDatas.push(mock);
+        colorIdx++;
+      }
+
+      // 2. Real stores: fetch real API data via Promise.all
+      if (realStores.length > 0) {
+        const results = await Promise.all(
+          realStores.map((store) => fetchRealStoreData(store, EXCHANGE_RATE)),
+        );
+
+        for (const result of results) {
+          if (result) {
+            result.color = STORE_COLORS[colorIdx % STORE_COLORS.length];
+            storeDatas.push(result);
+            colorIdx++;
+          }
+        }
+      }
+
+      if (cancelled) return;
+
+      // 3. Aggregate
+      const totalGmv = storeDatas.reduce((sum, s) => sum + s.gmv, 0);
+      const totalOrders = storeDatas.reduce((sum, s) => sum + s.orderCount, 0);
+
+      for (const s of storeDatas) {
+        s.contribution = totalGmv > 0 ? (s.gmv / totalGmv) * 100 : 0;
+      }
+
+      storeDatas.sort((a, b) => b.gmv - a.gmv);
+
+      const chartData = buildStackedChartData(storeDatas);
+      setAggregated({ data: storeDatas, totalGmv, totalOrders, chartData });
+      setLoading(false);
     }
 
-    const data = stores.map((s, i) =>
-      generateStoreMockData(s, i, today, EXCHANGE_RATE),
-    );
-    const totalGmv = data.reduce((sum, s) => sum + s.gmv, 0);
-    const totalOrders = data.reduce((sum, s) => sum + s.orderCount, 0);
-
-    // Contribution percentage
-    for (const s of data) {
-      s.contribution = totalGmv > 0 ? (s.gmv / totalGmv) * 100 : 0;
-    }
-
-    // Sort by GMV descending
-    data.sort((a, b) => b.gmv - a.gmv);
-
-    const chartData = buildStackedChartData(data);
-    return { data, totalGmv, totalOrders, chartData };
+    load();
+    return () => { cancelled = true; };
   }, [stores, today]);
 
   const { data: storeData, totalGmv, totalOrders, chartData } = aggregated;
   const demoCount = stores.filter((s) => s.isDemo).length;
   const realCount = stores.filter((s) => !s.isDemo).length;
   const avgOrdersPerStore = stores.length > 0 ? Math.round(totalOrders / stores.length) : 0;
+
+  // Loading state
+  if (loading) {
+    return (
+      <div className="flex items-center justify-center py-32">
+        <Card className="border-border/40 bg-card/60 shadow-lg backdrop-blur-lg">
+          <CardContent className="flex flex-col items-center gap-4 py-12 px-16">
+            <Loader2 className="h-8 w-8 animate-spin text-emerald-500" />
+            <p className="text-sm font-medium text-muted-foreground">
+              正在拉取 {realCount} 家真实店铺数据...
+            </p>
+          </CardContent>
+        </Card>
+      </div>
+    );
+  }
 
   return (
     <div className="space-y-6">
@@ -309,16 +407,18 @@ export default function MultiStoreAggregator() {
           全店聚合大盘
         </h2>
         <p className="mt-1 text-sm text-muted-foreground">
-          跨店铺 {DEMO_LOOKBACK_DAYS} 天综合数据汇总 · 本周 vs 上周 {((DEMO_GROWTH_FACTOR - 1) * 100).toFixed(0)}% 增长模拟
+          跨店铺 {realCount > 0 ? `${DEMO_LOOKBACK_DAYS} 天` : ""}综合数据汇总
+          {demoCount > 0 && realCount > 0 && <span className="text-amber-400"> (含演示店铺)</span>}
+          {demoCount > 0 && realCount === 0 && <span className="text-amber-400"> (演示模式)</span>}
         </p>
       </div>
 
       {/* Summary Cards */}
       <div className="grid grid-cols-1 gap-4 sm:grid-cols-3">
         <SummaryCard
-          title="聚合总营收 (7 天 CN)"
+          title="聚合总营收"
           value={formatCny(totalGmv)}
-          subtitle={`${stores.length} 家店铺合计`}
+          subtitle={`${stores.length} 家店铺合计 · 汇率 ¥${EXCHANGE_RATE}`}
           icon={DollarSign}
           accent="emerald"
         />
@@ -342,9 +442,9 @@ export default function MultiStoreAggregator() {
       <Card className="border-border/40 bg-card/60 shadow-lg backdrop-blur-lg">
         <CardHeader className="flex flex-row items-center justify-between">
           <div>
-            <CardTitle className="text-base">多店铺营收堆叠分布 (24H)</CardTitle>
+            <CardTitle className="text-base">多店铺营收堆叠分布</CardTitle>
             <CardDescription>
-              北京时间每小时堆叠 · 每种颜色代表一家店铺 · 汇率 ¥{EXCHANGE_RATE}
+              北京时间每小时堆叠 · 每种颜色代表一家店铺 · 无未来数据泄漏
             </CardDescription>
           </div>
           <button
@@ -356,44 +456,24 @@ export default function MultiStoreAggregator() {
         </CardHeader>
         {showChart && (
           <CardContent>
-            <div className="h-[360px] w-full">
-              <ResponsiveContainer width="100%" height="100%">
-                <BarChart data={chartData} margin={{ top: 10, right: 10, left: 10, bottom: 5 }}>
-                  <CartesianGrid strokeDasharray="3 3" stroke="oklch(1 0 0 / 0.06)" vertical={false} />
-                  <XAxis
-                    dataKey="hour"
-                    tick={{ fontSize: 11, fill: "oklch(0.708 0 0)" }}
-                    tickLine={false}
-                    axisLine={false}
-                    interval={3}
-                  />
-                  <YAxis
-                    tick={{ fontSize: 11, fill: "oklch(0.708 0 0)" }}
-                    tickLine={false}
-                    axisLine={false}
-                    tickFormatter={(v: number) => `¥${v}`}
-                    width={60}
-                  />
-                  <Tooltip content={<StackedTooltip />} />
-                  <Legend
-                    formatter={(value: string) => (
-                      <span style={{ color: "oklch(0.708 0 0)", fontSize: "11px" }}>{value}</span>
-                    )}
-                  />
-                  {storeData.map((store) => (
-                    <Bar
-                      key={store.id}
-                      dataKey={`bar_${store.id}`}
-                      name={store.name}
-                      stackId="a"
-                      fill={store.color}
-                      radius={[0, 0, 0, 0]}
-                      maxBarSize={32}
-                    />
-                  ))}
-                </BarChart>
-              </ResponsiveContainer>
-            </div>
+            {chartData.length > 0 ? (
+              <div className="h-[360px] w-full">
+                <ResponsiveContainer width="100%" height="100%">
+                  <BarChart data={chartData} margin={{ top: 10, right: 10, left: 10, bottom: 5 }}>
+                    <CartesianGrid strokeDasharray="3 3" stroke="oklch(1 0 0 / 0.06)" vertical={false} />
+                    <XAxis dataKey="hour" tick={{ fontSize: 11, fill: "oklch(0.708 0 0)" }} tickLine={false} axisLine={false} interval={3} />
+                    <YAxis tick={{ fontSize: 11, fill: "oklch(0.708 0 0)" }} tickLine={false} axisLine={false} tickFormatter={(v: number) => `¥${v}`} width={60} />
+                    <Tooltip content={<StackedTooltip />} />
+                    <Legend formatter={(value: string) => (<span style={{ color: "oklch(0.708 0 0)", fontSize: "11px" }}>{value}</span>)} />
+                    {storeData.map((store) => (
+                      <Bar key={store.id} dataKey={`bar_${store.id}`} name={store.name} stackId="a" fill={store.color} radius={[0, 0, 0, 0]} maxBarSize={32} />
+                    ))}
+                  </BarChart>
+                </ResponsiveContainer>
+              </div>
+            ) : (
+              <div className="flex flex-col items-center gap-3 py-12 text-sm text-muted-foreground">暂无数据，请添加店铺后重试</div>
+            )}
           </CardContent>
         )}
       </Card>
@@ -405,9 +485,7 @@ export default function MultiStoreAggregator() {
             <TrendingUp className="h-4 w-4 text-amber-400" />
             店铺战力排行榜
           </CardTitle>
-          <CardDescription>
-            按 7 天营收降序 · 贡献率含进度条
-          </CardDescription>
+          <CardDescription>按营收降序 · 贡献率含进度条</CardDescription>
         </CardHeader>
         <CardContent>
           {storeData.length > 0 ? (
@@ -416,9 +494,9 @@ export default function MultiStoreAggregator() {
                 <TableRow className="hover:bg-transparent">
                   <TableHead className="w-12 text-center">#</TableHead>
                   <TableHead>店铺</TableHead>
-                  <TableHead className="text-right">近 7 天订单</TableHead>
-                  <TableHead className="text-right">近 7 天营收 (CNY)</TableHead>
-                  <TableHead className="text-right w-64">大盘贡献率</TableHead>
+                  <TableHead className="text-right">订单</TableHead>
+                  <TableHead className="text-right">营收 (CNY)</TableHead>
+                  <TableHead className="text-right w-64">贡献率</TableHead>
                 </TableRow>
               </TableHeader>
               <TableBody>
@@ -440,33 +518,21 @@ export default function MultiStoreAggregator() {
                         <div className="h-3 w-3 shrink-0 rounded-full" style={{ backgroundColor: store.color }} />
                         <span className="font-medium text-foreground">{store.name}</span>
                         <span className="text-xs text-muted-foreground">({store.domain})</span>
-                        {store.isDemo && (
-                          <Badge variant="outline" className="text-[10px] px-1 py-0 border-amber-500/30 text-amber-400">
-                            演示
-                          </Badge>
+                        {store.isDemo ? (
+                          <Badge variant="outline" className="text-[10px] px-1 py-0 border-amber-500/30 text-amber-400">演示</Badge>
+                        ) : (
+                          <Badge variant="outline" className="text-[10px] px-1 py-0 border-emerald-500/30 text-emerald-400">真实</Badge>
                         )}
                       </div>
                     </TableCell>
-                    <TableCell className="text-right tabular-nums">
-                      {store.orderCount} 单
-                    </TableCell>
-                    <TableCell className="text-right tabular-nums font-medium text-emerald-400">
-                      {formatCny(store.gmv)}
-                    </TableCell>
+                    <TableCell className="text-right tabular-nums">{store.orderCount} 单</TableCell>
+                    <TableCell className="text-right tabular-nums font-medium text-emerald-400">{formatCny(store.gmv)}</TableCell>
                     <TableCell className="text-right">
                       <div className="flex items-center justify-end gap-2">
                         <div className="h-2 flex-1 overflow-hidden rounded-full bg-muted">
-                          <div
-                            className="h-full rounded-full transition-all"
-                            style={{
-                              width: `${Math.min(100, store.contribution)}%`,
-                              backgroundColor: store.color,
-                            }}
-                          />
+                          <div className="h-full rounded-full transition-all" style={{ width: `${Math.min(100, store.contribution)}%`, backgroundColor: store.color }} />
                         </div>
-                        <span className="w-14 text-right text-xs font-semibold tabular-nums text-muted-foreground">
-                          {store.contribution.toFixed(1)}%
-                        </span>
+                        <span className="w-14 text-right text-xs font-semibold tabular-nums text-muted-foreground">{store.contribution.toFixed(1)}%</span>
                       </div>
                     </TableCell>
                   </TableRow>
@@ -477,7 +543,7 @@ export default function MultiStoreAggregator() {
             <div className="flex flex-col items-center gap-3 py-12 text-center">
               <Store className="h-10 w-10 text-muted-foreground/40" />
               <p className="text-sm text-muted-foreground">暂无已绑定店铺数据</p>
-              <p className="text-xs text-muted-foreground/60">请前往配置页添加至少 2 家店铺以启用聚合面板</p>
+              <p className="text-xs text-muted-foreground/60">请前往配置页添加店铺以启用聚合面板</p>
             </div>
           )}
         </CardContent>

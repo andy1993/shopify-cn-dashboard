@@ -36,7 +36,7 @@ interface Order {
   total_price: string;
   financial_status: string;
   gateway?: string;
-  customer?: { orders_count?: number };
+  customer_orders_count?: number;
 }
 
 interface FunnelStage {
@@ -148,8 +148,8 @@ export default function FunnelRetentionPanel({
     for (let i = 0; i < paidOrders.length; i++) {
       const o = paidOrders[i];
       const price = parseFloat(o.total_price) || 0;
-      // Demo mode: use deterministic hash; real: use customer.orders_count
-      let ordersCount = o.customer?.orders_count ?? 0;
+      // Real: use customer_orders_count from API; Demo: use deterministic hash
+      let ordersCount = o.customer_orders_count ?? 0;
       if (isDemo && ordersCount === 0) {
         // Simulate repeat customer probability ~25% for the last few orders
         ordersCount = i % 4 === 0 ? 2 : 1;

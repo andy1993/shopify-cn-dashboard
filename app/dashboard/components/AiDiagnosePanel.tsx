@@ -1,6 +1,6 @@
 "use client";
 
-import { Brain, Sparkles, Bot, Lightbulb } from "lucide-react";
+import { Brain, Sparkles, Bot, Lightbulb, AlertTriangle } from "lucide-react";
 import { Card, CardContent } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
@@ -22,6 +22,7 @@ interface AiDiagnosePanelProps {
   diagnosing: boolean;
   diagnosis: DiagnosisReport | null;
   typewriterText: string;
+  diagnosisError?: string | null;
 }
 
 // ─── Panel ─────────────────────────────────────────────
@@ -33,6 +34,7 @@ export default function AiDiagnosePanel({
   diagnosing,
   diagnosis,
   typewriterText,
+  diagnosisError,
 }: AiDiagnosePanelProps) {
   return (
     <div className="space-y-6">
@@ -56,6 +58,14 @@ export default function AiDiagnosePanel({
           {diagnosing ? "诊断中..." : diagnosis ? "重新诊断" : "开始诊断"}
         </Button>
       </div>
+
+      {/* Diagnosis error alert */}
+      {diagnosisError && (
+        <div className="flex items-start gap-2 rounded-lg border border-amber-500/30 bg-amber-500/10 px-4 py-3">
+          <AlertTriangle className="mt-0.5 h-4 w-4 shrink-0 text-amber-400" />
+          <p className="text-sm text-amber-200">{diagnosisError}</p>
+        </div>
+      )}
 
       {/* Loading */}
       {diagnosing && (

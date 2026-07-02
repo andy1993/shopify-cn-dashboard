@@ -6,7 +6,6 @@ import { Loader2, Globe, AlertCircle, RefreshCw, LogOut } from "lucide-react";
 import { Card, CardContent } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { useDashboardMenu } from "./layout";
-import { findNearestHoliday, getCountdown, type Holiday } from "./helpers";
 import OverviewPanel from "./components/OverviewPanel";
 import AiDiagnosePanel from "./components/AiDiagnosePanel";
 import FinancePanel from "./components/FinancePanel";
@@ -25,7 +24,10 @@ interface DashboardData {
   gmv: number; orderCount: number; conversionRate: number;
   charts: Array<{ hour: string; sales: number }>;
   products: Array<{ id: number; title: string; image: string | null; totalSold: number; totalRevenue: number; inventory: number }>;
-  orders: Array<{ id: number; created_at: string; total_price: string; financial_status: string }>;
+  orders: Array<{
+    id: number; created_at: string; total_price: string; financial_status: string;
+    gateway?: string; customer_orders_count?: number; shipping_country?: string;
+  }>;
   holidaysData: Record<string, Array<{ date: string; localName: string; name: string; countryCode: string }>>;
   topCountries: string[]; lastUpdated: string;
 }
@@ -90,12 +92,8 @@ export default function DashboardPage() {
   const [sheetOpen, setSheetOpen] = useState(false);
   const [diagnosing, setDiagnosing] = useState(false);
   const [diagnosis, setDiagnosis] = useState<DiagnosisReport | null>(null);
+  const [diagnosisError, setDiagnosisError] = useState<string | null>(null);
   const [typewriterText, setTypewriterText] = useState("");
-
-  // Holiday
-  const [activeCountry, setActiveCountry] = useState("");
-  const [countdown, setCountdown] = useState({ days: 0, hours: 0, minutes: 0, seconds: 0 });
-  const [countryHolidays, setCountryHolidays] = useState<Record<string, Holiday | null>>({});
 
   // ── Init stores ──
   useEffect(() => {
@@ -197,31 +195,65 @@ export default function DashboardPage() {
     return map;
   }, [data, refundedOrders]);
 
-  // ── Holiday ──
-  useEffect(() => {
-    if (data?.holidaysData && data.topCountries.length > 0) {
-      const nearest: Record<string, Holiday | null> = {};
-      for (const code of data.topCountries) nearest[code] = findNearestHoliday(data.holidaysData[code] || []);
-      setCountryHolidays(nearest);
-      if (!activeCountry || !data.topCountries.includes(activeCountry)) setActiveCountry(data.topCountries[0]);
-    }
-  }, [data]);
-  useEffect(() => {
-    if (!activeCountry) return;
-    const h = countryHolidays[activeCountry];
-    if (!h) { setCountdown({ days: 0, hours: 0, minutes: 0, seconds: 0 }); return; }
-    setCountdown(getCountdown(h.date));
-    const t = setInterval(() => setCountdown(getCountdown(h.date)), 1000);
-    return () => clearInterval(t);
-  }, [activeCountry, countryHolidays]);
-
   // ── Diagnosis handler ──
   const handleStartDiagnosis = async () => {
     if (!data || (data.domain !== currentStore?.shopUrl && data.shopName !== currentStore?.shopName)) return;
     setDiagnosing(true); setDiagnosis(null); setTypewriterText("");
     const lines = ["DeepSeek 正在深度剖析今日站点运营数据...", "正在分析 GMV 趋势与订单分布...", "检查商品库存健康度...", "生成跨境操盘手诊断报告..."];
-    for (const l of lines) { setTypewriterText(l); await new Promise((r) => setTimeout(r, 800)); }
-    setDiagnosis(generateDiagnosis({ shopName: data.shopName, gmv: data.gmv, orderCount: data.orderCount, exchangeRate: data.exchangeRate, currency: data.currency, products: data.products, isDemo: !!currentStore?.isDemo }));
+
+    // ── 轨 A: Demo — 本地预设诊断 ──
+    if (currentStore?.isDemo) {
+      for (const l of lines) { setTypewriterText(l); await new Promise((r) => setTimeout(r, 800)); }
+      setDiagnosis(generateDiagnosis({
+        shopName: data.shopName, gmv: data.gmv, orderCount: data.orderCount,
+        exchangeRate: data.exchangeRate, currency: data.currency,
+        products: data.products, isDemo: true,
+      }));
+      setDiagnosing(false);
+      return;
+    }
+
+    // ── 轨 B: Real — 调用后端 POST /api/shopify/dashboard → DeepSeek API ──
+    try {
+      for (const l of lines) { setTypewriterText(l); await new Promise((r) => setTimeout(r, 800)); }
+
+      const res = await fetch("/api/shopify/dashboard", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          isDemo: false,
+          metrics: {
+            shopName: data.shopName,
+            gmv: data.gmv,
+            orderCount: data.orderCount,
+            conversionRate: data.conversionRate,
+            products: data.products,
+            refundRate,
+          },
+        }),
+      });
+
+      const json = await res.json();
+      if (json.success && json.diagnosis) {
+        setDiagnosis(json.diagnosis);
+        setDiagnosisError(null);
+      } else {
+        // Show graceful error but still provide local diagnosis
+        setDiagnosisError(json.error || "AI 诊断服务暂时不可用，已启用本地离线诊断模式。");
+        setDiagnosis(generateDiagnosis({
+          shopName: data.shopName, gmv: data.gmv, orderCount: data.orderCount,
+          exchangeRate: data.exchangeRate, currency: data.currency,
+          products: data.products, isDemo: false,
+        }));
+      }
+    } catch {
+      setDiagnosisError("⚠️ 核心数据已同步，但检测到系统未配置 DeepSeek 密钥，AI 智能诊断暂时无法激活，其余统计功能正常使用。");
+      setDiagnosis(generateDiagnosis({
+        shopName: data.shopName, gmv: data.gmv, orderCount: data.orderCount,
+        exchangeRate: data.exchangeRate, currency: data.currency,
+        products: data.products, isDemo: false,
+      }));
+    }
     setDiagnosing(false);
   };
 
@@ -270,13 +302,13 @@ export default function DashboardPage() {
           totalCostRate={totalCostRate} profit={profit} profitMargin={profitMargin}
           refundRate={refundRate} refundedOrders={refundedOrders} refundAmount={refundAmount}
           pieData={pieData} productRiskMap={productRiskMap}
-          countryHolidays={countryHolidays} activeCountry={activeCountry} setActiveCountry={setActiveCountry} countdown={countdown}
           fetchData={fetchData} handleStoreChange={handleStoreChange} handleRemoveStore={handleRemoveStore} handleAddStore={() => router.push("/config")} handleStartDiagnosis={handleStartDiagnosis}
           sheetOpen={sheetOpen} setSheetOpen={setSheetOpen} diagnosing={diagnosing} diagnosis={diagnosis} typewriterText={typewriterText}
+          diagnosisError={diagnosisError}
         />
       )}
       {activeMenu === "ai" && (
-        <AiDiagnosePanel shopName={data.shopName} isDemo={!!currentStore?.isDemo} handleStartDiagnosis={handleStartDiagnosis} diagnosing={diagnosing} diagnosis={diagnosis} typewriterText={typewriterText} />
+        <AiDiagnosePanel shopName={data.shopName} isDemo={!!currentStore?.isDemo} handleStartDiagnosis={handleStartDiagnosis} diagnosing={diagnosing} diagnosis={diagnosis} typewriterText={typewriterText} diagnosisError={diagnosisError} />
       )}
       {activeMenu === "finance" && (
         <FinancePanel shopName={data.shopName} currency={data.currency} exchangeRate={data.exchangeRate} gmv={data.gmv}

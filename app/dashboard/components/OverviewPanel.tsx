@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useState, useRef, useCallback } from "react";
+import { useEffect, useState, useRef, useCallback, useMemo } from "react";
 import {
   TrendingUp,
   ShoppingCart,
@@ -41,7 +41,6 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Badge } from "@/components/ui/badge";
 import { Select, SelectContent, SelectItem, SelectSeparator, SelectTrigger, SelectValue } from "@/components/ui/select";
-import { Tabs, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import {
   Sheet,
   SheetContent,
@@ -50,7 +49,7 @@ import {
   SheetDescription,
   SheetFooter,
 } from "@/components/ui/sheet";
-import { formatCny, formatTimeAgo, getInventoryBadge } from "../helpers";
+import { formatCny, formatTimeAgo, getInventoryBadge, findNearestHoliday, getCountdown } from "../helpers";
 
 // ─── Types ────────────────────────────────────────────
 
@@ -63,6 +62,7 @@ interface ChartPoint { hour: string; count?: number; sales: number; }
 interface Order {
   id: number; created_at: string; total_price: string; financial_status: string;
   productId?: number;
+  gateway?: string;
   shippingCountry?: string;
 }
 
@@ -92,9 +92,6 @@ interface OverviewPanelProps {
   refundRate: number; refundedOrders: Order[]; refundAmount: number;
   pieData: Array<{ name: string; value: number; color: string }>;
   productRiskMap: Map<number, { level: string }>;
-  countryHolidays: Record<string, Holiday | null>;
-  activeCountry: string; setActiveCountry: (v: string) => void;
-  countdown: { days: number; hours: number; minutes: number; seconds: number };
   fetchData: (store: StoreEntry) => void;
   handleStoreChange: (id: string | null) => void;
   handleRemoveStore: () => void;
@@ -102,6 +99,7 @@ interface OverviewPanelProps {
   handleStartDiagnosis: () => void;
   sheetOpen: boolean; setSheetOpen: (v: boolean) => void;
   diagnosing: boolean; diagnosis: DiagnosisReport | null; typewriterText: string;
+  diagnosisError?: string | null;
 }
 
 // ─── Sub-components ───────────────────────────────────
@@ -189,22 +187,67 @@ function generateDemoTickOrders(
   return { orders, productSales };
 }
 
+// ─── Intl helpers (native, no hardcoded dictionary) ──
+
+const regionNames = new Intl.DisplayNames(["zh-CN"], { type: "region" });
+
+function getFlagEmoji(code: string): string {
+  const points = code.toUpperCase().split("").map((c) => 127397 + c.charCodeAt(0));
+  return String.fromCodePoint(...points);
+}
+
+function getCountryChineseName(code: string): string {
+  return regionNames.of(code.toUpperCase()) || code;
+}
+
 // ─── Main Component ───────────────────────────────────
 
 export default function OverviewPanel(props: OverviewPanelProps) {
-  const { data: initialData, currentStore, stores, cogsRate, shippingRate, marketingRate, setCogsRate, setShippingRate, setMarketingRate, totalCostRate, profit, profitMargin, refundRate, refundedOrders, refundAmount, pieData, productRiskMap, countryHolidays, activeCountry, setActiveCountry, countdown, fetchData, handleStoreChange, handleRemoveStore, handleAddStore, handleStartDiagnosis, sheetOpen, setSheetOpen, diagnosing, diagnosis, typewriterText } = props;
+  const { data: initialData, currentStore, stores, cogsRate, shippingRate, marketingRate, setCogsRate, setShippingRate, setMarketingRate, totalCostRate, profit, profitMargin, refundRate, refundedOrders, refundAmount, pieData, productRiskMap, fetchData, handleStoreChange, handleRemoveStore, handleAddStore, handleStartDiagnosis, sheetOpen, setSheetOpen, diagnosing, diagnosis, typewriterText, diagnosisError } = props;
 
   // ── Local reactive state ──
+  // Initialize with current-hour truncation applied immediately (no future data flash)
+  const mountHour = useMemo(() => new Date().getHours(), []);
+  const initCharts = useMemo(
+    () => initialData.charts.filter((p) => parseInt(p.hour, 10) <= mountHour),
+    [initialData.charts, mountHour],
+  );
   const [localGmv, setLocalGmv] = useState(initialData.gmv);
   const [localOrderCount, setLocalOrderCount] = useState(initialData.orderCount);
   const [localOrders, setLocalOrders] = useState<Order[]>(initialData.orders);
-  const [chartData, setChartData] = useState<ChartPoint[]>(initialData.charts);
+  const [chartData, setChartData] = useState<ChartPoint[]>(initCharts);
   const [localProducts, setLocalProducts] = useState<Product[]>(initialData.products.map((p) => ({ ...p })));
   const [flashIds, setFlashIds] = useState<Set<number>>(new Set());
 
   const nextOrderIdRef = useRef(Math.max(...initialData.orders.map((o) => o.id), 0) + 1);
   const localProductsRef = useRef(localProducts);
   localProductsRef.current = localProducts;
+
+  // ── Holiday state (internal, no parent dependency) ──
+  const availableCountries = useMemo(() => {
+    const keys = Object.keys(initialData.holidaysData ?? {});
+    return keys.length > 0 ? keys : (initialData.topCountries.length > 0 ? initialData.topCountries : ["US"]);
+  }, [initialData.holidaysData, initialData.topCountries]);
+
+  const [selectedCountry, setSelectedCountry] = useState(availableCountries[0] ?? "US");
+
+  const localCountryHolidays = useMemo(() => {
+    const result: Record<string, Holiday | null> = {};
+    for (const code of availableCountries) {
+      result[code] = findNearestHoliday(initialData.holidaysData?.[code] ?? []);
+    }
+    return result;
+  }, [availableCountries, initialData.holidaysData]);
+
+  const [localCountdown, setLocalCountdown] = useState({ days: 0, hours: 0, minutes: 0, seconds: 0 });
+
+  useEffect(() => {
+    const nearest = localCountryHolidays[selectedCountry];
+    if (!nearest) { setLocalCountdown({ days: 0, hours: 0, minutes: 0, seconds: 0 }); return; }
+    setLocalCountdown(getCountdown(nearest.date));
+    const t = setInterval(() => setLocalCountdown(getCountdown(nearest.date)), 1000);
+    return () => clearInterval(t);
+  }, [selectedCountry, localCountryHolidays]);
 
   // Sync from parent on initial data change (store switch / first load)
   const dataRef = useRef(initialData);
@@ -369,7 +412,7 @@ export default function OverviewPanel(props: OverviewPanelProps) {
           <Button size="sm" onClick={() => setSheetOpen(true)} className="relative gap-1.5 overflow-hidden border border-amber-500/40 bg-gradient-to-r from-amber-600/20 to-yellow-600/20 text-amber-300 backdrop-blur-sm hover:from-amber-600/30 hover:text-amber-200">
             <Sparkles className="relative h-3.5 w-3.5" /><span className="relative">AI 智能诊断</span>
           </Button>
-          <Button size="sm" onClick={() => exportCSV(localOrders, exchangeRate, initialData.shopName)} className="gap-1.5 bg-emerald-600 text-white hover:bg-emerald-500"><Download className="h-3.5 w-3.5" />导出报表</Button>
+          <Button size="sm" onClick={() => exportCSV(localOrders, exchangeRate, initialData.shopName, cogsRate, shippingRate, marketingRate)} className="gap-1.5 bg-emerald-600 text-white hover:bg-emerald-500"><Download className="h-3.5 w-3.5" />导出报表</Button>
           <Button variant="outline" size="sm" onClick={handleRemoveStore} className="gap-1.5 text-muted-foreground hover:text-red-500"><LogOut className="h-3.5 w-3.5" />移除店铺</Button>
           <Button variant="outline" size="sm" onClick={() => currentStore && fetchData(currentStore)} className="gap-1.5"><RefreshCw className="h-3.5 w-3.5" />刷新</Button>
 
@@ -425,37 +468,63 @@ export default function OverviewPanel(props: OverviewPanelProps) {
       </div>
 
       {/* Holiday Countdown */}
-      {topCountries.length > 0 && (
+      {availableCountries.length > 0 && (
         <Card className="border-amber-500/20 bg-amber-500/5 shadow-lg backdrop-blur-lg ring-1 ring-amber-500/10">
           <CardContent className="py-4">
-            <Tabs value={activeCountry} onValueChange={setActiveCountry}>
-              <div className="flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
-                <div>
-                  <p className="flex items-center gap-2 text-sm font-medium text-foreground"><Calendar className="h-4 w-4 text-amber-400" />全球商机倒计时</p>
-                  <TabsList className="mt-2 h-8">
-                    {topCountries.map((code) => (
-                      <TabsTrigger key={code} value={code} className="gap-1.5 px-3 text-xs">
-                        {code === "US" ? "🇺🇸" : code === "GB" ? "🇬🇧" : code === "DE" ? "🇩🇪" : code === "JP" ? "🇯🇵" : code === "SE" ? "🇸🇪" : code === "FR" ? "🇫🇷" : code === "CA" ? "🇨🇦" : code === "AU" ? "🇦🇺" : code === "CN" ? "🇨🇳" : ""} {code}
-                      </TabsTrigger>
-                    ))}
-                  </TabsList>
-                </div>
-                {countryHolidays[activeCountry] ? (
-                  <div className="flex items-center gap-4">
-                    <div className="text-right"><p className="text-sm font-semibold text-amber-300">{countryHolidays[activeCountry]!.localName} ({countryHolidays[activeCountry]!.name})</p><p className="text-xs text-muted-foreground">{countryHolidays[activeCountry]!.date}</p></div>
-                    <Clock className="h-5 w-5 animate-pulse text-amber-400" />
-                    <div className="flex items-center gap-3">
-                      {[{ label: "天", value: countdown.days }, { label: "时", value: countdown.hours }, { label: "分", value: countdown.minutes }, { label: "秒", value: countdown.seconds }].map((u, i, arr) => (
-                        <span key={u.label} className="flex items-center gap-3">
-                          {i > 0 && <span className="text-lg font-light text-muted-foreground">:</span>}
-                          <div className="text-center"><span className="block text-2xl font-bold tabular-nums text-amber-300">{String(u.value).padStart(2, "0")}</span><span className="text-xs text-muted-foreground">{u.label}</span></div>
-                        </span>
-                      ))}
-                    </div>
-                  </div>
-                ) : <p className="text-sm text-muted-foreground">当前国家近期无重大节日，建议保持日常广告投放预算</p>}
+            <div className="flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
+              <div className="flex items-center gap-3">
+                <Calendar className="h-4 w-4 text-amber-400" />
+                <p className="text-sm font-medium text-foreground">全球商机倒计时</p>
+                <Select value={selectedCountry} onValueChange={(v) => v && setSelectedCountry(v)}>
+                  <SelectTrigger size="sm" className="w-36">
+                    <SelectValue />
+                  </SelectTrigger>
+                  <SelectContent>
+                    {availableCountries.map((code) => {
+                      const codeUpper = code.toUpperCase();
+                      const flag = getFlagEmoji(codeUpper);
+                      const cnName = getCountryChineseName(codeUpper);
+                      return (
+                        <SelectItem key={code} value={code}>
+                          <span className="flex items-center gap-1.5">
+                            {flag} {cnName} <span className="text-muted-foreground">({codeUpper})</span>
+                          </span>
+                        </SelectItem>
+                      );
+                    })}
+                  </SelectContent>
+                </Select>
               </div>
-            </Tabs>
+              {localCountryHolidays[selectedCountry] ? (
+                <div className="flex items-center gap-4">
+                  <div className="text-right">
+                    <p className="text-sm font-semibold text-amber-300">
+                      {localCountryHolidays[selectedCountry]!.localName}
+                      <span className="text-xs font-normal text-muted-foreground ml-1">
+                        ({localCountryHolidays[selectedCountry]!.name})
+                      </span>
+                    </p>
+                    <p className="text-xs text-muted-foreground">{localCountryHolidays[selectedCountry]!.date}</p>
+                  </div>
+                  <Clock className="h-5 w-5 animate-pulse text-amber-400" />
+                  <div className="flex items-center gap-3">
+                    {[{ label: "天", value: localCountdown.days }, { label: "时", value: localCountdown.hours }, { label: "分", value: localCountdown.minutes }, { label: "秒", value: localCountdown.seconds }].map((u, i, arr) => (
+                      <span key={u.label} className="flex items-center gap-3">
+                        {i > 0 && <span className="text-lg font-light text-muted-foreground">:</span>}
+                        <div className="text-center">
+                          <span className="block text-2xl font-bold tabular-nums text-amber-300">{String(u.value).padStart(2, "0")}</span>
+                          <span className="text-xs text-muted-foreground">{u.label}</span>
+                        </div>
+                      </span>
+                    ))}
+                  </div>
+                </div>
+              ) : (
+                <p className="text-sm text-muted-foreground">
+                  🌍 已嗅探到目标市场 {selectedCountry}，当前暂无公共节日大促，建议保持日常广告预算稳定。
+                </p>
+              )}
+            </div>
           </CardContent>
         </Card>
       )}
@@ -567,6 +636,12 @@ export default function OverviewPanel(props: OverviewPanelProps) {
               </div>
             )}
           </div>
+          {/* AI Diagnosis Error Alert */}
+          {diagnosisError && (
+            <div className="mx-4 mb-4 rounded-lg border border-amber-500/30 bg-amber-500/10 px-4 py-3">
+              <p className="text-xs leading-relaxed text-amber-200">{diagnosisError}</p>
+            </div>
+          )}
           <SheetFooter className="border-t border-border/30 pt-4">
             <p className="text-center text-xs text-muted-foreground">{currentStore?.isDemo ? "演示数据仅供体验" : "Powered by DeepSeek · 本地运行"}</p>
           </SheetFooter>
@@ -578,15 +653,79 @@ export default function OverviewPanel(props: OverviewPanelProps) {
 
 // ─── CSV Export ───────────────────────────────────────
 
-function exportCSV(orders: Order[], rate: number, shopName: string) {
+function exportCSV(
+  orders: Order[],
+  rate: number,
+  shopName: string,
+  cogsRate: number,
+  shippingRate: number,
+  marketingRate: number,
+) {
   const PAY: Record<string, string> = { paid: "已支付", pending: "待处理", authorized: "已授权", refunded: "已退款", voided: "已作废" };
-  const header = ["订单ID", "下单时间（北京时间）", "美元金额 (USD)", "人民币金额 (CNY)", "付款状态"];
+
+  const calcGatewayFeeCny = (order: Order): number => {
+    const usd = parseFloat(order.total_price) || 0;
+    const gw = (order.gateway || "").toLowerCase();
+    if (gw.includes("stripe") || gw.includes("shopify_payments")) {
+      return (usd * 0.034 + 0.3) * rate;
+    }
+    if (gw.includes("paypal")) {
+      return (usd * 0.044 + 0.3) * rate;
+    }
+    // Unknown gateway: fallback to Stripe rate
+    return (usd * 0.034 + 0.3) * rate;
+  };
+
+  const header = [
+    "订单编号",
+    "下单时间(北京时间)",
+    "目的国",
+    "支付网关",
+    "总额(USD)",
+    "总额(CNY)",
+    "网关手续费(CNY)",
+    "商品成本(CNY)",
+    "物流运费(CNY)",
+    "广告成本(CNY)",
+    "净纯利润(CNY)",
+  ];
+
   const rows = orders.map((o) => {
-    const t = new Date(new Date(o.created_at).getTime() + 8 * 60 * 60 * 1000).toISOString().replace("T", " ").slice(0, 16);
-    return [String(o.id), t, parseFloat(o.total_price).toFixed(2), (parseFloat(o.total_price) * rate).toFixed(2), (PAY[o.financial_status] ?? o.financial_status) || "未知"].join(",");
+    const usd = parseFloat(o.total_price) || 0;
+    const cny = usd * rate;
+    const t = new Date(new Date(o.created_at).getTime() + 8 * 60 * 60 * 1000)
+      .toISOString().replace("T", " ").slice(0, 16);
+    const country = (o as any).shippingCountry || "未知";
+    const gateway = o.gateway || "未知";
+    const gatewayFeeCny = calcGatewayFeeCny(o);
+    const costCny = (usd * cogsRate / 100) * rate;
+    const shipCny = (usd * shippingRate / 100) * rate;
+    const adCny = (usd * marketingRate / 100) * rate;
+    const netProfitCny = cny - gatewayFeeCny - costCny - shipCny - adCny;
+
+    return [
+      String(o.id),
+      t,
+      country,
+      gateway,
+      usd.toFixed(2),
+      cny.toFixed(2),
+      gatewayFeeCny.toFixed(2),
+      costCny.toFixed(2),
+      shipCny.toFixed(2),
+      adCny.toFixed(2),
+      netProfitCny.toFixed(2),
+    ].join(",");
   });
+
   const blob = new Blob(["\uFEFF" + [header.join(","), ...rows].join("\n")], { type: "text/csv;charset=utf-8;" });
-  const d = new Date().toLocaleDateString("zh-CN", { year: "numeric", month: "2-digit", day: "2-digit" }).replace(/\//g, "-");
+  const d = new Date().toLocaleDateString("zh-CN", { year: "numeric", month: "2-digit", day: "2-digit" }).replace(/\//g, "");
   const url = URL.createObjectURL(blob);
-  const a = document.createElement("a"); a.href = url; a.download = `Shopify_今日财务报表_${shopName}_${d}.csv`; document.body.appendChild(a); a.click(); document.body.removeChild(a); URL.revokeObjectURL(url);
+  const a = document.createElement("a");
+  a.href = url;
+  a.download = `Shopify_全维度财务对账单_${shopName}_${d}.csv`;
+  document.body.appendChild(a);
+  a.click();
+  document.body.removeChild(a);
+  URL.revokeObjectURL(url);
 }

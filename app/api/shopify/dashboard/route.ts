@@ -15,6 +15,10 @@ interface ShopifyOrder {
   created_at: string;
   total_price: string;
   financial_status: string;
+  gateway: string | null;
+  customer: {
+    orders_count: number;
+  } | null;
   shipping_address: {
     country_code: string;
   } | null;
@@ -60,6 +64,9 @@ interface DashboardSuccess {
     created_at: string;
     total_price: string;
     financial_status: string;
+    gateway: string;
+    customer_orders_count: number;
+    shipping_country: string;
   }>;
   /** Multi-market holiday data: { 'US': [...], 'GB': [...], 'DE': [...] } */
   holidaysData: Record<string, NagerHoliday[]>;
@@ -205,13 +212,93 @@ async function fetchHolidays(countryCode: string): Promise<NagerHoliday[]> {
 }
 
 /**
+ * Fetch seller's active Markets via Shopify GraphQL Admin API.
+ * Returns deduplicated ISO country codes from all enabled markets.
+ * This is the authoritative source — NOT order shipping_address.
+ */
+async function fetchActiveMarketCountries(
+  shopUrl: string,
+  accessToken: string,
+): Promise<string[]> {
+  const GQL_URL = `https://${shopUrl}/admin/api/${SHOPIFY_API_VERSION}/graphql.json`;
+  const query = `{
+    markets(first: 10) {
+      nodes {
+        name
+        enabled
+        regions(first: 20) {
+          nodes {
+            ... on MarketRegionCountry {
+              code
+            }
+          }
+        }
+      }
+    }
+  }`;
+
+  const res = await fetch(GQL_URL, {
+    method: "POST",
+    headers: {
+      "X-Shopify-Access-Token": accessToken,
+      "Content-Type": "application/json",
+    },
+    body: JSON.stringify({ query }),
+    signal: AbortSignal.timeout(15000),
+  });
+
+  if (!res.ok) {
+    const body = await res.text().catch(() => "");
+    throw new Error(`GraphQL Markets 查询失败 (${res.status}): ${body.slice(0, 200)}`);
+  }
+
+  const data = await res.json() as {
+    data?: {
+      markets?: {
+        nodes?: Array<{
+          name: string;
+          enabled: boolean;
+          regions?: {
+            nodes?: Array<{ code: string }>;
+          };
+        }>;
+      };
+    };
+    errors?: Array<{ message: string }>;
+  };
+
+  if (data.errors?.length) {
+    throw new Error(`GraphQL 错误: ${data.errors[0].message}`);
+  }
+
+  const countries = new Set<string>();
+  const markets = data.data?.markets?.nodes ?? [];
+
+  for (const market of markets) {
+    if (!market.enabled) continue;
+    for (const region of market.regions?.nodes ?? []) {
+      const code = region.code?.trim().toUpperCase();
+      if (code) countries.add(code);
+    }
+  }
+
+  const result = Array.from(countries);
+  if (result.length === 0) {
+    // No active markets configured — fallback to shop-level country
+    return [];
+  }
+  return result;
+}
+
+/**
  * Extract top 3 shipping destination countries from today's orders.
  */
 function extractTopCountries(orders: ShopifyOrder[]): string[] {
   const counts = new Map<string, number>();
   for (const order of orders) {
-    const code = order.shipping_address?.country_code;
-    if (code) {
+    const raw = order.shipping_address?.country_code;
+    if (raw) {
+      const code = raw.trim().toUpperCase();
       counts.set(code, (counts.get(code) || 0) + 1);
     }
   }
@@ -259,7 +346,7 @@ async function fetchAllTodayOrders(
     status: "any",
     created_at_min: todayISO,
     limit: "250",
-    fields: "id,created_at,total_price,financial_status,shipping_address,line_items",
+    fields: "id,created_at,total_price,financial_status,shipping_address,gateway,customer,line_items",
   });
 
   let nextUrl: string | null = `${baseUrl}?${params.toString()}`;
@@ -454,6 +541,9 @@ export async function GET(request: NextRequest) {
         created_at: o.created_at,
         total_price: o.total_price,
         financial_status: o.financial_status,
+        gateway: o.gateway ?? "",
+        customer_orders_count: o.customer?.orders_count ?? 1,
+        shipping_country: o.shipping_address?.country_code ?? "",
       }));
 
       const products = store.products.map((p) => {
@@ -570,11 +660,16 @@ export async function GET(request: NextRequest) {
     // Returning 0 as a placeholder.
     const conversionRate = 0;
 
-    // ─ Step 9: Extract top shipping countries + fetch multi-market holidays ─
-    const topCountries = extractTopCountries(orders);
-    const holidaysData = await fetchMultiCountryHolidays(
-      topCountries.length > 0 ? topCountries : [shop.country || "US"],
-    );
+    // ─ Step 9: Fetch active Markets via GraphQL + multi-market holidays ─
+    let safeCountries: string[];
+    try {
+      const markets = await fetchActiveMarketCountries(shopUrl, accessToken);
+      safeCountries = markets.length > 0 ? markets : [shop.country || "US"];
+    } catch (err) {
+      console.warn("[shopify/dashboard] GraphQL Markets fell back to shop country:", (err as Error).message);
+      safeCountries = [shop.country || "US"];
+    }
+    const holidaysData = await fetchMultiCountryHolidays(safeCountries);
 
     // ─ Step 10: Build success response ─
     const compactOrders = orders.map((o) => ({
@@ -582,6 +677,9 @@ export async function GET(request: NextRequest) {
       created_at: o.created_at,
       total_price: o.total_price,
       financial_status: o.financial_status ?? "",
+      gateway: o.gateway ?? "",
+      customer_orders_count: o.customer?.orders_count ?? 1,
+      shipping_country: o.shipping_address?.country_code ?? "",
     }));
 
     const response: DashboardSuccess = {
@@ -597,7 +695,7 @@ export async function GET(request: NextRequest) {
       products: productStats,
       orders: compactOrders,
       holidaysData,
-      topCountries,
+      topCountries: safeCountries,
       lastUpdated: new Date().toISOString(),
     };
 
@@ -611,5 +709,152 @@ export async function GET(request: NextRequest) {
       { success: false, error: `服务器内部错误: ${message}`, code: 500 },
       { status: 500 },
     );
+  }
+}
+
+// ═══════════════════════════════════════════════════════
+// POST /api/shopify/dashboard — AI 智能诊断
+// ═══════════════════════════════════════════════════════
+
+export async function POST(request: NextRequest) {
+  try {
+    const body = await request.json() as {
+      shopUrl?: string;
+      isDemo?: boolean;
+      metrics?: {
+        shopName: string;
+        gmv: number;
+        orderCount: number;
+        conversionRate: number;
+        products: Array<{ title: string; totalSold: number; inventory: number }>;
+        refundRate?: number;
+      };
+    };
+
+    const isDemo = body.isDemo || !!body.shopUrl?.includes("demo");
+    const metrics = body.metrics;
+
+    if (!metrics) {
+      return NextResponse.json({ success: false, error: "缺少诊断指标" }, { status: 400 });
+    }
+
+    // ── 轨 A: Demo 店铺 — 返回预设诊断 ──
+    if (isDemo) {
+      const lowStock = metrics.products.filter((p) => p.inventory < 10);
+      return NextResponse.json({
+        success: true,
+        diagnosis: {
+          overview: `## 📊 数据总览\n\n**${metrics.shopName}** 今日表现活跃，GMV 达 **¥${metrics.gmv.toLocaleString()}**，共 **${metrics.orderCount} 笔**订单。订单分布呈现典型电商昼夜节律——上午 10 点和晚上 20 点为两大流量高峰。\n\n> 演示环境数据示意，连接真实店铺获取个性化诊断。`,
+          conversionAnalysis: `## 📈 转化漏斗分析\n\n当前店铺访问量充足，但结账转化率仍有提升空间。建议启用 **Shop Pay** 加速结算流程，并优化移动端落地页加载速度。\n\n主要瓶颈：\n- 移动端加载速度\n- 商品详情页信息密度不足\n- 结算流程待简化`,
+          inventoryAlerts: lowStock.length > 0
+            ? [`## 🔴 库存预警\n\n以下商品库存告急：\n${lowStock.map((p) => `- ${p.title}：仅剩 **${p.inventory} 件** 🚨`).join("\n")}`, `## 🟡 建议向国内工厂追单\n\n${lowStock.map((p) => p.title).join("、")} 建议立即联系供应链补货，避免断货影响转化率。`]
+            : ["## ✅ 库存健康\n\n所有热销商品库存充足。"],
+          recommendations: [`## 💡 行动建议\n\n### ① 紧急事项\n> ${lowStock.length > 0 ? `为 **${lowStock.map((p) => p.title).join("、")}** 安排补货采购单` : "维持当前库存水位，继续监控"}\n\n### ② 转化优化\n> 添加限时折扣倒计时和库存紧迫提示，提升转化紧迫感\n\n### ③ 邮件营销增长\n> 通过 Klaviyo 或 Omnisend 创建弃单挽回自动化流程，可挽回约 15% 流失订单`],
+          riskLevel: lowStock.length >= 2 ? "high" : lowStock.length === 1 ? "medium" : "low",
+        },
+      });
+    }
+
+    // ── 轨 B: 真实店铺 — 调用 DeepSeek API ──
+    const apiKey = process.env.DEEPSEEK_API_KEY;
+    if (!apiKey) {
+      return NextResponse.json({
+        success: false,
+        error: "未配置 DEEPSEEK_API_KEY 环境变量，请在 .env.local 中添加并重启服务",
+      }, { status: 500 });
+    }
+
+    const prompt = `你是一名专为中国跨境独立站卖家服务的 AI 智囊诊断助手。
+
+请基于以下真实运营数据，用中文输出一份精准的运营诊断报告：
+
+店铺名称：${metrics.shopName}
+今日 GMV (人民币)：¥${metrics.gmv.toLocaleString()}
+今日订单数：${metrics.orderCount} 单
+客单价：约 ¥${metrics.orderCount > 0 ? Math.round(metrics.gmv / metrics.orderCount).toLocaleString() : 0}
+退款率：${(metrics.refundRate ?? 0).toFixed(1)}%
+
+热销商品：
+${metrics.products.map((p) => `- ${p.title}：售出 ${p.totalSold} 件 · 库存 ${p.inventory} 件`).join("\n")}
+
+请按以下 Markdown 格式输出，严禁输出其他问题回答：
+## 📊 数据总览
+[2-3 句整体评价]
+
+## 📈 转化漏斗分析
+[分析转化瓶颈并给出建议]
+
+## [库存预警标题]
+[低库存商品预警，库存充足则写 ✅ 全部健康]
+
+## 💡 行动建议
+### ① [最紧急的一条建议]
+### ② [可操作的优化建议]
+### ③ [长期增长建议]
+
+请保持语言精准接地气，适合中国跨境电商卖家阅读。`;
+
+    const dsResponse = await fetch("https://api.deepseek.com/chat/completions", {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+        "Authorization": `Bearer ${apiKey}`,
+      },
+      body: JSON.stringify({
+        model: "deepseek-chat",
+        messages: [
+          { role: "system", content: "你是一名专业的跨境电商运营诊断 AI 助手。" },
+          { role: "user", content: prompt },
+        ],
+        temperature: 0.7,
+        max_tokens: 2048,
+      }),
+      signal: AbortSignal.timeout(45000),
+    });
+
+    if (!dsResponse.ok) {
+      const errBody = await dsResponse.text().catch(() => "");
+      console.error("[shopify/dashboard POST] DeepSeek error:", dsResponse.status, errBody);
+      return NextResponse.json({ success: false, error: `AI 诊断服务异常 (${dsResponse.status})` }, { status: 502 });
+    }
+
+    const dsData = await dsResponse.json() as {
+      choices: Array<{ message: { content: string } }>;
+    };
+    const rawContent = dsData.choices?.[0]?.message?.content ?? "";
+
+    // Parse sections from AI response
+    const lines = rawContent.split("\n");
+    const overviewEnd = lines.findIndex((l) => l.startsWith("## 📈"));
+    const invIdx = lines.findIndex((l) => l.startsWith("## ") && (l.includes("库存") || l.includes("预警") || l.includes("✅")));
+    const recIdx = lines.findIndex((l) => l.startsWith("## 💡"));
+
+    const overview = lines.slice(0, overviewEnd > 0 ? overviewEnd : undefined).join("\n").trim();
+    const conversionAnalysis = overviewEnd >= 0
+      ? lines.slice(overviewEnd, invIdx > 0 ? invIdx : recIdx > 0 ? recIdx : undefined).join("\n").trim()
+      : "";
+    const inventorySection = invIdx >= 0 && recIdx > 0
+      ? lines.slice(invIdx, recIdx).join("\n").trim()
+      : "## ✅ 库存健康\n\n所有商品库存充足。";
+    const recommendations = recIdx >= 0
+      ? lines.slice(recIdx).join("\n").trim()
+      : "## 💡 行动建议\n\n暂无建议。";
+
+    return NextResponse.json({
+      success: true,
+      diagnosis: {
+        overview: overview || `## 📊 数据总览\n\n${metrics.shopName} 今日运营正常。`,
+        conversionAnalysis: conversionAnalysis || "## 📈 转化漏斗分析\n\n暂无分析数据。",
+        inventoryAlerts: [inventorySection],
+        recommendations: [recommendations],
+        riskLevel: (metrics.refundRate ?? 0) > 1.5 ? "high"
+          : (metrics.refundRate ?? 0) > 1 ? "medium"
+          : "low",
+      },
+    });
+  } catch (err) {
+    const message = err instanceof Error ? err.message : "未知错误";
+    console.error("[shopify/dashboard POST] unhandled error:", message);
+    return NextResponse.json({ success: false, error: `诊断失败: ${message}` }, { status: 500 });
   }
 }
