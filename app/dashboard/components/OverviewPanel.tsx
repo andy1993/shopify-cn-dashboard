@@ -1,6 +1,6 @@
 "use client";
 
-import { useState } from "react";
+import { useEffect, useState, useRef, useCallback } from "react";
 import {
   TrendingUp,
   ShoppingCart,
@@ -55,83 +55,71 @@ import { formatCny, formatTimeAgo, getInventoryBadge } from "../helpers";
 // ─── Types ────────────────────────────────────────────
 
 interface StoreEntry {
-  id: string;
-  shopUrl: string;
-  accessToken: string;
-  shopName: string;
-  isDemo?: boolean;
+  id: string; shopUrl: string; accessToken: string; shopName: string; isDemo?: boolean;
 }
 
-interface DashboardData {
-  success: true;
-  shopName: string;
-  domain: string;
-  currency: string;
-  exchangeRate: number;
-  gmv: number;
-  orderCount: number;
-  charts: Array<{ hour: string; sales: number }>;
-  products: Array<{
-    id: number; title: string; image: string | null;
-    totalSold: number; totalRevenue: number; inventory: number;
-  }>;
-  orders: Array<{ id: number; created_at: string; total_price: string; financial_status: string }>;
-  holidaysData: Record<string, Array<{ date: string; localName: string; name: string; countryCode: string }>>;
-  topCountries: string[];
-  lastUpdated: string;
+interface ChartPoint { hour: string; count?: number; sales: number; }
+
+interface Order {
+  id: number; created_at: string; total_price: string; financial_status: string;
+  productId?: number;
+  shippingCountry?: string;
+}
+
+interface Product {
+  id: number; title: string; image: string | null;
+  totalSold: number; totalRevenue: number; inventory: number;
 }
 
 interface Holiday { date: string; localName: string; name: string; countryCode: string; }
 interface DiagnosisReport { overview: string; conversionAnalysis: string; inventoryAlerts: string[]; recommendations: string[]; riskLevel: "low" | "medium" | "high"; }
 
+interface DashboardData {
+  success: true; shopName: string; domain: string; currency: string; exchangeRate: number;
+  gmv: number; orderCount: number;
+  charts: ChartPoint[]; products: Product[]; orders: Order[];
+  holidaysData: Record<string, Array<{ date: string; localName: string; name: string; countryCode: string }>>;
+  topCountries: string[]; lastUpdated: string;
+}
+
 interface OverviewPanelProps {
   data: DashboardData;
-  currentStore: StoreEntry | null;
-  stores: StoreEntry[];
-  // Cost
-  cogsRate: number; shippingRate: number; marketingRate: number;
-  setCogsRate: (v: number) => void; setShippingRate: (v: number) => void; setMarketingRate: (v: number) => void;
+  currentStore: StoreEntry | null; stores: StoreEntry[];
+  cogsRate: number; setCogsRate: (v: number) => void;
+  shippingRate: number; setShippingRate: (v: number) => void;
+  marketingRate: number; setMarketingRate: (v: number) => void;
   totalCostRate: number; profit: number; profitMargin: number;
-  // Refund
-  refundRate: number; refundedOrders: Array<{ id: number; total_price: string }>; refundAmount: number;
-  // Charts
-  computedCharts: Array<{ hour: string; count: number; sales: number }>;
+  refundRate: number; refundedOrders: Order[]; refundAmount: number;
   pieData: Array<{ name: string; value: number; color: string }>;
-  // Risk map
   productRiskMap: Map<number, { level: string }>;
-  // Holiday
   countryHolidays: Record<string, Holiday | null>;
   activeCountry: string; setActiveCountry: (v: string) => void;
   countdown: { days: number; hours: number; minutes: number; seconds: number };
-  // Handlers
   fetchData: (store: StoreEntry) => void;
   handleStoreChange: (id: string | null) => void;
   handleRemoveStore: () => void;
   handleAddStore: () => void;
   handleStartDiagnosis: () => void;
-  // Sheet
   sheetOpen: boolean; setSheetOpen: (v: boolean) => void;
-  diagnosing: boolean;
-  diagnosis: DiagnosisReport | null;
-  typewriterText: string;
+  diagnosing: boolean; diagnosis: DiagnosisReport | null; typewriterText: string;
 }
 
 // ─── Sub-components ───────────────────────────────────
 
-function KpiCard({ title, value, subtitle, icon: Icon, trend, trendValue, accent }: {
+function KpiCard({ title, value, subtitle, icon: Icon, trend, trendValue, accent, flash }: {
   title: string; value: string; subtitle: string;
   icon: React.ComponentType<{ className?: string }>;
   trend: "up" | "down" | "neutral"; trendValue: string;
-  accent?: "emerald" | "sky" | "amber" | "violet";
+  accent?: "emerald" | "sky" | "amber" | "violet"; flash?: boolean;
 }) {
   const a = { emerald: "bg-emerald-500/10 text-emerald-400 ring-emerald-500/20", sky: "bg-sky-500/10 text-sky-400 ring-sky-500/20", amber: "bg-amber-500/10 text-amber-400 ring-amber-500/20", violet: "bg-violet-500/10 text-violet-400 ring-violet-500/20" };
   return (
-    <Card className="group relative overflow-hidden border-border/40 bg-card/60 shadow-lg shadow-black/5 backdrop-blur-lg transition-all hover:border-border/60 hover:shadow-xl">
+    <Card className={`group relative overflow-hidden border-border/40 bg-card/60 shadow-lg backdrop-blur-lg transition-all hover:border-border/60 hover:shadow-xl ${flash ? "animate-[gmv-flash_0.6s_ease-in-out]" : ""}`}>
       <CardContent className="relative p-6">
         <div className="flex items-start justify-between">
           <div className="space-y-1">
             <p className="text-sm font-medium text-muted-foreground">{title}</p>
-            <p className="text-3xl font-bold tracking-tight text-foreground">{value}</p>
+            <p className={`text-3xl font-bold tracking-tight text-foreground transition-all duration-300 ${flash ? "text-emerald-400 scale-105" : ""}`}>{value}</p>
             <div className="flex items-center gap-1.5">
               <span className={`text-xs font-medium ${trend === "up" ? "text-emerald-500" : trend === "down" ? "text-red-500" : "text-muted-foreground"}`}>{trendValue}</span>
               <span className="text-xs text-muted-foreground">{subtitle}</span>
@@ -144,7 +132,7 @@ function KpiCard({ title, value, subtitle, icon: Icon, trend, trendValue, accent
   );
 }
 
-function CustomTooltip({ active, payload, label }: { active?: boolean; payload?: Array<{ value: number; name?: string }>; label?: string }) {
+function CustomTooltip({ active, payload, label }: { active?: boolean; payload?: Array<{ value: number }>; label?: string }) {
   if (!active || !payload?.length) return null;
   return (
     <div className="rounded-lg border border-border/50 bg-card px-3 py-2 shadow-lg backdrop-blur-sm">
@@ -154,11 +142,193 @@ function CustomTooltip({ active, payload, label }: { active?: boolean; payload?:
   );
 }
 
-// ─── Main Panel ───────────────────────────────────────
+// ─── Polling tick: generate new orders with product linkage ──
+
+interface TickResult {
+  orders: Order[];
+  /** Map of productId → quantity sold in this tick */
+  productSales: Map<number, number>;
+}
+
+function generateDemoTickOrders(
+  startId: number,
+  exchangeRate: number,
+  currentHour: number,
+  products: Product[],
+): TickResult {
+  if (Math.random() >= 0.5) return { orders: [], productSales: new Map() };
+  if (products.length === 0) return { orders: [], productSales: new Map() };
+
+  // Destination countries for multi-market linkage (US/GB/DE)
+  const DEST_COUNTRIES = ["US", "US", "GB", "DE", "US"]; // US 60%, GB 20%, DE 20%
+
+  const count = Math.random() < 0.5 ? 1 : 2;
+  const orders: Order[] = [];
+  const productSales = new Map<number, number>();
+
+  for (let i = 0; i < count; i++) {
+    const product = products[Math.floor(Math.random() * products.length)];
+    const qty = Math.random() < 0.3 ? 2 : 1;
+    const unitPrice = 20 + Math.random() * 200;
+    const totalPrice = (unitPrice * qty).toFixed(2);
+    const destCountry = DEST_COUNTRIES[Math.floor(Math.random() * DEST_COUNTRIES.length)];
+    const now = new Date();
+
+    orders.push({
+      id: startId + i,
+      created_at: now.toISOString(),
+      total_price: totalPrice,
+      financial_status: Math.random() < 0.85 ? "paid" : "pending",
+      productId: product.id,
+      shippingCountry: destCountry,
+    });
+
+    const existing = productSales.get(product.id) || 0;
+    productSales.set(product.id, existing + qty);
+  }
+  return { orders, productSales };
+}
+
+// ─── Main Component ───────────────────────────────────
 
 export default function OverviewPanel(props: OverviewPanelProps) {
-  const { data, currentStore, stores, cogsRate, shippingRate, marketingRate, setCogsRate, setShippingRate, setMarketingRate, totalCostRate, profit, profitMargin, refundRate, refundedOrders, refundAmount, computedCharts, pieData, productRiskMap, countryHolidays, activeCountry, setActiveCountry, countdown, fetchData, handleStoreChange, handleRemoveStore, handleAddStore, handleStartDiagnosis, sheetOpen, setSheetOpen, diagnosing, diagnosis, typewriterText } = props;
-  const { domain, currency, exchangeRate, gmv, orderCount, products, orders, holidaysData, topCountries, lastUpdated } = data;
+  const { data: initialData, currentStore, stores, cogsRate, shippingRate, marketingRate, setCogsRate, setShippingRate, setMarketingRate, totalCostRate, profit, profitMargin, refundRate, refundedOrders, refundAmount, pieData, productRiskMap, countryHolidays, activeCountry, setActiveCountry, countdown, fetchData, handleStoreChange, handleRemoveStore, handleAddStore, handleStartDiagnosis, sheetOpen, setSheetOpen, diagnosing, diagnosis, typewriterText } = props;
+
+  // ── Local reactive state ──
+  const [localGmv, setLocalGmv] = useState(initialData.gmv);
+  const [localOrderCount, setLocalOrderCount] = useState(initialData.orderCount);
+  const [localOrders, setLocalOrders] = useState<Order[]>(initialData.orders);
+  const [chartData, setChartData] = useState<ChartPoint[]>(initialData.charts);
+  const [localProducts, setLocalProducts] = useState<Product[]>(initialData.products.map((p) => ({ ...p })));
+  const [flashIds, setFlashIds] = useState<Set<number>>(new Set());
+
+  const nextOrderIdRef = useRef(Math.max(...initialData.orders.map((o) => o.id), 0) + 1);
+  const localProductsRef = useRef(localProducts);
+  localProductsRef.current = localProducts;
+
+  // Sync from parent on initial data change (store switch / first load)
+  const dataRef = useRef(initialData);
+  useEffect(() => {
+    if (dataRef.current !== initialData) {
+      dataRef.current = initialData;
+      setLocalGmv(initialData.gmv);
+      setLocalOrderCount(initialData.orderCount);
+      setLocalOrders(initialData.orders);
+      setLocalProducts(initialData.products.map((p) => ({ ...p })));
+
+      // Cap initial chart data at current hour (no future data leak)
+      const currentHour = new Date().getHours();
+      const capped = initialData.charts.filter(
+        (p) => parseInt(p.hour, 10) <= currentHour,
+      );
+      setChartData(capped);
+
+      nextOrderIdRef.current = Math.max(...initialData.orders.map((o) => o.id), 0) + 1;
+      setFlashIds(new Set());
+    }
+  }, [initialData]);
+
+  // ── 30s heartbeat polling ──
+  const chartDataRef = useRef(chartData);
+  chartDataRef.current = chartData;
+
+  useEffect(() => {
+    const isDemo = !!currentStore?.isDemo;
+    const exchangeRate = initialData.exchangeRate;
+
+    const tick = () => {
+      // ── Strict current-hour hardware lock ──
+      const currentHour = new Date().getHours();
+
+      if (isDemo) {
+        const { orders: newOrders, productSales } = generateDemoTickOrders(
+          nextOrderIdRef.current, exchangeRate, currentHour,
+          localProductsRef.current,
+        );
+        if (newOrders.length === 0) return;
+
+        nextOrderIdRef.current += newOrders.length;
+
+        // ── Build fresh chart array capped at currentHour ──
+        const prevChart = chartDataRef.current;
+
+        // Determine new order sales total added to current hour
+        const addedSales = newOrders.reduce(
+          (sum, o) => sum + parseFloat(o.total_price) * exchangeRate, 0,
+        );
+
+        // Build chart: keep all hours 0..currentHour, zero out future hours
+        const updatedChart: ChartPoint[] = [];
+        let foundCurrent = false;
+
+        for (let h = 0; h <= currentHour; h++) {
+          const existing = prevChart.find((p) => parseInt(p.hour, 10) === h);
+          if (h === currentHour) {
+            foundCurrent = true;
+            updatedChart.push({
+              hour: `${String(h).padStart(2, "0")}:00`,
+              sales: Math.round(((existing?.sales ?? 0) + addedSales) * 100) / 100,
+              count: (existing?.count ?? 0) + newOrders.length,
+            });
+          } else if (existing) {
+            updatedChart.push({ ...existing });
+          }
+        }
+
+        // If currentHour bucket didn't exist, create it
+        if (!foundCurrent) {
+          updatedChart.push({
+            hour: `${String(currentHour).padStart(2, "0")}:00`,
+            sales: Math.round(addedSales * 100) / 100,
+            count: newOrders.length,
+          });
+        }
+
+        setChartData(updatedChart);
+
+        // Update orders: prepend new ones
+        const addedGmv = newOrders.reduce(
+          (s, o) => s + parseFloat(o.total_price) * exchangeRate, 0,
+        );
+
+        setLocalOrders((prev) => [...newOrders, ...prev]);
+        setLocalGmv((prev) => prev + addedGmv);
+        setLocalOrderCount((prev) => prev + newOrders.length);
+
+        // ── Product sales + inventory live update ──
+        if (productSales.size > 0) {
+          setLocalProducts((prev) => {
+            const updated = prev.map((p) => {
+              const qty = productSales.get(p.id);
+              if (!qty) return p;
+              return {
+                ...p,
+                totalSold: p.totalSold + qty,
+                totalRevenue: p.totalRevenue + (parseFloat(newOrders.find((o) => o.productId === p.id)?.total_price ?? "0") * exchangeRate),
+                inventory: Math.max(0, p.inventory - qty),
+              };
+            });
+            // Sort by totalSold descending for live leaderboard
+            return [...updated].sort((a, b) => b.totalSold - a.totalSold);
+          });
+        }
+
+        // Flash tracking
+        const ids = new Set<number>();
+        for (const o of newOrders) ids.add(o.id);
+        setFlashIds(ids);
+        setTimeout(() => setFlashIds(new Set()), 1200);
+      } else {
+        if (currentStore) fetchData(currentStore);
+      }
+    };
+
+    const timer = setInterval(tick, 30_000);
+    return () => clearInterval(timer);
+  }, [currentStore, initialData.exchangeRate, fetchData]);
+
+  // ── Derived props from data ──
+  const { domain, currency, exchangeRate, products, holidaysData, topCountries, lastUpdated } = initialData;
 
   return (
     <div className="w-full space-y-6">
@@ -199,9 +369,18 @@ export default function OverviewPanel(props: OverviewPanelProps) {
           <Button size="sm" onClick={() => setSheetOpen(true)} className="relative gap-1.5 overflow-hidden border border-amber-500/40 bg-gradient-to-r from-amber-600/20 to-yellow-600/20 text-amber-300 backdrop-blur-sm hover:from-amber-600/30 hover:text-amber-200">
             <Sparkles className="relative h-3.5 w-3.5" /><span className="relative">AI 智能诊断</span>
           </Button>
-          <Button size="sm" onClick={() => exportCSV(orders, exchangeRate, data.shopName)} className="gap-1.5 bg-emerald-600 text-white hover:bg-emerald-500"><Download className="h-3.5 w-3.5" />导出报表</Button>
+          <Button size="sm" onClick={() => exportCSV(localOrders, exchangeRate, initialData.shopName)} className="gap-1.5 bg-emerald-600 text-white hover:bg-emerald-500"><Download className="h-3.5 w-3.5" />导出报表</Button>
           <Button variant="outline" size="sm" onClick={handleRemoveStore} className="gap-1.5 text-muted-foreground hover:text-red-500"><LogOut className="h-3.5 w-3.5" />移除店铺</Button>
           <Button variant="outline" size="sm" onClick={() => currentStore && fetchData(currentStore)} className="gap-1.5"><RefreshCw className="h-3.5 w-3.5" />刷新</Button>
+
+          {/* Heartbeat */}
+          <div className="ml-2 flex items-center gap-2 rounded-full border border-emerald-500/30 bg-emerald-500/10 px-3 py-1.5">
+            <span className="relative flex h-2 w-2">
+              <span className="absolute inline-flex h-full w-full animate-ping rounded-full bg-emerald-400 opacity-75" />
+              <span className="relative inline-flex h-2 w-2 rounded-full bg-emerald-400" />
+            </span>
+            <span className="text-[11px] text-emerald-400 font-medium whitespace-nowrap">Live · 30s 同步</span>
+          </div>
         </div>
       </header>
 
@@ -212,7 +391,8 @@ export default function OverviewPanel(props: OverviewPanelProps) {
           {[{ label: "采购成本", value: cogsRate, set: setCogsRate }, { label: "物流运费", value: shippingRate, set: setShippingRate }, { label: "广告成本", value: marketingRate, set: setMarketingRate }].map((item) => (
             <div key={item.label} className="flex items-center gap-1.5">
               <label className="text-xs text-muted-foreground whitespace-nowrap">{item.label}</label>
-              <Input type="number" min={0} max={100} value={item.value} onChange={(e) => item.set(Math.min(100, Math.max(0, Number(e.target.value) || 0)))} className="h-8 w-16 text-center text-sm" /><span className="text-xs text-muted-foreground">%</span>
+              <Input type="number" min={0} max={100} value={item.value} onChange={(e) => item.set(Math.min(100, Math.max(0, Number(e.target.value) || 0)))} className="h-8 w-16 text-center text-sm" />
+              <span className="text-xs text-muted-foreground">%</span>
             </div>
           ))}
           <div className="ml-auto flex items-center gap-2 text-xs text-muted-foreground">
@@ -231,15 +411,15 @@ export default function OverviewPanel(props: OverviewPanelProps) {
             {refundRate < 1 ? "✓ 今日账户健康度：优秀" : refundRate < 1.5 ? `⚠ 警告：退款率 ${refundRate.toFixed(1)}%，接近风险红线` : `🔥 极高风险：退款率 ${refundRate.toFixed(1)}%！暂停广告自查刷单！`}
           </p>
           <div className="flex items-center gap-3 text-xs text-muted-foreground">
-            <span>退款 {refundedOrders.length}/{orderCount} 单</span><span>¥{(refundAmount * exchangeRate).toFixed(2)}</span>
+            <span>退款 {refundedOrders.length}/{localOrderCount} 单</span><span>¥{(refundAmount * exchangeRate).toFixed(2)}</span>
           </div>
         </div>
       </div>
 
       {/* KPI Cards */}
       <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-4">
-        <KpiCard title="今日 GMV（人民币）" value={formatCny(gmv)} subtitle={`原始货币 ${currency}`} icon={DollarSign} trend="neutral" trendValue={`1 ${currency} = ${formatCny(exchangeRate)}`} accent="emerald" />
-        <KpiCard title="今日订单数" value={`${orderCount} 单`} subtitle={`1 ${currency} = ¥${exchangeRate}`} icon={ShoppingCart} trend="neutral" trendValue="" accent="sky" />
+        <KpiCard title="今日 GMV（人民币）" value={formatCny(localGmv)} subtitle={`原始货币 ${currency}`} icon={DollarSign} trend="neutral" trendValue={`1 ${currency} = ${formatCny(exchangeRate)}`} accent="emerald" flash={flashIds.size > 0} />
+        <KpiCard title="今日订单数" value={`${localOrderCount} 单`} subtitle={`1 ${currency} = ¥${exchangeRate}`} icon={ShoppingCart} trend="neutral" trendValue="" accent="sky" />
         <KpiCard title="预计纯利润" value={formatCny(profit)} subtitle={`成本 ${totalCostRate}%`} icon={Wallet} trend={profit >= 0 ? "up" : "down"} trendValue={profit >= 0 ? "盈利中" : "亏损"} accent={profit >= 0 ? "emerald" : "violet"} />
         <KpiCard title="预计毛利率" value={totalCostRate < 100 ? `${profitMargin.toFixed(1)}%` : "—"} subtitle="扣除采购/物流/广告" icon={Receipt} trend={profit >= 0 ? "up" : "down"} trendValue={`${currency} ${(profit / exchangeRate).toFixed(2)}`} accent={profit >= 0 ? "emerald" : "violet"} />
       </div>
@@ -265,10 +445,10 @@ export default function OverviewPanel(props: OverviewPanelProps) {
                     <div className="text-right"><p className="text-sm font-semibold text-amber-300">{countryHolidays[activeCountry]!.localName} ({countryHolidays[activeCountry]!.name})</p><p className="text-xs text-muted-foreground">{countryHolidays[activeCountry]!.date}</p></div>
                     <Clock className="h-5 w-5 animate-pulse text-amber-400" />
                     <div className="flex items-center gap-3">
-                      {[{ label: "天", value: countdown.days }, { label: "时", value: countdown.hours }, { label: "分", value: countdown.minutes }, { label: "秒", value: countdown.seconds }].map((unit, i, arr) => (
-                        <span key={unit.label} className="flex items-center gap-3">
+                      {[{ label: "天", value: countdown.days }, { label: "时", value: countdown.hours }, { label: "分", value: countdown.minutes }, { label: "秒", value: countdown.seconds }].map((u, i, arr) => (
+                        <span key={u.label} className="flex items-center gap-3">
                           {i > 0 && <span className="text-lg font-light text-muted-foreground">:</span>}
-                          <div className="text-center"><span className="block text-2xl font-bold tabular-nums text-amber-300">{String(unit.value).padStart(2, "0")}</span><span className="text-xs text-muted-foreground">{unit.label}</span></div>
+                          <div className="text-center"><span className="block text-2xl font-bold tabular-nums text-amber-300">{String(u.value).padStart(2, "0")}</span><span className="text-xs text-muted-foreground">{u.label}</span></div>
                         </span>
                       ))}
                     </div>
@@ -283,17 +463,17 @@ export default function OverviewPanel(props: OverviewPanelProps) {
       {/* Charts Grid */}
       <div className="grid grid-cols-1 gap-6 xl:grid-cols-3">
         <Card className="xl:col-span-2 border-border/40 bg-card/60 shadow-lg backdrop-blur-lg">
-          <CardHeader><CardTitle>24 小时销量走势</CardTitle><CardDescription>北京时间 (UTC+8) 每小时分组 &middot; 金额已换算人民币</CardDescription></CardHeader>
+          <CardHeader><CardTitle>当天实时销量走势</CardTitle><CardDescription>展示今日 00:00 截止当前时间点的实时销售额波动，未来时段保持留白</CardDescription></CardHeader>
           <CardContent>
             <div className="h-[320px] w-full">
               <ResponsiveContainer width="100%" height="100%">
-                <AreaChart data={computedCharts} margin={{ top: 5, right: 5, left: 5, bottom: 5 }}>
+                <AreaChart data={chartData} margin={{ top: 5, right: 5, left: 5, bottom: 5 }}>
                   <defs><linearGradient id="salesGradient" x1="0" y1="0" x2="0" y2="1"><stop offset="0%" stopColor="#10b981" stopOpacity={0.25} /><stop offset="100%" stopColor="#10b981" stopOpacity={0} /></linearGradient></defs>
                   <CartesianGrid strokeDasharray="3 3" stroke="oklch(1 0 0 / 0.06)" vertical={false} />
                   <XAxis dataKey="hour" tick={{ fontSize: 12, fill: "oklch(0.708 0 0)" }} tickLine={false} axisLine={false} interval={1} />
                   <YAxis tick={{ fontSize: 12, fill: "oklch(0.708 0 0)" }} tickLine={false} axisLine={false} tickFormatter={(v) => `¥${v}`} width={65} />
                   <Tooltip content={<CustomTooltip />} />
-                  <Area type="monotone" dataKey="sales" stroke="#10b981" strokeWidth={2} fill="url(#salesGradient)" dot={false} activeDot={{ r: 4, fill: "#10b981", stroke: "oklch(0.145 0 0)", strokeWidth: 2 }} />
+                  <Area type="monotone" dataKey="sales" stroke="#10b981" strokeWidth={2} fill="url(#salesGradient)" dot={false} isAnimationActive={true} animationDuration={600} activeDot={{ r: 5, fill: "#10b981", stroke: "oklch(0.145 0 0)", strokeWidth: 2 }} />
                 </AreaChart>
               </ResponsiveContainer>
             </div>
@@ -318,18 +498,19 @@ export default function OverviewPanel(props: OverviewPanelProps) {
       {/* Products Table */}
       <Card className="border-border/40 bg-card/60 shadow-lg backdrop-blur-lg">
         <CardHeader>
-          <CardTitle className="flex items-center gap-2"><Package className="h-5 w-5 text-muted-foreground" />热销商品 Top {products.length}</CardTitle>
-          <CardDescription>今日销量排名前 {products.length} 的商品</CardDescription>
+          <CardTitle className="flex items-center gap-2"><Package className="h-5 w-5 text-muted-foreground" />热销商品 Top {localProducts.length}</CardTitle>
+          <CardDescription>今日销量排名 · 新订单实时置顶插入</CardDescription>
         </CardHeader>
         <CardContent>
           <Table>
             <TableHeader><TableRow className="hover:bg-transparent"><TableHead className="w-12">#</TableHead><TableHead>商品</TableHead><TableHead className="text-right">销量</TableHead><TableHead className="text-right">销售额 (CNY)</TableHead><TableHead className="text-right">库存</TableHead><TableHead className="text-right w-24">库存状态</TableHead><TableHead className="text-right w-28">风控评级</TableHead></TableRow></TableHeader>
             <TableBody>
-              {products.map((p, i) => {
+              {localProducts.map((p, i) => {
                 const badge = getInventoryBadge(p.inventory);
                 const risk = productRiskMap.get(p.id);
+                const isFlash = flashIds.size > 0 && i < 2;
                 return (
-                  <TableRow key={p.id} className="group transition-colors hover:bg-muted/30">
+                  <TableRow key={p.id} className={`group transition-all duration-700 hover:bg-muted/30 ${isFlash ? "animate-pulse bg-emerald-500/10" : ""}`}>
                     <TableCell className="font-medium text-muted-foreground">{String(i + 1).padStart(2, "0")}</TableCell>
                     <TableCell><div className="flex items-center gap-3">{p.image ? <img src={p.image} alt={p.title} className="h-10 w-10 shrink-0 rounded-lg object-cover ring-1 ring-border/30" /> : <div className="flex h-10 w-10 shrink-0 items-center justify-center rounded-lg bg-muted/50 ring-1 ring-border/30"><Package className="h-4 w-4 text-muted-foreground" /></div>}<span className="max-w-[220px] truncate font-medium text-foreground">{p.title}</span></div></TableCell>
                     <TableCell className="text-right tabular-nums">{p.totalSold}</TableCell>
@@ -359,15 +540,13 @@ export default function OverviewPanel(props: OverviewPanelProps) {
           <div className="flex-1 overflow-y-auto px-4 py-6">
             {!diagnosing && !diagnosis && (
               <div className="flex flex-col items-center gap-6 py-10">
-                <div className="flex h-20 w-20 items-center justify-center rounded-2xl bg-amber-500/10 ring-1 ring-amber-500/20">
-                  <span className="text-3xl">🧠</span>
-                </div>
-                <p className="text-base font-medium text-foreground">准备分析 {data.shopName}</p>
+                <div className="flex h-20 w-20 items-center justify-center rounded-2xl bg-amber-500/10 ring-1 ring-amber-500/20"><span className="text-3xl">🧠</span></div>
+                <p className="text-base font-medium text-foreground">准备分析 {initialData.shopName}</p>
                 <Button size="lg" onClick={handleStartDiagnosis} className="gap-2 bg-amber-600 text-white hover:bg-amber-500"><Sparkles className="h-4 w-4" />开始诊断</Button>
                 {!currentStore?.isDemo && (
                   <div className="mt-4 w-full rounded-lg border border-border/30 bg-muted/30 p-4">
                     <p className="mb-2 text-xs font-medium text-muted-foreground">💡 想要真正的 AI 实时诊断？</p>
-                    <pre className="whitespace-pre-wrap text-[11px] leading-relaxed text-muted-foreground/70">{"// .env.local\nDEEPSEEK_API_KEY=sk-xxxxxxxxxxxxxxxx\n// POST /api/ai/diagnose"}</pre>
+                    <pre className="whitespace-pre-wrap text-[11px] leading-relaxed text-muted-foreground/70">{"// .env.local\nDEEPSEEK_API_KEY=sk-xxxxxxxxxxxxxxxx"}</pre>
                   </div>
                 )}
               </div>
@@ -397,10 +576,10 @@ export default function OverviewPanel(props: OverviewPanelProps) {
   );
 }
 
-// ─── CSV Export (inline) ───────────────────────────────
+// ─── CSV Export ───────────────────────────────────────
 
-function exportCSV(orders: Array<{ id: number; created_at: string; total_price: string; financial_status: string }>, rate: number, shopName: string) {
-  const PAY: Record<string, string> = { paid: "已支付", pending: "待处理", authorized: "已授权", partially_paid: "部分支付", partially_refunded: "部分退款", refunded: "已退款", voided: "已作废" };
+function exportCSV(orders: Order[], rate: number, shopName: string) {
+  const PAY: Record<string, string> = { paid: "已支付", pending: "待处理", authorized: "已授权", refunded: "已退款", voided: "已作废" };
   const header = ["订单ID", "下单时间（北京时间）", "美元金额 (USD)", "人民币金额 (CNY)", "付款状态"];
   const rows = orders.map((o) => {
     const t = new Date(new Date(o.created_at).getTime() + 8 * 60 * 60 * 1000).toISOString().replace("T", " ").slice(0, 16);

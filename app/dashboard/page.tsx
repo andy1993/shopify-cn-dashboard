@@ -11,6 +11,10 @@ import OverviewPanel from "./components/OverviewPanel";
 import AiDiagnosePanel from "./components/AiDiagnosePanel";
 import FinancePanel from "./components/FinancePanel";
 import RiskRadarPanel from "./components/RiskRadarPanel";
+import TrendAnalysisPanel from "./components/TrendAnalysisPanel";
+import MultiStoreAggregator from "./components/MultiStoreAggregator";
+import GatewayFinancePanel from "./components/GatewayFinancePanel";
+import FunnelRetentionPanel from "./components/FunnelRetentionPanel";
 
 // ─── Types ────────────────────────────────────────────
 
@@ -147,14 +151,19 @@ export default function DashboardPage() {
   // ── Derived calcs ──
   const computedCharts = useMemo(() => {
     if (!data) return [];
+    const currentHour = new Date().getHours();
     const exchangeRate = data.exchangeRate;
     const buckets = new Array(24).fill(0).map(() => ({ count: 0, sales: 0 })) as Array<{ count: number; sales: number }>;
     for (const order of data.orders) {
       const bh = (new Date(order.created_at).getUTCHours() + 8) % 24;
+      // Only count orders up to current real-world hour (no future data leak)
+      if (bh > currentHour) continue;
       buckets[bh].count += 1;
       buckets[bh].sales += (parseFloat(order.total_price) || 0) * exchangeRate;
     }
-    return buckets.map((b, i) => ({ hour: `${String(i).padStart(2, "0")}:00`, count: b.count, sales: Math.round(b.sales * 100) / 100 }));
+    return buckets
+      .map((b, i) => ({ hour: `${String(i).padStart(2, "0")}:00`, count: b.count, sales: Math.round(b.sales * 100) / 100 }))
+      .slice(0, currentHour + 1);
   }, [data]);
 
   const totalCostRate = cogsRate + shippingRate + marketingRate;
@@ -260,7 +269,7 @@ export default function DashboardPage() {
           cogsRate={cogsRate} setCogsRate={setCogsRate} shippingRate={shippingRate} setShippingRate={setShippingRate} marketingRate={marketingRate} setMarketingRate={setMarketingRate}
           totalCostRate={totalCostRate} profit={profit} profitMargin={profitMargin}
           refundRate={refundRate} refundedOrders={refundedOrders} refundAmount={refundAmount}
-          computedCharts={computedCharts} pieData={pieData} productRiskMap={productRiskMap}
+          pieData={pieData} productRiskMap={productRiskMap}
           countryHolidays={countryHolidays} activeCountry={activeCountry} setActiveCountry={setActiveCountry} countdown={countdown}
           fetchData={fetchData} handleStoreChange={handleStoreChange} handleRemoveStore={handleRemoveStore} handleAddStore={() => router.push("/config")} handleStartDiagnosis={handleStartDiagnosis}
           sheetOpen={sheetOpen} setSheetOpen={setSheetOpen} diagnosing={diagnosing} diagnosis={diagnosis} typewriterText={typewriterText}
@@ -276,6 +285,36 @@ export default function DashboardPage() {
       )}
       {activeMenu === "risk" && (
         <RiskRadarPanel shopName={data.shopName} refundRate={refundRate} refundedOrders={refundedOrders} refundAmount={refundAmount} exchangeRate={data.exchangeRate} orderCount={data.orderCount} products={data.products} productRiskMap={productRiskMap} />
+      )}
+      {activeMenu === "trend" && (
+        <TrendAnalysisPanel
+          shopName={data.shopName}
+          isDemo={!!currentStore?.isDemo}
+          exchangeRate={data.exchangeRate}
+          currency={data.currency}
+          shopId={currentStore?.id}
+        />
+      )}
+      {activeMenu === "aggregator" && (
+        <MultiStoreAggregator />
+      )}
+      {activeMenu === "gateway" && (
+        <GatewayFinancePanel
+          orders={data.orders}
+          exchangeRate={data.exchangeRate}
+          currency={data.currency}
+          isDemo={!!currentStore?.isDemo}
+          shopName={data.shopName}
+        />
+      )}
+      {activeMenu === "funnel" && (
+        <FunnelRetentionPanel
+          orders={data.orders}
+          isDemo={!!currentStore?.isDemo}
+          shopName={data.shopName}
+          exchangeRate={data.exchangeRate}
+          currency={data.currency}
+        />
       )}
     </div>
   );

@@ -7,13 +7,16 @@ import {
   Brain,
   Coins,
   Shield,
+  BarChart3,
+  Layers,
+  Landmark,
   Settings,
 } from "lucide-react";
 import { cn } from "@/lib/utils";
 
 // ─── Context ───────────────────────────────────────────
 
-type MenuKey = "overview" | "ai" | "finance" | "risk";
+type MenuKey = "overview" | "ai" | "finance" | "risk" | "trend" | "aggregator" | "gateway" | "funnel";
 
 interface DashboardContextValue {
   activeMenu: MenuKey;
@@ -40,6 +43,10 @@ const NAV_ITEMS: Array<{
   { id: "ai", label: "AI 智能诊断", icon: Brain },
   { id: "finance", label: "供应链对账", icon: Coins },
   { id: "risk", label: "风控雷达", icon: Shield },
+  { id: "trend", label: "趋势同比", icon: BarChart3 },
+  { id: "aggregator", label: "全店聚合", icon: Layers },
+  { id: "gateway", label: "网关对账", icon: Landmark },
+  { id: "funnel", label: "漏斗转化", icon: Brain },
 ];
 
 // ─── Layout Component ──────────────────────────────────
