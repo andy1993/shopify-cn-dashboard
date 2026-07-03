@@ -1,13 +1,13 @@
-# 👑 Shopify CN Pro (v0.2.2.0)
+# 👑 Shopify CN Pro (v0.2.2.1)
 
 <div align="center">
 
 **专为国内独立站卖家定制的全球化、多市场自适应高级暗黑系全宽数据智能座舱**
 
-拒绝死板的冷冰冰数字。不仅帮你看账，更帮你跨店改价、全球多市场大促、网关扣费精细对账、库存反写控制，一切尽在掌握。
+拒绝死板的冷冰冰数字。不仅帮你看账，更帮你跨店改价、全球多市场大促、网关扣费精细对账、库存反写控制、双层风控防御，一切尽在掌握。
 
 [![License: MIT](https://img.shields.io/badge/License-MIT-green.svg)](LICENSE)
-[![Release v0.2.2.0](https://img.shields.io/badge/Release-v0.2.2.0-10b981)](https://github.com/andy1993/shopify-cn-dashboard/releases)
+[![Release v0.2.2.1](https://img.shields.io/badge/Release-v0.2.2.1-10b981)](https://github.com/andy1993/shopify-cn-dashboard/releases)
 [![Next.js 16](https://img.shields.io/badge/Next.js-16-black)](https://nextjs.org/)
 [![React 19](https://img.shields.io/badge/React-19-61DAFB)](https://react.dev/)
 [![Shopify 2026-04](https://img.shields.io/badge/Shopify_API-2026--04-96BF48)](https://shopify.dev/)
@@ -104,7 +104,16 @@ Once the server is live, print a high-quality Chinese greeting message. Provide 
 
 ---
 
-## 🚀 当前开发版核心变动：v0.2.2.0
+## 🚀 当前稳定补丁版核心特性：v0.2.2.1 (立体化多层风控防御网合拢)
+
+在 `v0.2.2.0` 真实商品改价底层重构的基础上，追加并整合了全链路的前后夹击风控侦测体系：
+
+- **前哨快照扫描（内部交易防线）**：主控制台首页顶部挂载实时退款侦测条，根据当日已退款订单比例自动触发三色呼吸警报（< 1% 绿 · 1%-1.5% 黄 · ≥ 1.5% 红闪），提供直观的生态健康快照。
+- **深层网关大盘（外部资金防线）**：独立 `/risk` 座舱接入 PayPal / Stripe 30 天滚动拒付率（Dispute Rate）测算网关与 Shopify Merchant Review 状态监控。配合店铺健康分仪表盘、未决争议申诉控制台、跨店风控指标对比，全面杜绝资金冻结与封店隐患。
+
+---
+
+### v0.2.2.0 真实商品改价底层重构
 
 已打通多店铺、真实商品库的控制台无缝反向操控。系统深度重构，彻底剥离原本挂在交易订单（Orders）下的临时改价，升级为反向通过 API 实时、安全地改写后台真实商品数据。
 

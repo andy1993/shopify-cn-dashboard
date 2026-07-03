@@ -9,7 +9,7 @@ import { useDashboardMenu } from "./layout";
 import OverviewPanel from "./components/OverviewPanel";
 import AiDiagnosePanel from "./components/AiDiagnosePanel";
 import FinancePanel from "./components/FinancePanel";
-import RiskRadarPanel from "./components/RiskRadarPanel";
+import RiskRadarDashboard from "./components/RiskRadarDashboard";
 import TrendAnalysisPanel from "./components/TrendAnalysisPanel";
 import MultiStoreAggregator from "./components/MultiStoreAggregator";
 import GatewayFinancePanel from "./components/GatewayFinancePanel";
@@ -339,7 +339,18 @@ export default function DashboardPage() {
           totalCostRate={totalCostRate} profit={profit} profitMargin={profitMargin} pieData={pieData} />
       )}
       {activeMenu === "risk" && (
-        <RiskRadarPanel shopName={data.shopName} refundRate={refundRate} refundedOrders={refundedOrders} refundAmount={refundAmount} exchangeRate={data.exchangeRate} orderCount={data.orderCount} products={data.products} productRiskMap={productRiskMap} />
+        <RiskRadarDashboard
+          isDemo={!!currentStore?.isDemo}
+          shopName={data.shopName}
+          orders={data.orders}
+          orderCount={data.orderCount}
+          gmv={data.gmv}
+          refundRate={refundRate}
+          refundedCount={refundedOrders.length}
+          refundAmount={refundAmount}
+          exchangeRate={data.exchangeRate}
+          stores={stores}
+        />
       )}
       {activeMenu === "trend" && (
         <TrendAnalysisPanel
