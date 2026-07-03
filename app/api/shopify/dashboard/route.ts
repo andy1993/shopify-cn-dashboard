@@ -76,15 +76,30 @@ interface DashboardSuccess {
   fullProducts?: Array<{
     id: number;
     title: string;
+    handle: string;
+    descriptionHtml: string;
+    vendor: string;
+    productType: string;
     status: string;
+    tags: string[];
     image: string | null;
     shopName: string;
     isDemo: boolean;
+    seoTitle: string;
+    seoDescription: string;
+    images: Array<{
+      id: string;
+      src: string;
+      alt: string;
+      width: number;
+      height: number;
+    }>;
     variants: Array<{
       variantId: number;
       name: string;
       sku: string;
       price: string;
+      compareAtPrice: string | null;
       inventory: number;
       productId: string;
       inventoryItemId: string;
@@ -98,6 +113,44 @@ interface DashboardSuccess {
     default_address?: { address1: string; address2?: string; city: string; province: string; country: string; zip: string };
     addresses?: Array<{ address1: string; address2?: string; city: string; province: string; country: string; zip: string; default: boolean }>;
     recent_orders?: Array<{ id: number; order_number: string; total_price: number; created_at: string; financial_status: string }>;
+  }>;
+  /** Collection data (smart + custom) */
+  collections?: {
+    smart: Array<{
+      id: number; title: string; handle: string;
+      body_html: string; published: boolean; products_count: number;
+      sort_order: string; rules: Array<{ column: string; relation: string; condition: string }>;
+      updated_at: string;
+    }>;
+    custom: Array<{
+      id: number; title: string; handle: string;
+      body_html: string; published: boolean; products_count: number;
+      sort_order: string; updated_at: string;
+    }>;
+  } | null;
+  /** Navigation menus with items */
+  menus?: Array<{
+    id: number; title: string; handle: string;
+    items: Array<{
+      id: number; title: string; url: string;
+      type: string; parent_id: number | null; position: number;
+    }>;
+  }>;
+  /** Pages */
+  pages?: Array<{
+    id: number; title: string; handle: string; bodyHtml: string;
+    published: boolean; seoTitle: string; seoDescription: string;
+    created_at: string; updated_at: string;
+  }>;
+  /** Blogs with articles (GraphQL) */
+  blogs?: Array<{
+    id: number; title: string; handle: string;
+    articles: Array<{
+      id: number; title: string; handle: string;
+      bodyHtml: string; summaryHtml: string; author: string;
+      tags: string[]; published: boolean; seoTitle: string; seoDescription: string;
+      createdAt: string; updatedAt: string;
+    }>;
   }>;
 }
 
@@ -332,19 +385,26 @@ async function fetchFullProducts(
       nodes {
         id
         title
+        handle
+        descriptionHtml
+        vendor
+        productType
         status
-        images(first: 1) { nodes { url } }
-        variants(first: 20) {
+        tags
+        images(first: 20) { nodes { id src altText width height } }
+        variants(first: 100) {
           nodes {
             id
             title
             sku
             price
+            compareAtPrice
             inventoryQuantity
             product { id }
             inventoryItem { id }
           }
         }
+        seo { title description }
       }
     }
   }`;
@@ -370,19 +430,26 @@ async function fetchFullProducts(
         nodes?: Array<{
           id: string;
           title: string;
+          handle: string;
+          descriptionHtml: string;
+          vendor: string;
+          productType: string;
           status: string;
-          images?: { nodes?: Array<{ url: string }> };
+          tags: string[];
+          images?: { nodes?: Array<{ id: string; src: string; altText: string | null; width: number; height: number }> };
           variants?: {
             nodes?: Array<{
               id: string;
               title: string;
               sku: string | null;
               price: string;
+              compareAtPrice: string | null;
               inventoryQuantity: number;
               product?: { id: string };
               inventoryItem?: { id: string };
             }>;
           };
+          seo?: { title: string | null; description: string | null };
         }>;
       };
     };
@@ -402,10 +469,24 @@ async function fetchFullProducts(
     return {
       id: Number(gid),
       title: p.title,
+      handle: p.handle || "",
+      descriptionHtml: p.descriptionHtml || "",
+      vendor: p.vendor || "",
+      productType: p.productType || "",
       status: p.status,
-      image: p.images?.nodes?.[0]?.url ?? null,
+      tags: p.tags || [],
+      image: p.images?.nodes?.[0]?.src ?? null,
       shopName,
       isDemo: false,
+      seoTitle: p.seo?.title || "",
+      seoDescription: p.seo?.description || "",
+      images: (p.images?.nodes || []).map((img) => ({
+        id: img.id.replace("gid://shopify/ProductImage/", ""),
+        src: img.src,
+        alt: img.altText || "",
+        width: img.width || 0,
+        height: img.height || 0,
+      })),
       variants: (p.variants?.nodes ?? []).map((v) => {
         const vgid = v.id.replace(/\D/g, "");
         return {
@@ -413,6 +494,7 @@ async function fetchFullProducts(
           name: v.title || "默认",
           sku: v.sku ?? `SKU-${vgid}`,
           price: v.price,
+          compareAtPrice: v.compareAtPrice || null,
           inventory: v.inventoryQuantity,
           productId: v.product?.id ?? p.id,
           inventoryItemId: v.inventoryItem?.id ?? "",
@@ -490,6 +572,183 @@ async function fetchCustomers(shopUrl: string, accessToken: string): Promise<Das
       recent_orders: [],
     };
   });
+}
+
+/**
+ * Fetch collections (smart + custom) concurrently.
+ */
+async function fetchCollections(shopUrl: string, accessToken: string): Promise<DashboardSuccess["collections"]> {
+  const headers = { "X-Shopify-Access-Token": accessToken };
+  try {
+    const [smartRes, customRes] = await Promise.all([
+      fetch(`https://${shopUrl}/admin/api/${SHOPIFY_API_VERSION}/smart_collections.json?limit=250`, { headers, signal: AbortSignal.timeout(10000) }),
+      fetch(`https://${shopUrl}/admin/api/${SHOPIFY_API_VERSION}/custom_collections.json?limit=250`, { headers, signal: AbortSignal.timeout(10000) }),
+    ]);
+    if (!smartRes.ok || !customRes.ok) return null;
+    const smartData = await smartRes.json();
+    const customData = await customRes.json();
+    return {
+      smart: (smartData.smart_collections || []).map((c: Record<string, unknown>) => ({
+        id: c.id as number,
+        title: (c.title as string) || "",
+        handle: (c.handle as string) || "",
+        body_html: (c.body_html as string) || "",
+        published: !!(c as any).published_at,
+        products_count: (c.products_count as number) || 0,
+        sort_order: ((c as any).sort_order as string) || "manual",
+        rules: ((c.rules as Array<Record<string, unknown>>) || []).map((r: any) => ({
+          column: r.column as string,
+          relation: r.relation as string,
+          condition: r.condition as string,
+        })),
+        updated_at: (c.updated_at as string) || "",
+      })),
+      custom: (customData.custom_collections || []).map((c: Record<string, unknown>) => ({
+        id: c.id as number,
+        title: (c.title as string) || "",
+        handle: (c.handle as string) || "",
+        body_html: (c.body_html as string) || "",
+        published: !!(c as any).published_at,
+        products_count: (c.products_count as number) || 0,
+        sort_order: ((c as any).sort_order as string) || "manual",
+        updated_at: (c.updated_at as string) || "",
+      })),
+    };
+  } catch (err) {
+    console.warn("[shopify/dashboard] collections fetch error:", err instanceof Error ? err.message : err);
+    return null;
+  }
+}
+
+/**
+ * Fetch all navigation menus with their items.
+ */
+async function fetchMenus(shopUrl: string, accessToken: string): Promise<DashboardSuccess["menus"]> {
+  const headers = { "X-Shopify-Access-Token": accessToken };
+  try {
+    const res = await fetch(`https://${shopUrl}/admin/api/${SHOPIFY_API_VERSION}/menus.json`, { headers, signal: AbortSignal.timeout(10000) });
+    if (!res.ok) return [];
+    const data = await res.json();
+    const menus = data.menus || [];
+    const withItems = await Promise.all(
+      menus.map(async (m: Record<string, unknown>) => {
+        try {
+          const itemsRes = await fetch(
+            `https://${shopUrl}/admin/api/${SHOPIFY_API_VERSION}/menus/${m.id}/items.json`,
+            { headers, signal: AbortSignal.timeout(10000) },
+          );
+          if (!itemsRes.ok) return { id: m.id, title: m.title, handle: m.handle, items: [] };
+          const itemsData = await itemsRes.json();
+          return {
+            id: m.id as number,
+            title: (m.title as string) || "",
+            handle: (m.handle as string) || "",
+            items: (itemsData.items || []).map((item: Record<string, unknown>) => ({
+              id: item.id as number,
+              title: (item.title as string) || "",
+              url: (item.url as string) || "",
+              type: (item.type as string) || "custom",
+              parent_id: (item.parent_id as number) || null,
+              position: (item.position as number) || 0,
+            })),
+          };
+        } catch {
+          return { id: m.id as number, title: m.title, handle: m.handle, items: [] };
+        }
+      }),
+    );
+    return withItems;
+  } catch (err) {
+    console.warn("[shopify/dashboard] menus fetch error:", err instanceof Error ? err.message : err);
+    return [];
+  }
+}
+
+/**
+ * Fetch all pages.
+ */
+async function fetchPages(shopUrl: string, accessToken: string): Promise<DashboardSuccess["pages"]> {
+  const headers = { "X-Shopify-Access-Token": accessToken };
+  try {
+    const res = await fetch(`https://${shopUrl}/admin/api/${SHOPIFY_API_VERSION}/pages.json?limit=250`, { headers, signal: AbortSignal.timeout(10000) });
+    if (!res.ok) return [];
+    const data = await res.json();
+    return (data.pages || []).map((p: Record<string, unknown>) => ({
+      id: p.id as number,
+      title: (p.title as string) || "",
+      handle: (p.handle as string) || "",
+      bodyHtml: (p.body_html as string) || "",
+      published: !!(p as any).published_at,
+      seoTitle: ((p as any).metafields_global_title_tag as string) || "",
+      seoDescription: ((p as any).metafields_global_description_tag as string) || "",
+      created_at: (p.created_at as string) || "",
+      updated_at: (p.updated_at as string) || "",
+    }));
+  } catch { return []; }
+}
+
+/**
+ * Fetch all blogs with their articles via REST（并发拉各博客文章）。
+ * Note: If GraphQL fails with permission errors, fall back to this REST path.
+ */
+async function fetchBlogs(shopUrl: string, accessToken: string): Promise<DashboardSuccess["blogs"]> {
+  const headers = { "X-Shopify-Access-Token": accessToken };
+  const signal = AbortSignal.timeout(15000);
+
+  try {
+    const blogsRes = await fetch(
+      `https://${shopUrl}/admin/api/${SHOPIFY_API_VERSION}/blogs.json`,
+      { headers, signal },
+    );
+    if (!blogsRes.ok) {
+      console.warn("[shopify/dashboard] blogs REST failed:", blogsRes.status);
+      return [];
+    }
+    const blogsData = await blogsRes.json() as { blogs?: Array<{ id: number; title: string; handle: string }> };
+    if (!blogsData.blogs?.length) return [];
+
+    // 并发拉各博客文章
+    const blogs = await Promise.all(
+      blogsData.blogs.map(async (b) => {
+        try {
+          const articlesRes = await fetch(
+            `https://${shopUrl}/admin/api/${SHOPIFY_API_VERSION}/blogs/${b.id}/articles.json?limit=250`,
+            { headers, signal: AbortSignal.timeout(10000) },
+          );
+          if (!articlesRes.ok) return { id: b.id, title: b.title, handle: b.handle, articles: [] };
+          const articlesData = await articlesRes.json();
+
+          return {
+            id: b.id,
+            title: b.title,
+            handle: b.handle,
+            articles: (articlesData.articles || []).map((a: any) => ({
+              id: a.id,
+              title: a.title,
+              handle: a.handle || "",
+              bodyHtml: a.body_html || "",
+              summaryHtml: a.summary_html || "",
+              author: a.author || "",
+              tags: typeof a.tags === "string"
+                ? a.tags.split(",").map((t: string) => t.trim()).filter(Boolean)
+                : (a.tags || []),
+              published: a.published_at !== null,
+              seoTitle: a.metafields_global_title_tag || "",
+              seoDescription: a.metafields_global_description_tag || "",
+              createdAt: a.created_at || "",
+              updatedAt: a.updated_at || "",
+            })),
+          };
+        } catch {
+          return { id: b.id, title: b.title, handle: b.handle, articles: [] };
+        }
+      }),
+    );
+    return blogs;
+  } catch (err) {
+    console.warn("[shopify/dashboard] fetchBlogs failed:", (err as Error).message);
+    return [];
+  }
 }
 
 /**
@@ -862,6 +1121,18 @@ export async function GET(request: NextRequest) {
     // ─ Step 7c: Fetch customers ─
     const customers = await fetchCustomers(shopUrl, accessToken);
 
+    // ─ Step 7d: Fetch collections ─
+    const collections = await fetchCollections(shopUrl, accessToken);
+
+    // ─ Step 7e: Fetch navigation menus ─
+    const menus = await fetchMenus(shopUrl, accessToken);
+
+    // ─ Step 7f: Fetch pages ─
+    const pages = await fetchPages(shopUrl, accessToken);
+
+    // ─ Step 7g: Fetch blogs with articles ─
+    const blogs = await fetchBlogs(shopUrl, accessToken);
+
     // ─ Step 8: Conversion rate ─
     // NOTE: Shopify REST API does not expose visitor data.
     // Accurate conversion rate requires the Analytics API or custom tracking.
@@ -906,6 +1177,10 @@ export async function GET(request: NextRequest) {
       topCountries: safeCountries,
       fullProducts,
       customers,
+      collections,
+      menus,
+      pages,
+      blogs,
       lastUpdated: new Date().toISOString(),
     };
 
@@ -1117,6 +1392,113 @@ async function handleOrderNoteUpdate(
 }
 
 // ═══════════════════════════════════════════════════════
+// Update Product — Shopify REST API
+// ═══════════════════════════════════════════════════════
+
+async function handleUpdateProduct(
+  shopUrl: string,
+  accessToken: string,
+  productId: number,
+  title?: string,
+  bodyHtml?: string,
+  vendor?: string,
+  productType?: string,
+  tags?: string[],
+  status?: string,
+  seoTitle?: string,
+  seoDescription?: string,
+): Promise<NextResponse> {
+  const url = "https://" + shopUrl + "/admin/api/" + SHOPIFY_API_VERSION + "/products/" + productId + ".json";
+
+  const product: Record<string, unknown> = { id: productId };
+  if (title !== undefined) product.title = title;
+  if (bodyHtml !== undefined) product.body_html = bodyHtml;
+  if (vendor !== undefined) product.vendor = vendor;
+  if (productType !== undefined) product.product_type = productType;
+  if (tags !== undefined) product.tags = tags.join(", ");
+  if (status !== undefined) product.status = status;
+  if (seoTitle !== undefined) product.metafields_global_title_tag = seoTitle;
+  if (seoDescription !== undefined) product.metafields_global_description_tag = seoDescription;
+
+  try {
+    const res = await fetch(url, {
+      method: "PUT",
+      headers: { "X-Shopify-Access-Token": accessToken, "Content-Type": "application/json" },
+      body: JSON.stringify({ product }),
+      signal: AbortSignal.timeout(10000),
+    });
+
+    if (!res.ok) {
+      if (res.status === 401) return NextResponse.json({ success: false, error: "Token 已过期或无效，请重新绑定店铺" }, { status: 401 });
+      if (res.status === 404) return NextResponse.json({ success: false, error: "商品不存在或已被删除" }, { status: 404 });
+      if (res.status === 422) return NextResponse.json({ success: false, error: "字段校验失败，请检查输入数据" }, { status: 400 });
+      return NextResponse.json({ success: false, error: "商品更新失败 HTTP " + res.status }, { status: 502 });
+    }
+
+    return NextResponse.json({ success: true });
+  } catch (err) {
+    const msg = err instanceof Error ? err.message : "未知错误";
+    console.error("[shopify/dashboard] updateProduct error:", msg);
+    return NextResponse.json({ success: false, error: "商品更新失败: " + msg }, { status: 500 });
+  }
+}
+
+// ═══════════════════════════════════════════════════════
+// Collection CRUD Handler
+// ═══════════════════════════════════════════════════════
+
+async function handleCollectionAction(
+  action: string,
+  shopUrl: string,
+  accessToken: string,
+  collectionType: string,
+  collectionId?: number,
+  collectionData?: Record<string, unknown>,
+): Promise<NextResponse> {
+  const base = `https://${shopUrl}/admin/api/${SHOPIFY_API_VERSION}`;
+  const resource = collectionType === "smart" ? "smart_collections" : "custom_collections";
+
+  try {
+    let url = `${base}/${resource}.json`;
+    let method = "GET";
+    let body: string | undefined;
+
+    if (action === "deleteCollection" && collectionId) {
+      url = `${base}/${resource}/${collectionId}.json`;
+      method = "DELETE";
+    } else if (action === "updateCollection" && collectionId && collectionData) {
+      url = `${base}/${resource}/${collectionId}.json`;
+      method = "PUT";
+      body = JSON.stringify(collectionData);
+    } else if (action === "createCollection" && collectionData) {
+      method = "POST";
+      body = JSON.stringify(collectionData);
+    } else {
+      return NextResponse.json({ success: false, error: "缺少必要参数" }, { status: 400 });
+    }
+
+    const res = await fetch(url, {
+      method,
+      headers: { "X-Shopify-Access-Token": accessToken, "Content-Type": "application/json" },
+      ...(body ? { body } : {}),
+      signal: AbortSignal.timeout(10000),
+    });
+
+    if (!res.ok) {
+      if (res.status === 401) return NextResponse.json({ success: false, error: "Token 已过期或无效" }, { status: 401 });
+      if (res.status === 404) return NextResponse.json({ success: false, error: "集合不存在" }, { status: 404 });
+      return NextResponse.json({ success: false, error: "操作失败 HTTP " + res.status }, { status: 502 });
+    }
+
+    return NextResponse.json({ success: true });
+  } catch (err) {
+    const msg = err instanceof Error ? err.message : "未知错误";
+    console.error("[shopify/dashboard] collection action error:", msg);
+    return NextResponse.json({ success: false, error: "集合操作失败: " + msg }, { status: 500 });
+  }
+}
+
+// ═══════════════════════════════════════════════════════
 // Create Fulfillment — Shopify REST API
 // ═══════════════════════════════════════════════════════
 
@@ -1176,6 +1558,139 @@ async function handleCreateFulfillment(
 }
 
 // ═══════════════════════════════════════════════════════
+// Menu Item Action Handler
+// ═══════════════════════════════════════════════════════
+
+async function handleMenuItemAction(
+  shopUrl: string, accessToken: string, menuId: number,
+  changeType: "add" | "update" | "delete", itemId: number,
+  itemData?: Record<string, unknown>,
+): Promise<NextResponse> {
+  const base = `https://${shopUrl}/admin/api/${SHOPIFY_API_VERSION}/menus/${menuId}/items`;
+
+  try {
+    let url = `${base}.json`;
+    let method = "GET";
+    let body: string | undefined;
+
+    if (changeType === "delete") {
+      url = `${base}/${itemId}.json`;
+      method = "DELETE";
+    } else if (changeType === "update" && itemData) {
+      url = `${base}/${itemId}.json`;
+      method = "PUT";
+      const { id, title, url: itemUrl, type, parent_id, position } = itemData;
+      body = JSON.stringify({ link_list_item: { title, url: itemUrl, type, parent_id: parent_id || null, position } });
+    } else if (changeType === "add" && itemData) {
+      method = "POST";
+      const { id, title, url: itemUrl, type, parent_id, position } = itemData;
+      body = JSON.stringify({ link_list_item: { title, url: itemUrl, type, parent_id: parent_id || null, position } });
+    }
+
+    const res = await fetch(url, {
+      method, headers: { "X-Shopify-Access-Token": accessToken, "Content-Type": "application/json" },
+      ...(body ? { body } : {}),
+      signal: AbortSignal.timeout(8000),
+    });
+
+    if (!res.ok) return NextResponse.json({ success: false, error: "菜单操作失败 HTTP " + res.status }, { status: 502 });
+    return NextResponse.json({ success: true });
+  } catch (err) {
+    return NextResponse.json({ success: false, error: "网络错误" }, { status: 500 });
+  }
+}
+
+// ═══════════════════════════════════════════════════════
+// Metafield CRUD Handler
+// ═══════════════════════════════════════════════════════
+
+async function handleMetafieldAction(
+  action: string, shopUrl: string, accessToken: string,
+  ownerType: string, ownerId: number, fieldId?: number,
+  fieldData?: Record<string, unknown>,
+): Promise<NextResponse> {
+  const resourceMap: Record<string, string> = { product: "products", variant: "variants", collection: "collections" };
+  const resource = resourceMap[ownerType] || ownerType;
+  const headers = { "X-Shopify-Access-Token": accessToken, "Content-Type": "application/json" };
+
+  try {
+    let url = `https://${shopUrl}/admin/api/${SHOPIFY_API_VERSION}/${resource}/${ownerId}/metafields.json`;
+    let method = "GET";
+    let body: string | undefined;
+
+    if (action === "deleteMetafield" && fieldId) {
+      url = `https://${shopUrl}/admin/api/${SHOPIFY_API_VERSION}/${resource}/${ownerId}/metafields/${fieldId}.json`;
+      method = "DELETE";
+    } else if (action === "saveMetafield" && fieldData) {
+      if (fieldId) {
+        url = `https://${shopUrl}/admin/api/${SHOPIFY_API_VERSION}/${resource}/${ownerId}/metafields/${fieldId}.json`;
+        method = "PUT";
+      } else {
+        method = "POST";
+      }
+      body = JSON.stringify({ metafield: fieldData });
+    }
+
+    const res = await fetch(url, { method, headers, body, signal: AbortSignal.timeout(10000) });
+
+    if (action === "getMetafields") {
+      if (!res.ok) return NextResponse.json({ success: true, metafields: [] });
+      const data = await res.json();
+      return NextResponse.json({ success: true, metafields: data.metafields || [] });
+    }
+
+    if (!res.ok) return NextResponse.json({ success: false, error: "操作失败 HTTP " + res.status }, { status: 502 });
+    return NextResponse.json({ success: true });
+  } catch (err) {
+    return NextResponse.json({ success: false, error: "网络错误" }, { status: 500 });
+  }
+}
+
+// ═══════════════════════════════════════════════════════
+// Page & Article CRUD Handler
+// ═══════════════════════════════════════════════════════
+
+async function handleContentAction(
+  action: string, shopUrl: string, accessToken: string,
+  id?: number, blogId?: number, data?: Record<string, unknown>,
+): Promise<NextResponse> {
+  const headers = { "X-Shopify-Access-Token": accessToken, "Content-Type": "application/json" };
+  const base = `https://${shopUrl}/admin/api/${SHOPIFY_API_VERSION}`;
+
+  try {
+    let url = "", method = "POST";
+    const shouldBody = action.startsWith("save");
+
+    if (action === "savePage") {
+      url = `${base}/pages${id ? "/" + id + ".json" : ".json"}`;
+      method = id ? "PUT" : "POST";
+    } else if (action === "deletePage" && id) {
+      url = `${base}/pages/${id}.json`;
+      method = "DELETE";
+    } else if (action === "saveArticle" && blogId) {
+      url = `${base}/blogs/${blogId}/articles${id ? "/" + id + ".json" : ".json"}`;
+      method = id ? "PUT" : "POST";
+    } else if (action === "deleteArticle" && blogId && id) {
+      url = `${base}/blogs/${blogId}/articles/${id}.json`;
+      method = "DELETE";
+    } else {
+      return NextResponse.json({ success: false, error: "参数错误" }, { status: 400 });
+    }
+
+    const res = await fetch(url, {
+      method, headers,
+      body: shouldBody && data ? JSON.stringify(data) : undefined,
+      signal: AbortSignal.timeout(10000),
+    });
+
+    if (!res.ok) return NextResponse.json({ success: false, error: "操作失败 HTTP " + res.status }, { status: 502 });
+    return NextResponse.json({ success: true });
+  } catch (err) {
+    return NextResponse.json({ success: false, error: "网络错误" }, { status: 500 });
+  }
+}
+
+// ═══════════════════════════════════════════════════════
 // POST /api/shopify/dashboard — 双轨路由器
 //   • action="updateProductVariant" → Shopify GraphQL 写操作
 //   • 其他 → AI 智能诊断
@@ -1200,6 +1715,27 @@ export async function POST(request: NextRequest) {
       trackingCompany?: string;
       notifyCustomer?: boolean;
       lineItemIds?: number[];
+      title?: string;
+      bodyHtml?: string;
+      vendor?: string;
+      productType?: string;
+      status?: string;
+      seoTitle?: string;
+      seoDescription?: string;
+      collectionType?: string;
+      collectionId?: number;
+      collectionData?: Record<string, unknown>;
+      menuId?: number;
+      changeType?: string;
+      itemId?: number;
+      itemData?: Record<string, unknown>;
+      contentId?: number;
+      blogId?: number;
+      contentData?: Record<string, unknown>;
+      ownerType?: string;
+      ownerId?: number;
+      metaFieldId?: number;
+      metaFieldData?: Record<string, unknown>;
       isDemo?: boolean;
       metrics?: {
         shopName: string;
@@ -1259,6 +1795,32 @@ export async function POST(request: NextRequest) {
     }
 
     // ═════════════════════════════════════════════════════
+    // 写操作路由: 更新商品信息
+    // ═════════════════════════════════════════════════════
+    if (body.action === "updateProduct" && body.shopUrl && body.accessToken && body.productId) {
+      return await handleUpdateProduct(
+        body.shopUrl,
+        body.accessToken,
+        Number(body.productId),
+        body.title,
+        body.bodyHtml,
+        body.vendor,
+        body.productType,
+        body.tags,
+        body.status,
+        body.seoTitle,
+        body.seoDescription,
+      );
+    }
+
+    // ═════════════════════════════════════════════════════
+    // 写操作路由: 集合 CRUD
+    // ═════════════════════════════════════════════════════
+    if (body.action && ["createCollection", "updateCollection", "deleteCollection"].includes(body.action) && body.shopUrl && body.accessToken) {
+      return await handleCollectionAction(body.action, body.shopUrl, body.accessToken, body.collectionType || "smart", body.collectionId as number | undefined, body.collectionData as Record<string, unknown> | undefined);
+    }
+
+    // ═════════════════════════════════════════════════════
     // 写操作路由: 创建履约
     // ═════════════════════════════════════════════════════
     if (body.action === "createFulfillment" && body.shopUrl && body.accessToken && body.orderId) {
@@ -1271,6 +1833,34 @@ export async function POST(request: NextRequest) {
         body.notifyCustomer ?? true,
         body.lineItemIds,
       );
+    }
+
+    // ═════════════════════════════════════════════════════
+    // 写操作路由: 菜单项更新
+    // ═════════════════════════════════════════════════════
+    if (body.action === "updateMenu" && body.shopUrl && body.accessToken && body.menuId && body.changeType && body.itemId) {
+      return await handleMenuItemAction(
+        body.shopUrl,
+        body.accessToken,
+        body.menuId,
+        body.changeType as "add" | "update" | "delete",
+        body.itemId,
+        body.itemData as Record<string, unknown> | undefined,
+      );
+    }
+
+    // ═════════════════════════════════════════════════════
+    // 写操作路由: 页面/文章 CRUD
+    // ═════════════════════════════════════════════════════
+    if (body.action && ["savePage", "deletePage", "saveArticle", "deleteArticle"].includes(body.action) && body.shopUrl && body.accessToken) {
+      return await handleContentAction(body.action, body.shopUrl, body.accessToken, body.contentId as number, body.blogId as number, body.contentData as Record<string, unknown>);
+    }
+
+    // ═════════════════════════════════════════════════════
+    // 写操作路由: Metafields CRUD
+    // ═════════════════════════════════════════════════════
+    if (body.action && ["getMetafields", "saveMetafield", "deleteMetafield"].includes(body.action) && body.shopUrl && body.accessToken && body.ownerType && body.ownerId) {
+      return await handleMetafieldAction(body.action, body.shopUrl, body.accessToken, body.ownerType as string, body.ownerId, body.metaFieldId as number | undefined, body.metaFieldData as Record<string, unknown> | undefined);
     }
 
     const isDemo = body.isDemo || !!body.shopUrl?.includes("demo");

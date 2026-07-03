@@ -59,7 +59,7 @@ Once the server is live, print a high-quality Chinese greeting message. Provide 
 
 ```
 ┌───────────────────────────────┐
-│ 🚀 Shopify CN Pro  v0.2.3.0   │
+│ 🚀 Shopify CN Pro  v0.2.4.0   │
 │ 全球多市场自适应智能座舱       │
 ├───────────────────────────────┤
 │                               │
@@ -67,27 +67,32 @@ Once the server is live, print a high-quality Chinese greeting message. Provide 
 │   ├ 核心实时看板               │
 │ ─────────────────────────────  │
 │                               │
-│ 📦 数据纵深中心 [可折叠]       │
+│ 📊 数据中心 [可折叠]            │
 │   ├ 🌐 全店聚合大盘            │
 │   ├ 📆 趋势同比分析            │
 │   └ 🎯 漏斗转化复购            │
 │                               │
-│ 💰 财务与流量对账 [可折叠]     │
+│ 🏪 订单与客户 [可折叠]          │
+│   ├ 📋 订单管理中心             │
+│   ├ 👥 客户管理中心             │
+│   └ 🚚 履约看板                 │
+│                               │
+│ 📦 商品与内容 [可折叠]          │
+│   ├ 🔧 跨店改价控制            │
+│   ├ 📝 批量编辑面板             │
+│   ├ 📁 集合管理                 │
+│   ├ 🧭 导航菜单编辑             │
+│   ├ 📄 页面与博客               │
+│   └ 🗄️ Metafields 编辑器        │
+│                               │
+│ 💰 财务对账 [可折叠]            │
 │   ├ 🟩 广告成效与 MER          │
 │   ├ 💳 网关渠道对账            │
 │   └ 💵 供应链对账              │
 │                               │
-│ ⚡ 核心控制专区 [可折叠]       │
-│   └ 🔧 跨店改价控制            │
-│                               │
-│ 🛡️ 风控预警中心 [可折叠]      │
+│ 🛡️ 风控预警 [可折叠]          │
 │   ├ 🧠 AI 智能诊断              │
 │   └ 🚨 账户风控雷达             │
-│                               │
-│ 🏭 运营管理中心 [可折叠]  NEW  │
-│   ├ 📋 订单管理中心             │
-│   ├ 👥 客户管理                 │
-│   └ 🚚 履约看板                 │
 │                               │
 ├───────────────────────────────┤
 │ ⚙ 重新绑定店铺                 │
@@ -97,64 +102,78 @@ Once the server is live, print a high-quality Chinese greeting message. Provide 
 | 分类 | 面板 | 核心能力 |
 |---|---|---|
 | 📊 顶级常驻 | 核心实时看板 | 30s 心跳爆单 · 硬件锁折线图 · GraphQL Markets · Intl 原生汉化 Select · 多国节日倒计时 |
-| 📦 数据纵深 | 全店聚合大盘 | Promise.all 多店真实 API · 堆叠 BarChart · 贡献率排行榜 · 单店直读降级 |
-| 📦 数据纵深 | 趋势同比分析 | 14 天双线对比 · 环比增长率 · 本周/上周切换 |
-| 📦 数据纵深 | 漏斗转化复购 | 4 阶段横向漏斗 · 复购率分析 · 新老客营收饼图 · 分母零保护 |
+| 📊 数据中心 | 全店聚合大盘 | Promise.all 多店真实 API · 堆叠 BarChart · 贡献率排行榜 · 单店直读降级 |
+| 📊 数据中心 | 趋势同比分析 | 14 天双线对比 · 环比增长率 · 本周/上周切换 |
+| 📊 数据中心 | 漏斗转化复购 | 4 阶段横向漏斗 · 复购率分析 · 新老客营收饼图 · 分母零保护 |
+| 🏪 订单与客户 | 订单管理中心 | 多条件筛选 · 批量操作 · 订单详情抽屉 · 标签/备注 · CSV 导出 |
+| 🏪 订单与客户 | 客户管理中心 | RFM 筛选 · 客户详情 Sheet · 地址簿 · 订单历史联动 · 分群 CSV 导出 |
+| 🏪 订单与客户 | 履约看板 | 三泳道拖拽履约 · 物流单号确认 · 超时预警红色边框 · 履约统计 KPI |
+| 📦 商品与内容 | 跨店改价控制 | 多店多规格商品库 · Accordion 子母表 · 4 Tab 编辑器 · 图片管理 · SEO · 双轨隔离 |
+| 📦 商品与内容 | 批量编辑面板 | 分割面板批量操作 · 标题/描述/SEO/标签四模板 · 预览确认 · 增量进度条 |
+| 📦 商品与内容 | 集合管理 | 智能条件编辑器 · AND/OR 切换 · 手动商品挑选器 · SEO 预览 · 双轨数据 |
+| 📦 商品与内容 | 导航菜单编辑 | 树形层级编辑 · 拖拽排序 · 链接类型选择器 · 变更摘要 · 批量保存 |
+| 📦 商品与内容 | 页面与博客 | Pages + Blog Posts 双 Tab · 预览/编辑双模式 · SEO 预览卡片 · 内联 CRUD |
+| 📦 商品与内容 | Metafields 编辑器 | 11 种类型动态输入 · JSON 校验 · CSV 导入导出 · 按需 API 拉取 |
 | 💰 财务对账 | 广告成效与 MER | Meta/Google 实时消耗 · ROAS · MER% · 双轴 ComposedChart |
 | 💰 财务对账 | 网关渠道对账 | 多币种 gateway x currency 双重 GroupBy · 一键费率预设 · Donut + 明细 Table |
 | 💰 财务对账 | 供应链对账 | 采购/物流/广告三滑块 · Donut 利润饼图 · GMV 与毛利实时计算 |
-| ⚡ 核心控制 | 跨店改价控制 | 多店铺多规格商品库 · Accordion 子母表 · GraphQL 改价 + REST 库存覆盖 · 双轨隔离 |
 | 🛡️ 风控预警 | AI 智能诊断 | 全站 17 维指标打包 · DeepSeek-v4-pro 对接 · 三段式操盘手实战报告 |
 | 🛡️ 风控预警 | 账户风控雷达 | 退款率三色警报 · 呼吸灯动画 · 商品风控评级 Table |
-| 🏭 运营管理 | 订单管理中心 | 多条件筛选 · 批量操作 · 订单详情抽屉 · 标签/备注 · CSV 导出 |
-| 🏭 运营管理 | 客户管理 | RFM 筛选 · 客户详情 Sheet · 地址簿 · 订单历史联动 · 分群 CSV 导出 |
-| 🏭 运营管理 | 履约看板 | 三泳道拖拽履约 · 物流单号确认 · 超时预警红色边框 · 履约统计 KPI |
 
 ---
 
-## 🚀 当前稳定版本核心特性：v0.2.3.0 (订单与客户管理中心)
+## 🚀 当前稳定版本核心特性：v0.2.4.0 (商品内容与店铺装修管理)
 
-在 `v0.2.2.x` 风控防御网的基础上，本版补上了 Shopify 原生后台最薄弱的两环——**订单处理**和**客户管理**，
-让卖家在一个界面内完成从接单到履约的完整闭环，无需在 Shopify Admin 十几个页面间跳转。
+在 `v0.2.3.0` 订单与客户管理的基础上，本版补齐了 Shopify 原生后台的商品内容编辑和店铺装修能力，
+让卖家在一个界面内完成商品全字段编辑、批量操作、集合管理、导航菜单、页面博客、元字段配置。
 
-### 1. 订单管理中心 (OrderCenterPanel)
+### 1. 商品编辑器全面升级 (ProductControlPanel)
 
-- **多维度订单表格**：订单号、客户、金额（￥）、币种、支付/履约状态、下单时间、国家、商品数、标签，共 11 列可自定义显隐
-- **本地过滤引擎**：状态 / 日期范围 / 金额区间 / 国家下拉 / 商品关键词 / 物流状态，多条件组合筛选即时生效
-- **批量操作栏**：勾选多单 → 一键标记发货、取消、归档、添加标签、导出选中
-- **订单详情抽屉**：右侧 Sheet 滑出，展示客户信息 / 商品明细 / 支付信息 / 履约时间线 / 备注编辑
-- **CSV 导出**：当前筛选结果一键导出，11 列中文表头 + UTF-8 BOM
+- **详情编辑弹窗 4 Tab**：基本信息 / 图片管理 / SEO 元数据 / 变体编辑
+- 补齐 `descriptionHtml` 字段同步（修复 `bodyHtml` 命名不匹配 bug）
+- **图片管理 Tab**：真实渲染缩略图 + alt 文本编辑 + 拖拽排序
+- **描述预览/编辑双模式切换**：富文本渲染 + HTML 源码编辑
+- 供应商、品类、标签、SEO 标题/描述、URL 句柄全字段编辑
 
-### 2. 订单标签与备注 (OrderTags)
+### 2. 批量商品编辑引擎 (BulkEditPanel)
 
-- **标签管理**：Badge 列表展示现有标签，支持单独删除 + 输入新标签添加
-- **备注编辑**：Textarea 实时编辑 + 失焦 1 秒防抖自动保存
-- **快速标签模板**：预置「待审单」「已催付」「高价值客户」「疑似欺诈」「需要发票」一键添加
-- **颜色语义**：待审单-黄色、高价值-绿色、疑似欺诈-红色，自定义标签统一灰色
-- **双轨同步**：Demo 模式本地更新；真实模式通过 REST API 写回 Shopify `PUT /admin/api/2026-04/orders/{id}.json`
+- **左侧商品选择 + 右侧 4 Tab 操作区**：标题模板 / 描述替换 / SEO 批量 / 标签批量
+- 标题模板支持追加前缀/后缀、查找替换、完全替换
+- **实时预览修改前后对比**
+- 提交前变更摘要 + 进度条 + 失败详情汇总
+- **变量插入**：`{title}` `{price}` `{type}` 占位符
 
-### 3. 客户管理面板 (CustomerCenterPanel)
+### 3. 集合管理面板 (CollectionManagerPanel)
 
-- **客户列表**：姓名 / 邮箱 / 手机 / 国家 / 总消费（￥）/ 订单数 / 平均客单价 / 最近购买 / 标签 / 营销订阅
-- **多维筛选**：消费金额分段滑块 / 订单数档位 / 国家多选 / 最近购买时间范围 / 标签搜索，实时过滤
-- **客户详情 Sheet**：基本信息卡片 + 地址簿 Accordion + 订单历史列表 + 标签编辑 + 营销订阅 Toggle
-- **统计摘要**：顶部 4 KPI 卡片——总客户数 / 近 30 天新客 / 平均客户终身价值 / 回购率
-- **与订单面板联动**：客户详情中的订单历史，点击订单号直接跳转到订单详情 Sheet
+- **双 Tab**：智能集合（条件规则编辑器 AND/OR）+ 手动集合（商品挑选器拖拽排序）
+- **条件规则可视化**：字段下拉 × 比较符 × 值，动态增删行
+- SEO 编辑 + Google 搜索结果预览卡片
 
-### 4. 客户分群与一键导出 (export-utils)
+### 4. 导航菜单编辑器 (NavigationEditorPanel)
 
-- **筛选即导出**：「导出 N 位客户」按钮，导出当前筛选条件下的客户列表为 .csv
-- **通用导出模块 `lib/export-utils.ts`**：封装 `exportToCSV` / `exportCustomers` / `exportOrders` 三个工具函数
-- **重构 OverviewPanel 导出**：原有 11 列订单导出逻辑迁移至 export-utils 统一维护
-- **Demo 水印**：Demo 模式导出的 CSV 末尾追加「演示模式模拟数据」标识行
+- **树形菜单项编辑器**，支持三级嵌套
+- HTML5 Drag & Drop 拖拽排序/升降级
+- **添加菜单项弹窗**：链接类型选择器（首页/商品/集合/页面/博客/自定义）
+- 批量提交 diff 变更摘要
 
-### 5. 履约看板 (FulfillmentBoardPanel)
+### 5. 页面与博客管理 (ContentPagesPanel)
 
-- **三泳道 Trello 式看板**：待履约 | 部分履约 | 已履约，每列顶部显示订单数 Badge（颜色区分）
-- **订单卡片**：订单号 / 客户 / 金额 / 商品数 / 支付状态 / 标签 / 国家，超 24h 未履约红色左边框
-- **拖拽履约**：HTML5 原生 Drag & Drop，拖入「已履约」列弹出物流单号+物流公司确认对话框
-- **履约确认弹窗**：跟踪单号（必填）、物流公司（顺丰国际/云途/燕文/USPS/UPS/FedEx/DHL）、通知客户开关
-- **统计栏**：待履约数 / 今日已履约 / 超时未履约（>24h）/ 平均履约时长
+- **双 Tab**：页面 Pages / 博客文章 Blog Posts
+- 博客选择器 + 文章列表 + 内联编辑
+- 内容预览/编辑双模式 + SEO 预览卡片
+- 修复 blog 数据 API 对接（GraphQL→REST 降级 + selectedBlogId 匹配）
+
+### 6. Metafields 编辑器 (MetafieldsEditorPanel)
+
+- 商品/变体/集合三类型切换
+- **11 种类型动态输入控件**：文本/数字/布尔/JSON/颜色/URL/日期等
+- JSON 格式校验 + 批量 CSV 导入导出
+- 修复类型切换后数据丢失 bug（Record 多键状态保持）
+
+### 7. 侧边栏分类重构
+
+- 从 3 个臃肿大类重组为 **5 个按工作流划分的分类**：
+  📊 数据中心 → 🏪 订单与客户 → 📦 商品与内容 → 💰 财务对账 → 🛡️ 风控预警
 
 ---
 
@@ -247,7 +266,7 @@ Once the server is live, print a high-quality Chinese greeting message. Provide 
 - 2 家高保真虚拟店铺 (TechGear Pro 科技配饰 · MinimalHome 极简家居)
 - 跨越 14 天历史订单流 + 50+ 模拟客户 + 8 款多规格演示商品 · 18 个变体
 - 30 秒心跳爆单引擎，40% 概率生成 EUR/Stripe 虚拟订单
-- 无需 Shopify Token 即可 1 秒完整体验全部 13 个面板
+- 无需 Shopify Token 即可 1 秒完整体验全部 18 个面板
 
 ---
 
@@ -281,7 +300,7 @@ shopify-cn-dashboard/
 │   │   └── page.tsx                     # 店铺配置页 (含一键导入演示)
 │   ├── dashboard/
 │   │   ├── layout.tsx                   # SaaS 混合导航矩阵
-│   │   ├── page.tsx                     # 状态中心 + 13 面板条件渲染
+│   │   ├── page.tsx                     # 状态中心 + 18 面板条件渲染
 │   │   ├── config.ts                    # 全局常量
 │   │   ├── helpers.ts                   # 工具函数
 │   │   └── components/
@@ -295,6 +314,11 @@ shopify-cn-dashboard/
 │   │       ├── FunnelRetentionPanel.tsx  # 漏斗转化复购
 │   │       ├── AdPerformancePanel.tsx    # 广告成效
 │   │       ├── ProductControlPanel.tsx   # 跨店改价控制
+│   │       ├── BulkEditPanel.tsx          # 批量商品编辑引擎 [2.4]
+│   │       ├── CollectionManagerPanel.tsx # 集合管理 [2.4]
+│   │       ├── NavigationEditorPanel.tsx  # 导航菜单编辑器 [2.4]
+│   │       ├── ContentPagesPanel.tsx      # 页面与博客管理 [2.4]
+│   │       ├── MetafieldsEditorPanel.tsx  # 元字段编辑器 [2.4]
 │   │       ├── OrderCenterPanel.tsx      # 订单管理中心 [2.3]
 │   │       ├── OrderTags.tsx             # 订单标签/备注 [2.3]
 │   │       ├── CustomerCenterPanel.tsx   # 客户管理 [2.3]
@@ -362,7 +386,7 @@ npm run dev
 | 🎭 演示模式 | 点击「✨ 一键导入演示数据」，1 秒体验完整大屏 |
 | 🔗 真实店铺 | 输入 `your-store.myshopify.com` + Admin API Token |
 
-> Token 需 `read_orders`、`read_products`、`write_products`、`read_customers`、`write_orders` 权限。真实模式下系统 100% 读取 Shopify 2026-04 Stable API + GraphQL，绝不混入模拟逻辑。
+> Token 需 `read_orders`、`read_products`、`write_products`、`read_customers`、`write_orders` 权限。如需使用博客/页面/集合/导航管理，额外需要 `read_content`、`write_content` 权限。真实模式下系统 100% 读取 Shopify 2026-04 Stable API + GraphQL，绝不混入模拟逻辑。
 
 ### 6. 生产构建
 
@@ -386,8 +410,10 @@ npm run build && npm start
 
 ## 🏗 架构亮点
 
-- **双轨共存 (Dual-Track)**：Demo 沙盒与真实生产环境 100% 动态分流，13 个面板通过 `isDemo` 守卫 + Props 数据注入实现零混淆
-- **GraphQL + REST 双协议**：读走 GraphQL (products/markets)，改价走 GraphQL (productVariantsBulkUpdate)，改库存/履约走 REST (inventory_levels/set.json · fulfillments)，各取所长
+- **双轨共存 (Dual-Track)**：Demo 沙盒与真实生产环境 100% 动态分流，18 个面板通过 `isDemo` 守卫 + Props 数据注入实现零混淆
+- **GraphQL + REST 双协议**：读走 GraphQL (products/markets/blogs/pages/collections)，改价走 GraphQL (productVariantsBulkUpdate)，改库存/履约/导航/metaobjects 走 REST，各取所长
+- **全字段商品编辑器**：4 Tab 详情编辑弹窗，描述预览/源码双模式，图片缩略图+拖拽排序，SEO 元数据全字段
+- **批量编辑引擎**：标题/描述/SEO/标签四模板批量操作，实时预览+变更摘要+进度条
 - **Intl 原生汉化**：`Intl.DisplayNames(["zh-CN"], { type: "region" })` 零代码膨胀覆盖 249 个国家和地区
 - **多币种双重 GroupBy**：网关对账按 gateway x currency 聚合，USD/EUR/CAD/GBP 独立计费汇率
 - **DeepSeek-v4-pro 17 维诊断**：全站核心指标打包 JSON → 骨灰级操盘手 System Prompt → 三段式实战报告

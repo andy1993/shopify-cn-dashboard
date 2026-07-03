@@ -21,12 +21,16 @@ import {
   ShoppingBag,
   Users,
   Truck,
+  FolderTree,
+  Menu,
+  FileText,
+  Database,
 } from "lucide-react";
 import { cn } from "@/lib/utils";
 
 // ─── Context ───────────────────────────────────────────
 
-type MenuKey = "overview" | "ai" | "finance" | "risk" | "trend" | "aggregator" | "gateway" | "funnel" | "ad" | "product-control" | "orders" | "customers" | "fulfillment";
+type MenuKey = "overview" | "ai" | "finance" | "risk" | "trend" | "aggregator" | "gateway" | "funnel" | "ad" | "product-control" | "bulk-edit" | "orders" | "customers" | "fulfillment" | "collections" | "navigation" | "content-pages" | "metafields";
 
 interface DashboardContextValue {
   activeMenu: MenuKey;
@@ -59,31 +63,50 @@ interface NavCategory {
 const NAV_CATEGORIES: NavCategory[] = [
   {
     id: "data-center",
-    label: "📦 数据纵深中心",
-    icon: Layers,
+    label: "📊 数据中心",
+    icon: BarChart3,
     items: [
       { id: "aggregator", label: "全店聚合大盘", icon: Layers },
       { id: "trend", label: "趋势同比分析", icon: BarChart3 },
       { id: "funnel", label: "漏斗转化复购", icon: Repeat },
+    ],
+  },
+  {
+    id: "order-customer",
+    label: "🏪 订单与客户",
+    icon: ShoppingBag,
+    items: [
       { id: "orders", label: "订单管理中心", icon: ShoppingBag },
       { id: "customers", label: "客户管理中心", icon: Users },
       { id: "fulfillment", label: "履约看板", icon: Truck },
     ],
   },
   {
+    id: "product-content",
+    label: "📦 商品与内容",
+    icon: Package,
+    items: [
+      { id: "product-control", label: "跨店改价控制", icon: Zap },
+      { id: "bulk-edit", label: "批量编辑面板", icon: Layers },
+      { id: "collections", label: "集合管理", icon: FolderTree },
+      { id: "navigation", label: "导航菜单编辑", icon: Menu },
+      { id: "content-pages", label: "页面与博客", icon: FileText },
+      { id: "metafields", label: "Metafields 编辑器", icon: Database },
+    ],
+  },
+  {
     id: "finance-center",
-    label: "💰 财务与流量对账",
+    label: "💰 财务对账",
     icon: DollarSign,
     items: [
       { id: "ad", label: "广告成效与 MER", icon: TrendingUp },
-      { id: "product-control", label: "跨店改价控制", icon: Zap },
       { id: "gateway", label: "网关渠道对账", icon: Landmark },
       { id: "finance", label: "供应链对账", icon: Coins },
     ],
   },
   {
     id: "risk-center",
-    label: "🛡️ 风控预警中心",
+    label: "🛡️ 风控预警",
     icon: Shield,
     items: [
       { id: "ai", label: "AI 智能诊断", icon: Brain },
@@ -102,7 +125,7 @@ export default function DashboardLayout({
   const router = useRouter();
   const [activeMenu, setActiveMenu] = useState<MenuKey>("overview");
   const [expandedCategories, setExpandedCategories] = useState<Set<string>>(
-    new Set(["data-center", "finance-center", "risk-center"]),
+    new Set(["data-center", "order-customer", "product-content", "finance-center", "risk-center"]),
   );
   const [soonMsg, setSoonMsg] = useState<string | null>(null);
 
@@ -139,7 +162,7 @@ export default function DashboardLayout({
                 Shopify CN Pro
               </p>
               <p className="text-[10px] font-medium text-zinc-500">
-                v0.2.1-beta · MVP 2.0
+                v0.2.4.0-beta · MVP 2.4
               </p>
             </div>
           </div>

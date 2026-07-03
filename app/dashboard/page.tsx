@@ -19,6 +19,11 @@ import ProductControlPanel from "./components/ProductControlPanel";
 import OrderCenterPanel from "./components/OrderCenterPanel";
 import CustomerCenterPanel from "./components/CustomerCenterPanel";
 import FulfillmentBoardPanel from "./components/FulfillmentBoardPanel";
+import BulkEditPanel from "./components/BulkEditPanel";
+import CollectionManagerPanel from "./components/CollectionManagerPanel";
+import NavigationEditorPanel from "./components/NavigationEditorPanel";
+import ContentPagesPanel from "./components/ContentPagesPanel";
+import MetafieldsEditorPanel from "./components/MetafieldsEditorPanel";
 
 // ─── Types ────────────────────────────────────────────
 
@@ -36,8 +41,11 @@ interface DashboardData {
   holidaysData: Record<string, Array<{ date: string; localName: string; name: string; countryCode: string }>>;
   topCountries: string[]; lastUpdated: string;
   fullProducts?: Array<{
-    id: number; title: string; status: string; image: string | null; shopName: string; isDemo: boolean;
-    variants: Array<{ variantId: number; name: string; sku: string; price: string; inventory: number; productId?: string; inventoryItemId?: string }>;
+    id: number; title: string; handle: string; descriptionHtml: string; vendor: string; productType: string;
+    status: string; tags: string[]; image: string | null; shopName: string; isDemo: boolean;
+    seoTitle: string; seoDescription: string;
+    images: Array<{ id: string; src: string; alt: string; width: number; height: number }>;
+    variants: Array<{ variantId: number; name: string; sku: string; price: string; compareAtPrice: string | null; inventory: number; productId?: string; inventoryItemId?: string }>;
   }>;
   customers?: Array<{
     id: number; email: string; first_name: string; last_name: string; phone: string | null;
@@ -47,6 +55,13 @@ interface DashboardData {
     addresses?: Array<{ address1: string; address2?: string; city: string; province: string; country: string; zip: string; default: boolean }>;
     recent_orders?: Array<{ id: number; order_number: string; total_price: number; created_at: string; financial_status: string }>;
   }>;
+  collections?: {
+    smart: Array<{ id: number; title: string; handle: string; body_html: string; published: boolean; products_count: number; sort_order: string; rules: Array<{ column: string; relation: string; condition: string }>; updated_at: string }>;
+    custom: Array<{ id: number; title: string; handle: string; body_html: string; published: boolean; products_count: number; sort_order: string; updated_at: string }>;
+  } | null;
+  menus?: Array<{ id: number; title: string; handle: string; items: Array<{ id: number; title: string; url: string; type: string; parent_id: number | null; position: number }> }>;
+  pages?: Array<{ id: number; title: string; handle: string; bodyHtml: string; published: boolean; seoTitle: string; seoDescription: string; created_at: string; updated_at: string }>;
+  blogs?: Array<{ id: number; title: string; handle: string; articles: Array<{ id: number; title: string; handle: string; bodyHtml: string; summaryHtml: string; author: string; tags: string[]; published: boolean; seoTitle: string; seoDescription: string; createdAt: string; updatedAt: string }> }>;
 }
 
 interface DiagnosisReport { overview: string; conversionAnalysis: string; inventoryAlerts: string[]; recommendations: string[]; riskLevel: "low" | "medium" | "high"; }
@@ -414,10 +429,16 @@ export default function DashboardPage() {
       {activeMenu === "product-control" && (
         <ProductControlPanel
           isDemo={!!currentStore?.isDemo}
-          currentStore={currentStore}
-          shopName={data.shopName}
           stores={stores}
           fullProducts={data.fullProducts}
+        />
+      )}
+      {activeMenu === "bulk-edit" && (
+        <BulkEditPanel
+          products={data.fullProducts ?? []}
+          isDemo={!!currentStore?.isDemo}
+          shopUrl={currentStore?.shopUrl || ""}
+          accessToken={currentStore?.accessToken || ""}
         />
       )}
       {activeMenu === "orders" && (
@@ -458,6 +479,43 @@ export default function DashboardPage() {
           shopUrl={currentStore?.shopUrl || ""}
           accessToken={currentStore?.accessToken || ""}
           shopName={data.shopName}
+        />
+      )}
+      {activeMenu === "collections" && (
+        <CollectionManagerPanel
+          isDemo={!!currentStore?.isDemo}
+          collections={data.collections ?? null}
+          shopUrl={currentStore?.shopUrl || ""}
+          accessToken={currentStore?.accessToken || ""}
+          shopName={data.shopName}
+        />
+      )}
+      {activeMenu === "navigation" && (
+        <NavigationEditorPanel
+          isDemo={!!currentStore?.isDemo}
+          menus={data.menus ?? []}
+          shopUrl={currentStore?.shopUrl || ""}
+          accessToken={currentStore?.accessToken || ""}
+          shopName={data.shopName}
+        />
+      )}
+      {activeMenu === "content-pages" && (
+        <ContentPagesPanel
+          isDemo={!!currentStore?.isDemo}
+          shopUrl={currentStore?.shopUrl || ""}
+          accessToken={currentStore?.accessToken || ""}
+          shopName={data.shopName}
+          pages={data.pages}
+          blogs={data.blogs}
+        />
+      )}
+      {activeMenu === "metafields" && (
+        <MetafieldsEditorPanel
+          isDemo={!!currentStore?.isDemo}
+          shopUrl={currentStore?.shopUrl || ""}
+          accessToken={currentStore?.accessToken || ""}
+          shopName={data.shopName}
+          fullProducts={data.fullProducts}
         />
       )}
     </div>
