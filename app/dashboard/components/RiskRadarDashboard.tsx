@@ -410,7 +410,7 @@ export default function RiskRadarDashboard({
     if (!isDemo) return [];
     return [
       generateDemoRiskProfile(shopName, false),
-      generateDemoRiskProfile("AGAIC POWER Official", true),
+      generateDemoRiskProfile("MinimalHome", true),
     ];
   }, [isDemo, shopName]);
 
@@ -486,7 +486,7 @@ export default function RiskRadarDashboard({
         </h2>
         <p className="mt-1 text-sm text-muted-foreground">
           {isDemo ? "多店风控推演 (演示模式)" : shopName} · 滚动纠纷率 · Merchant Review · 拒付追踪
-          {isDemo && <span className="ml-2 text-xs text-amber-400">(包含 AGAIC POWER Official 高危风控演示数据)</span>}
+          {isDemo && <span className="ml-2 text-xs text-amber-400">(包含 MinimalHome 高危风控演示数据)</span>}
         </p>
       </div>
 
