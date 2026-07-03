@@ -72,6 +72,24 @@ interface DashboardSuccess {
   holidaysData: Record<string, NagerHoliday[]>;
   /** Top 3 shipping destination countries */
   topCountries: string[];
+  /** Full product catalog via GraphQL (with variants, only for real stores) */
+  fullProducts?: Array<{
+    id: number;
+    title: string;
+    status: string;
+    image: string | null;
+    shopName: string;
+    isDemo: boolean;
+    variants: Array<{
+      variantId: number;
+      name: string;
+      sku: string;
+      price: string;
+      inventory: number;
+      productId: string;
+      inventoryItemId: string;
+    }>;
+  }>;
 }
 
 interface NagerHoliday {
@@ -288,6 +306,111 @@ async function fetchActiveMarketCountries(
     return [];
   }
   return result;
+}
+
+/**
+ * Fetch full product catalog via Shopify GraphQL Admin API.
+ * Returns product list with variants (id, title, SKU, price, inventory).
+ */
+async function fetchFullProducts(
+  shopUrl: string,
+  accessToken: string,
+  shopName: string,
+): Promise<DashboardSuccess["fullProducts"]> {
+  const GQL_URL = `https://${shopUrl}/admin/api/${SHOPIFY_API_VERSION}/graphql.json`;
+  const query = `{
+    products(first: 50) {
+      nodes {
+        id
+        title
+        status
+        images(first: 1) { nodes { url } }
+        variants(first: 20) {
+          nodes {
+            id
+            title
+            sku
+            price
+            inventoryQuantity
+            product { id }
+            inventoryItem { id }
+          }
+        }
+      }
+    }
+  }`;
+
+  const res = await fetch(GQL_URL, {
+    method: "POST",
+    headers: {
+      "X-Shopify-Access-Token": accessToken,
+      "Content-Type": "application/json",
+    },
+    body: JSON.stringify({ query }),
+    signal: AbortSignal.timeout(20000),
+  });
+
+  if (!res.ok) {
+    console.warn("[shopify/dashboard] GraphQL products fetch failed:", res.status);
+    return undefined;
+  }
+
+  const data = await res.json() as {
+    data?: {
+      products?: {
+        nodes?: Array<{
+          id: string;
+          title: string;
+          status: string;
+          images?: { nodes?: Array<{ url: string }> };
+          variants?: {
+            nodes?: Array<{
+              id: string;
+              title: string;
+              sku: string | null;
+              price: string;
+              inventoryQuantity: number;
+              product?: { id: string };
+              inventoryItem?: { id: string };
+            }>;
+          };
+        }>;
+      };
+    };
+    errors?: Array<{ message: string }>;
+  };
+
+  if (data.errors?.length) {
+    console.warn("[shopify/dashboard] GraphQL products errors:", data.errors[0].message);
+    return undefined;
+  }
+
+  const nodes = data.data?.products?.nodes ?? [];
+  if (nodes.length === 0) return undefined;
+
+  return nodes.map((p) => {
+    const gid = p.id.replace(/\D/g, "");
+    return {
+      id: Number(gid),
+      title: p.title,
+      status: p.status,
+      image: p.images?.nodes?.[0]?.url ?? null,
+      shopName,
+      isDemo: false,
+      variants: (p.variants?.nodes ?? []).map((v) => {
+        const vgid = v.id.replace(/\D/g, "");
+        return {
+          variantId: Number(vgid),
+          name: v.title || "默认",
+          sku: v.sku ?? `SKU-${vgid}`,
+          price: v.price,
+          inventory: v.inventoryQuantity,
+          productId: v.product?.id ?? p.id,
+          inventoryItemId: v.inventoryItem?.id ?? "",
+        };
+      }).filter((v) => v.price !== "0.00" || v.inventory > 0),
+    };
+  });
 }
 
 /**
@@ -654,6 +777,9 @@ export async function GET(request: NextRequest) {
       }
     }
 
+    // ─ Step 7b: Fetch full product catalog via GraphQL (for ProductControlPanel) ─
+    const fullProducts = await fetchFullProducts(shopUrl, accessToken, shop.name);
+
     // ─ Step 8: Conversion rate ─
     // NOTE: Shopify REST API does not expose visitor data.
     // Accurate conversion rate requires the Analytics API or custom tracking.
@@ -696,6 +822,7 @@ export async function GET(request: NextRequest) {
       orders: compactOrders,
       holidaysData,
       topCountries: safeCountries,
+      fullProducts,
       lastUpdated: new Date().toISOString(),
     };
 
@@ -713,13 +840,140 @@ export async function GET(request: NextRequest) {
 }
 
 // ═══════════════════════════════════════════════════════
-// POST /api/shopify/dashboard — AI 智能诊断
+// Product Variant Update — Shopify GraphQL mutation
+// ═══════════════════════════════════════════════════════
+
+async function handleProductVariantUpdate(
+  shopUrl: string,
+  accessToken: string,
+  variantId: number,
+  productId: string,
+  inventoryItemId: string,
+  newPrice?: number,
+  newInventory?: number,
+  inventoryDelta?: number,
+): Promise<NextResponse> {
+  const GQL_URL = "https://" + shopUrl + "/admin/api/" + SHOPIFY_API_VERSION + "/graphql.json";
+
+  let success = true;
+
+  // Step 1: Update price via productVariantsBulkUpdate (2026-04 standard)
+  if (newPrice !== undefined && newPrice > 0) {
+    const priceMutation = "mutation bulkUpdateVariant($productId: ID!, $variants: [ProductVariantsBulkInput!]!) { productVariantsBulkUpdate(productId: $productId, variants: $variants) { productVariants { id price } userErrors { field message } } }";
+    const priceVariables = {
+      productId: productId,
+      variants: [{ id: "gid://shopify/ProductVariant/" + variantId, price: String(newPrice) }],
+    };
+
+    try {
+      const res = await fetch(GQL_URL, {
+        method: "POST",
+        headers: { "X-Shopify-Access-Token": accessToken, "Content-Type": "application/json" },
+        body: JSON.stringify({ query: priceMutation, variables: priceVariables }),
+        signal: AbortSignal.timeout(15000),
+      });
+
+      if (!res.ok) {
+        return NextResponse.json({ success: false, error: "改价请求失败 HTTP " + res.status }, { status: 502 });
+      }
+
+      const data = await res.json() as {
+        data?: { productVariantsBulkUpdate?: { userErrors?: Array<{ message: string }> } };
+        errors?: Array<{ message: string }>;
+      };
+
+      if (data.errors?.length) {
+        return NextResponse.json({ success: false, error: "GraphQL 错误: " + data.errors[0].message }, { status: 502 });
+      }
+
+      const ue = data.data?.productVariantsBulkUpdate?.userErrors;
+      if (ue && ue.length > 0) {
+        const msg = ue[0].message;
+        if (msg.toLowerCase().includes("access") || msg.toLowerCase().includes("scope")) {
+          return NextResponse.json({ success: false, error: "请确认 Custom App 已勾选 write_products Admin API 写入权限" }, { status: 403 });
+        }
+        return NextResponse.json({ success: false, error: "Shopify 拒绝: " + msg }, { status: 400 });
+      }
+    } catch (err) {
+      success = false;
+      console.error("[shopify/dashboard] price update error:", err);
+    }
+  }
+
+  // Step 2: Update inventory via REST Admin API (stable, all API versions)
+  if (newInventory !== undefined && inventoryItemId) {
+    // Extract numeric IDs from GID strings
+    const inventoryItemNum = inventoryItemId.replace(/\D/g, "");
+
+    // Fetch default location numeric ID
+    let locationNum = "";
+    try {
+      const locQuery = "{ locations(first: 1) { nodes { id } } }";
+      const locRes = await fetch(GQL_URL, {
+        method: "POST",
+        headers: { "X-Shopify-Access-Token": accessToken, "Content-Type": "application/json" },
+        body: JSON.stringify({ query: locQuery }),
+        signal: AbortSignal.timeout(10000),
+      });
+      if (locRes.ok) {
+        const locData = await locRes.json() as { data?: { locations?: { nodes?: Array<{ id: string }> } } };
+        locationNum = (locData.data?.locations?.nodes?.[0]?.id ?? "").replace(/\D/g, "");
+      }
+    } catch { /* continue */ }
+
+    if (!locationNum || !inventoryItemNum) {
+      success = false;
+      console.error("[shopify/dashboard] could not resolve location/inventory IDs for REST call");
+    } else {
+      const REST_URL = "https://" + shopUrl + "/admin/api/" + SHOPIFY_API_VERSION + "/inventory_levels/set.json";
+      try {
+        const res = await fetch(REST_URL, {
+          method: "POST",
+          headers: {
+            "X-Shopify-Access-Token": accessToken,
+            "Content-Type": "application/json",
+          },
+          body: JSON.stringify({
+            location_id: Number(locationNum),
+            inventory_item_id: Number(inventoryItemNum),
+            available: newInventory,
+          }),
+          signal: AbortSignal.timeout(15000),
+        });
+
+        if (!res.ok) {
+          const errBody = await res.text().catch(() => "");
+          return NextResponse.json({ success: false, error: "库存 REST 更新失败 HTTP " + res.status + ": " + errBody.slice(0, 100) }, { status: 502 });
+        }
+      } catch (err) {
+        success = false;
+        console.error("[shopify/dashboard] REST inventory error:", err);
+      }
+    }
+  }
+
+  if (!success) return NextResponse.json({ success: false, error: "部分更新失败，请重试" }, { status: 500 });
+  return NextResponse.json({ success: true });
+}
+
+// ═══════════════════════════════════════════════════════
+// POST /api/shopify/dashboard — 双轨路由器
+//   • action="updateProductVariant" → Shopify GraphQL 写操作
+//   • 其他 → AI 智能诊断
 // ═══════════════════════════════════════════════════════
 
 export async function POST(request: NextRequest) {
   try {
     const body = await request.json() as {
+      action?: string;
       shopUrl?: string;
+      accessToken?: string;
+      variantId?: number;
+      productId?: string;
+      inventoryItemId?: string;
+      newPrice?: number;
+      newInventory?: number;
+      inventoryDelta?: number;
       isDemo?: boolean;
       metrics?: {
         shopName: string;
@@ -747,6 +1001,22 @@ export async function POST(request: NextRequest) {
         newCustomerPct: number;
       };
     };
+
+    // ═════════════════════════════════════════════════════
+    // 写操作路由: Shopify GraphQL productVariantUpdate
+    // ═════════════════════════════════════════════════════
+    if (body.action === "updateProductVariant" && body.shopUrl && body.accessToken && body.variantId) {
+      return await handleProductVariantUpdate(
+        body.shopUrl,
+        body.accessToken,
+        body.variantId,
+        body.productId || "",
+        body.inventoryItemId || "",
+        body.newPrice,
+        body.newInventory,
+        body.inventoryDelta,
+      );
+    }
 
     const isDemo = body.isDemo || !!body.shopUrl?.includes("demo");
     const m = body.metrics;

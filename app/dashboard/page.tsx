@@ -15,6 +15,7 @@ import MultiStoreAggregator from "./components/MultiStoreAggregator";
 import GatewayFinancePanel from "./components/GatewayFinancePanel";
 import FunnelRetentionPanel from "./components/FunnelRetentionPanel";
 import AdPerformancePanel from "./components/AdPerformancePanel";
+import ProductControlPanel from "./components/ProductControlPanel";
 
 // ─── Types ────────────────────────────────────────────
 
@@ -31,6 +32,10 @@ interface DashboardData {
   }>;
   holidaysData: Record<string, Array<{ date: string; localName: string; name: string; countryCode: string }>>;
   topCountries: string[]; lastUpdated: string;
+  fullProducts?: Array<{
+    id: number; title: string; status: string; image: string | null; shopName: string; isDemo: boolean;
+    variants: Array<{ variantId: number; name: string; sku: string; price: string; inventory: number; productId?: string; inventoryItemId?: string }>;
+  }>;
 }
 
 interface DiagnosisReport { overview: string; conversionAnalysis: string; inventoryAlerts: string[]; recommendations: string[]; riskLevel: "low" | "medium" | "high"; }
@@ -382,6 +387,15 @@ export default function DashboardPage() {
           currency={data.currency}
           isDemo={!!currentStore?.isDemo}
           shopName={data.shopName}
+        />
+      )}
+      {activeMenu === "product-control" && (
+        <ProductControlPanel
+          isDemo={!!currentStore?.isDemo}
+          currentStore={currentStore}
+          shopName={data.shopName}
+          stores={stores}
+          fullProducts={data.fullProducts}
         />
       )}
     </div>

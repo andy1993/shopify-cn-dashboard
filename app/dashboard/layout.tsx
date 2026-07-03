@@ -23,7 +23,7 @@ import { cn } from "@/lib/utils";
 
 // ─── Context ───────────────────────────────────────────
 
-type MenuKey = "overview" | "ai" | "finance" | "risk" | "trend" | "aggregator" | "gateway" | "funnel" | "ad";
+type MenuKey = "overview" | "ai" | "finance" | "risk" | "trend" | "aggregator" | "gateway" | "funnel" | "ad" | "product-control";
 
 interface DashboardContextValue {
   activeMenu: MenuKey;
@@ -70,6 +70,7 @@ const NAV_CATEGORIES: NavCategory[] = [
     icon: DollarSign,
     items: [
       { id: "ad", label: "广告成效与 MER", icon: TrendingUp },
+      { id: "product-control", label: "跨店改价控制", icon: Zap },
       { id: "gateway", label: "网关渠道对账", icon: Landmark },
       { id: "finance", label: "供应链对账", icon: Coins },
     ],
