@@ -90,6 +90,15 @@ interface DashboardSuccess {
       inventoryItemId: string;
     }>;
   }>;
+  /** Customer list (real stores only) */
+  customers?: Array<{
+    id: number; email: string; first_name: string; last_name: string; phone: string | null;
+    orders_count: number; total_spent: number; currency: string; created_at: string; updated_at: string;
+    state: string; tags: string; accepts_marketing: boolean;
+    default_address?: { address1: string; address2?: string; city: string; province: string; country: string; zip: string };
+    addresses?: Array<{ address1: string; address2?: string; city: string; province: string; country: string; zip: string; default: boolean }>;
+    recent_orders?: Array<{ id: number; order_number: string; total_price: number; created_at: string; financial_status: string }>;
+  }>;
 }
 
 interface NagerHoliday {
@@ -409,6 +418,76 @@ async function fetchFullProducts(
           inventoryItemId: v.inventoryItem?.id ?? "",
         };
       }).filter((v) => v.price !== "0.00" || v.inventory > 0),
+    };
+  });
+}
+
+/**
+ * Fetch customers with auto-pagination via Link header.
+ */
+async function fetchCustomers(shopUrl: string, accessToken: string): Promise<DashboardSuccess["customers"]> {
+  const results: Array<Record<string, unknown>> = [];
+  let url = "https://" + shopUrl + "/admin/api/" + SHOPIFY_API_VERSION + "/customers.json?limit=250";
+
+  try {
+    while (url) {
+      const res = await fetch(url, {
+        headers: { "X-Shopify-Access-Token": accessToken },
+        signal: AbortSignal.timeout(15000),
+      });
+      if (!res.ok) {
+        console.warn("[shopify/dashboard] customers fetch failed:", res.status);
+        return undefined;
+      }
+      const data = await res.json() as { customers?: Array<Record<string, unknown>> };
+      if (data.customers) results.push(...data.customers);
+      // Check Link header for pagination
+      const link = res.headers.get("link");
+      const nextMatch = link?.match(/<([^>]+)>;\s*rel="next"/);
+      url = nextMatch ? nextMatch[1] : "";
+    }
+  } catch (err) {
+    console.warn("[shopify/dashboard] customers fetch error:", err instanceof Error ? err.message : err);
+    return undefined;
+  }
+
+  if (results.length === 0) return undefined;
+
+  return results.map((c: Record<string, unknown>) => {
+    const addr = c.default_address as Record<string, unknown> | undefined;
+    const addrs = c.addresses as Array<Record<string, unknown>> | undefined;
+    return {
+      id: c.id as number,
+      email: (c.email as string) || "",
+      first_name: (c.first_name as string) || "",
+      last_name: (c.last_name as string) || "",
+      phone: (c.phone as string) || null,
+      orders_count: (c.orders_count as number) || 0,
+      total_spent: parseFloat((c.total_spent as string) || "0"),
+      currency: (c.currency as string) || "USD",
+      created_at: (c.created_at as string) || "",
+      updated_at: (c.updated_at as string) || "",
+      state: (c.state as string) || "enabled",
+      tags: (c.tags as string) || "",
+      accepts_marketing: !!c.accepts_marketing,
+      default_address: addr ? {
+        address1: (addr.address1 as string) || "",
+        address2: addr.address2 as string,
+        city: (addr.city as string) || "",
+        province: (addr.province as string) || "",
+        country: (addr.country as string) || "",
+        zip: (addr.zip as string) || "",
+      } : undefined,
+      addresses: addrs?.map((a: Record<string, unknown>) => ({
+        address1: (a.address1 as string) || "",
+        address2: a.address2 as string,
+        city: (a.city as string) || "",
+        province: (a.province as string) || "",
+        country: (a.country as string) || "",
+        zip: (a.zip as string) || "",
+        default: !!a.default,
+      })),
+      recent_orders: [],
     };
   });
 }
@@ -780,6 +859,9 @@ export async function GET(request: NextRequest) {
     // ─ Step 7b: Fetch full product catalog via GraphQL (for ProductControlPanel) ─
     const fullProducts = await fetchFullProducts(shopUrl, accessToken, shop.name);
 
+    // ─ Step 7c: Fetch customers ─
+    const customers = await fetchCustomers(shopUrl, accessToken);
+
     // ─ Step 8: Conversion rate ─
     // NOTE: Shopify REST API does not expose visitor data.
     // Accurate conversion rate requires the Analytics API or custom tracking.
@@ -823,6 +905,7 @@ export async function GET(request: NextRequest) {
       holidaysData,
       topCountries: safeCountries,
       fullProducts,
+      customers,
       lastUpdated: new Date().toISOString(),
     };
 
@@ -957,6 +1040,142 @@ async function handleProductVariantUpdate(
 }
 
 // ═══════════════════════════════════════════════════════
+// Order Tags Update — Shopify REST API
+// ═══════════════════════════════════════════════════════
+
+async function handleOrderTagsUpdate(
+  shopUrl: string,
+  accessToken: string,
+  orderId: number,
+  tags: string[],
+): Promise<NextResponse> {
+  const url = "https://" + shopUrl + "/admin/api/" + SHOPIFY_API_VERSION + "/orders/" + orderId + ".json";
+  const tagString = tags.join(", ");
+
+  try {
+    const res = await fetch(url, {
+      method: "PUT",
+      headers: {
+        "X-Shopify-Access-Token": accessToken,
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify({ order: { id: orderId, tags: tagString } }),
+      signal: AbortSignal.timeout(10000),
+    });
+
+    if (!res.ok) {
+      if (res.status === 401) return NextResponse.json({ success: false, error: "Token 已过期或无效，请重新绑定店铺" }, { status: 401 });
+      if (res.status === 404) return NextResponse.json({ success: false, error: "订单不存在或已被删除" }, { status: 404 });
+      if (res.status === 429) return NextResponse.json({ success: false, error: "请求过于频繁，请稍后重试" }, { status: 429 });
+      return NextResponse.json({ success: false, error: "标签更新失败 HTTP " + res.status }, { status: 502 });
+    }
+
+    return NextResponse.json({ success: true });
+  } catch (err) {
+    const msg = err instanceof Error ? err.message : "未知错误";
+    console.error("[shopify/dashboard] orderTags update error:", msg);
+    return NextResponse.json({ success: false, error: "标签更新失败: " + msg }, { status: 500 });
+  }
+}
+
+// ═══════════════════════════════════════════════════════
+// Order Note Update — Shopify REST API
+// ═══════════════════════════════════════════════════════
+
+async function handleOrderNoteUpdate(
+  shopUrl: string,
+  accessToken: string,
+  orderId: number,
+  note: string,
+): Promise<NextResponse> {
+  const url = "https://" + shopUrl + "/admin/api/" + SHOPIFY_API_VERSION + "/orders/" + orderId + ".json";
+
+  try {
+    const res = await fetch(url, {
+      method: "PUT",
+      headers: {
+        "X-Shopify-Access-Token": accessToken,
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify({ order: { id: orderId, note } }),
+      signal: AbortSignal.timeout(10000),
+    });
+
+    if (!res.ok) {
+      if (res.status === 401) return NextResponse.json({ success: false, error: "Token 已过期或无效，请重新绑定店铺" }, { status: 401 });
+      if (res.status === 404) return NextResponse.json({ success: false, error: "订单不存在或已被删除" }, { status: 404 });
+      if (res.status === 429) return NextResponse.json({ success: false, error: "请求过于频繁，请稍后重试" }, { status: 429 });
+      return NextResponse.json({ success: false, error: "备注更新失败 HTTP " + res.status }, { status: 502 });
+    }
+
+    return NextResponse.json({ success: true });
+  } catch (err) {
+    const msg = err instanceof Error ? err.message : "未知错误";
+    console.error("[shopify/dashboard] orderNote update error:", msg);
+    return NextResponse.json({ success: false, error: "备注更新失败: " + msg }, { status: 500 });
+  }
+}
+
+// ═══════════════════════════════════════════════════════
+// Create Fulfillment — Shopify REST API
+// ═══════════════════════════════════════════════════════
+
+async function handleCreateFulfillment(
+  shopUrl: string,
+  accessToken: string,
+  orderId: number,
+  trackingNumber: string,
+  trackingCompany: string,
+  notifyCustomer: boolean,
+  lineItemIds?: number[],
+): Promise<NextResponse> {
+  const url = "https://" + shopUrl + "/admin/api/" + SHOPIFY_API_VERSION + "/orders/" + orderId + "/fulfillments.json";
+
+  try {
+    const body: Record<string, unknown> = {
+      fulfillment: {
+        tracking_number: trackingNumber,
+        tracking_company: trackingCompany,
+        notify_customer: notifyCustomer,
+      },
+    };
+
+    if (lineItemIds && lineItemIds.length > 0) {
+      (body.fulfillment as Record<string, unknown>).line_items = lineItemIds.map((id) => ({ id }));
+    }
+
+    const res = await fetch(url, {
+      method: "POST",
+      headers: {
+        "X-Shopify-Access-Token": accessToken,
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify(body),
+      signal: AbortSignal.timeout(15000),
+    });
+
+    if (!res.ok) {
+      if (res.status === 401) return NextResponse.json({ success: false, error: "Token 已过期或无效，请重新绑定店铺" }, { status: 401 });
+      if (res.status === 404) return NextResponse.json({ success: false, error: "订单不存在或已被删除" }, { status: 404 });
+      if (res.status === 422) {
+        const errData = await res.json().catch(() => ({})) as Record<string, unknown>;
+        const msg = String((errData as any)?.errors ?? "");
+        if (msg.includes("already fulfilled") || msg.includes("fulfill")) return NextResponse.json({ success: false, error: "该订单已完成全部履约" }, { status: 400 });
+        if (msg.includes("inventory") || msg.includes("stock") || msg.includes("not enough")) return NextResponse.json({ success: false, error: "该商品库存不足以完成履约" }, { status: 400 });
+        return NextResponse.json({ success: false, error: "履约失败: " + msg.slice(0, 100) }, { status: 400 });
+      }
+      return NextResponse.json({ success: false, error: "履约创建失败 HTTP " + res.status }, { status: 502 });
+    }
+
+    return NextResponse.json({ success: true });
+  } catch (err) {
+    const msg = err instanceof Error ? err.message : "未知错误";
+    console.error("[shopify/dashboard] createFulfillment error:", msg);
+    return NextResponse.json({ success: false, error: "履约创建失败: " + msg }, { status: 500 });
+  }
+}
+
+// ═══════════════════════════════════════════════════════
 // POST /api/shopify/dashboard — 双轨路由器
 //   • action="updateProductVariant" → Shopify GraphQL 写操作
 //   • 其他 → AI 智能诊断
@@ -974,6 +1193,13 @@ export async function POST(request: NextRequest) {
       newPrice?: number;
       newInventory?: number;
       inventoryDelta?: number;
+      orderId?: number;
+      tags?: string[];
+      note?: string;
+      trackingNumber?: string;
+      trackingCompany?: string;
+      notifyCustomer?: boolean;
+      lineItemIds?: number[];
       isDemo?: boolean;
       metrics?: {
         shopName: string;
@@ -1015,6 +1241,35 @@ export async function POST(request: NextRequest) {
         body.newPrice,
         body.newInventory,
         body.inventoryDelta,
+      );
+    }
+
+    // ═════════════════════════════════════════════════════
+    // 写操作路由: 订单标签更新
+    // ═════════════════════════════════════════════════════
+    if (body.action === "updateOrderTags" && body.shopUrl && body.accessToken && body.orderId && body.tags) {
+      return await handleOrderTagsUpdate(body.shopUrl, body.accessToken, body.orderId, body.tags);
+    }
+
+    // ═════════════════════════════════════════════════════
+    // 写操作路由: 订单备注更新
+    // ═════════════════════════════════════════════════════
+    if (body.action === "updateOrderNote" && body.shopUrl && body.accessToken && body.orderId) {
+      return await handleOrderNoteUpdate(body.shopUrl, body.accessToken, body.orderId, body.note || "");
+    }
+
+    // ═════════════════════════════════════════════════════
+    // 写操作路由: 创建履约
+    // ═════════════════════════════════════════════════════
+    if (body.action === "createFulfillment" && body.shopUrl && body.accessToken && body.orderId) {
+      return await handleCreateFulfillment(
+        body.shopUrl,
+        body.accessToken,
+        body.orderId,
+        body.trackingNumber || "",
+        body.trackingCompany || "USPS",
+        body.notifyCustomer ?? true,
+        body.lineItemIds,
       );
     }
 

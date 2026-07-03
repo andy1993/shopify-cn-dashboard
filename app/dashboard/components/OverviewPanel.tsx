@@ -50,6 +50,7 @@ import {
   SheetFooter,
 } from "@/components/ui/sheet";
 import { formatCny, formatTimeAgo, getInventoryBadge, findNearestHoliday, getCountdown } from "../helpers";
+import { exportToCSV } from "@/lib/export-utils";
 
 // ─── Types ────────────────────────────────────────────
 
@@ -218,6 +219,10 @@ export default function OverviewPanel(props: OverviewPanelProps) {
   const [chartData, setChartData] = useState<ChartPoint[]>(initCharts);
   const [localProducts, setLocalProducts] = useState<Product[]>(initialData.products.map((p) => ({ ...p })));
   const [flashIds, setFlashIds] = useState<Set<number>>(new Set());
+
+  const handleExport = () => {
+    buildOrderExport(localOrders, exchangeRate, initialData.shopName, cogsRate, shippingRate, marketingRate);
+  };
 
   const nextOrderIdRef = useRef(Math.max(...initialData.orders.map((o) => o.id), 0) + 1);
   const localProductsRef = useRef(localProducts);
@@ -412,7 +417,7 @@ export default function OverviewPanel(props: OverviewPanelProps) {
           <Button size="sm" onClick={() => setSheetOpen(true)} className="relative gap-1.5 overflow-hidden border border-amber-500/40 bg-gradient-to-r from-amber-600/20 to-yellow-600/20 text-amber-300 backdrop-blur-sm hover:from-amber-600/30 hover:text-amber-200">
             <Sparkles className="relative h-3.5 w-3.5" /><span className="relative">AI 智能诊断</span>
           </Button>
-          <Button size="sm" onClick={() => exportCSV(localOrders, exchangeRate, initialData.shopName, cogsRate, shippingRate, marketingRate)} className="gap-1.5 bg-emerald-600 text-white hover:bg-emerald-500"><Download className="h-3.5 w-3.5" />导出报表</Button>
+          <Button size="sm" onClick={handleExport} className="gap-1.5 bg-emerald-600 text-white hover:bg-emerald-500"><Download className="h-3.5 w-3.5" />导出报表</Button>
           <Button variant="outline" size="sm" onClick={handleRemoveStore} className="gap-1.5 text-muted-foreground hover:text-red-500"><LogOut className="h-3.5 w-3.5" />移除店铺</Button>
           <Button variant="outline" size="sm" onClick={() => currentStore && fetchData(currentStore)} className="gap-1.5"><RefreshCw className="h-3.5 w-3.5" />刷新</Button>
 
@@ -651,9 +656,9 @@ export default function OverviewPanel(props: OverviewPanelProps) {
   );
 }
 
-// ─── CSV Export ───────────────────────────────────────
+// ─── Export Handle ────────────────────────────────────
 
-function exportCSV(
+function buildOrderExport(
   orders: Order[],
   rate: number,
   shopName: string,
@@ -662,70 +667,26 @@ function exportCSV(
   marketingRate: number,
 ) {
   const PAY: Record<string, string> = { paid: "已支付", pending: "待处理", authorized: "已授权", refunded: "已退款", voided: "已作废" };
-
-  const calcGatewayFeeCny = (order: Order): number => {
+  function calcGatewayFeeCny(order: Order): number {
     const usd = parseFloat(order.total_price) || 0;
     const gw = (order.gateway || "").toLowerCase();
-    if (gw.includes("stripe") || gw.includes("shopify_payments")) {
-      return (usd * 0.034 + 0.3) * rate;
-    }
-    if (gw.includes("paypal")) {
-      return (usd * 0.044 + 0.3) * rate;
-    }
-    // Unknown gateway: fallback to Stripe rate
-    return (usd * 0.034 + 0.3) * rate;
-  };
+    return gw.includes("paypal") ? (usd * 0.044 + 0.3) * rate : (usd * 0.034 + 0.3) * rate;
+  }
 
-  const header = [
-    "订单编号",
-    "下单时间(北京时间)",
-    "目的国",
-    "支付网关",
-    "总额(USD)",
-    "总额(CNY)",
-    "网关手续费(CNY)",
-    "商品成本(CNY)",
-    "物流运费(CNY)",
-    "广告成本(CNY)",
-    "净纯利润(CNY)",
-  ];
-
+  const headers = ["订单编号", "下单时间(北京时间)", "目的国", "支付网关", "总额(USD)", "总额(CNY)", "网关手续费(CNY)", "商品成本(CNY)", "物流运费(CNY)", "广告成本(CNY)", "净纯利润(CNY)"];
   const rows = orders.map((o) => {
     const usd = parseFloat(o.total_price) || 0;
     const cny = usd * rate;
-    const t = new Date(new Date(o.created_at).getTime() + 8 * 60 * 60 * 1000)
-      .toISOString().replace("T", " ").slice(0, 16);
+    const t = new Date(new Date(o.created_at).getTime() + 8 * 60 * 60 * 1000).toISOString().replace("T", " ").slice(0, 16);
     const country = (o as any).shippingCountry || "未知";
-    const gateway = o.gateway || "未知";
-    const gatewayFeeCny = calcGatewayFeeCny(o);
+    const gatewayFee = calcGatewayFeeCny(o);
     const costCny = (usd * cogsRate / 100) * rate;
     const shipCny = (usd * shippingRate / 100) * rate;
     const adCny = (usd * marketingRate / 100) * rate;
-    const netProfitCny = cny - gatewayFeeCny - costCny - shipCny - adCny;
-
-    return [
-      String(o.id),
-      t,
-      country,
-      gateway,
-      usd.toFixed(2),
-      cny.toFixed(2),
-      gatewayFeeCny.toFixed(2),
-      costCny.toFixed(2),
-      shipCny.toFixed(2),
-      adCny.toFixed(2),
-      netProfitCny.toFixed(2),
-    ].join(",");
+    const netProfit = cny - gatewayFee - costCny - shipCny - adCny;
+    return [String(o.id), t, country, o.gateway || "未知", usd.toFixed(2), cny.toFixed(2), gatewayFee.toFixed(2), costCny.toFixed(2), shipCny.toFixed(2), adCny.toFixed(2), netProfit.toFixed(2)];
   });
 
-  const blob = new Blob(["\uFEFF" + [header.join(","), ...rows].join("\n")], { type: "text/csv;charset=utf-8;" });
   const d = new Date().toLocaleDateString("zh-CN", { year: "numeric", month: "2-digit", day: "2-digit" }).replace(/\//g, "");
-  const url = URL.createObjectURL(blob);
-  const a = document.createElement("a");
-  a.href = url;
-  a.download = `Shopify_全维度财务对账单_${shopName}_${d}.csv`;
-  document.body.appendChild(a);
-  a.click();
-  document.body.removeChild(a);
-  URL.revokeObjectURL(url);
+  exportToCSV("Shopify_全维度财务对账单_" + shopName + "_" + d + ".csv", headers, rows);
 }

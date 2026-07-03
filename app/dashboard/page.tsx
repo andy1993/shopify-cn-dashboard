@@ -16,6 +16,9 @@ import GatewayFinancePanel from "./components/GatewayFinancePanel";
 import FunnelRetentionPanel from "./components/FunnelRetentionPanel";
 import AdPerformancePanel from "./components/AdPerformancePanel";
 import ProductControlPanel from "./components/ProductControlPanel";
+import OrderCenterPanel from "./components/OrderCenterPanel";
+import CustomerCenterPanel from "./components/CustomerCenterPanel";
+import FulfillmentBoardPanel from "./components/FulfillmentBoardPanel";
 
 // ─── Types ────────────────────────────────────────────
 
@@ -35,6 +38,14 @@ interface DashboardData {
   fullProducts?: Array<{
     id: number; title: string; status: string; image: string | null; shopName: string; isDemo: boolean;
     variants: Array<{ variantId: number; name: string; sku: string; price: string; inventory: number; productId?: string; inventoryItemId?: string }>;
+  }>;
+  customers?: Array<{
+    id: number; email: string; first_name: string; last_name: string; phone: string | null;
+    orders_count: number; total_spent: number; currency: string; created_at: string; updated_at: string;
+    state: string; tags: string; accepts_marketing: boolean;
+    default_address?: { address1: string; address2?: string; city: string; province: string; country: string; zip: string };
+    addresses?: Array<{ address1: string; address2?: string; city: string; province: string; country: string; zip: string; default: boolean }>;
+    recent_orders?: Array<{ id: number; order_number: string; total_price: number; created_at: string; financial_status: string }>;
   }>;
 }
 
@@ -407,6 +418,46 @@ export default function DashboardPage() {
           shopName={data.shopName}
           stores={stores}
           fullProducts={data.fullProducts}
+        />
+      )}
+      {activeMenu === "orders" && (
+        <OrderCenterPanel
+          isDemo={!!currentStore?.isDemo}
+          shopName={data.shopName}
+          shopUrl={currentStore?.shopUrl || ""}
+          accessToken={currentStore?.accessToken || ""}
+        />
+      )}
+      {activeMenu === "customers" && (
+        <CustomerCenterPanel
+          customers={data.customers ?? []}
+          isDemo={!!currentStore?.isDemo}
+          shopName={data.shopName}
+          shopUrl={currentStore?.shopUrl || ""}
+          accessToken={currentStore?.accessToken || ""}
+        />
+      )}
+      {activeMenu === "fulfillment" && (
+        <FulfillmentBoardPanel
+          orders={(data.orders as any[])?.map((o: any) => ({
+            id: o.id,
+            order_number: "#" + o.id,
+            customer_name: "客户 " + o.id,
+            total_price: parseFloat(o.total_price) || 0,
+            currency: "USD",
+            financial_status: o.financial_status || "paid",
+            fulfillment_status: null,
+            created_at: o.created_at,
+            country_code: o.shipping_country || o.country_code || "US",
+            line_items: [],
+            item_count: 1,
+            tags: [],
+            gateway: o.gateway,
+          })) ?? []}
+          isDemo={!!currentStore?.isDemo}
+          shopUrl={currentStore?.shopUrl || ""}
+          accessToken={currentStore?.accessToken || ""}
+          shopName={data.shopName}
         />
       )}
     </div>

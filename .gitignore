@@ -45,3 +45,13 @@ next-env.d.ts
 
 # WorkBuddy
 .workbuddy/
+
+# IDE
+.vscode/
+.idea/
+*.swp
+*.swo
+
+# Project-specific
+debug.log
+docs/

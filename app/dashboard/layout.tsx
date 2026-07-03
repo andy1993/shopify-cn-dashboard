@@ -18,12 +18,15 @@ import {
   AlertTriangle,
   Repeat,
   Zap,
+  ShoppingBag,
+  Users,
+  Truck,
 } from "lucide-react";
 import { cn } from "@/lib/utils";
 
 // ─── Context ───────────────────────────────────────────
 
-type MenuKey = "overview" | "ai" | "finance" | "risk" | "trend" | "aggregator" | "gateway" | "funnel" | "ad" | "product-control";
+type MenuKey = "overview" | "ai" | "finance" | "risk" | "trend" | "aggregator" | "gateway" | "funnel" | "ad" | "product-control" | "orders" | "customers" | "fulfillment";
 
 interface DashboardContextValue {
   activeMenu: MenuKey;
@@ -62,6 +65,9 @@ const NAV_CATEGORIES: NavCategory[] = [
       { id: "aggregator", label: "全店聚合大盘", icon: Layers },
       { id: "trend", label: "趋势同比分析", icon: BarChart3 },
       { id: "funnel", label: "漏斗转化复购", icon: Repeat },
+      { id: "orders", label: "订单管理中心", icon: ShoppingBag },
+      { id: "customers", label: "客户管理中心", icon: Users },
+      { id: "fulfillment", label: "履约看板", icon: Truck },
     ],
   },
   {

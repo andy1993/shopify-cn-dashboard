@@ -269,3 +269,87 @@ const EXCHANGE_RATE = 7.25;
 
 export const DEMO_CHARTS_A = computeHourlySales(DEMO_ORDERS_A, EXCHANGE_RATE);
 export const DEMO_CHARTS_B = computeHourlySales(DEMO_ORDERS_B, EXCHANGE_RATE);
+
+// ─── Demo Customers ──────────────────────────────────
+
+export function generateDemoCustomers(): Array<{
+  id: number; email: string; first_name: string; last_name: string; phone: string | null; orders_count: number;
+  total_spent: number; currency: string; created_at: string; updated_at: string; state: string;
+  tags: string; accepts_marketing: boolean;
+  default_address?: { address1: string; address2?: string; city: string; province: string; country: string; zip: string };
+  addresses?: Array<{ address1: string; address2?: string; city: string; province: string; country: string; zip: string; default: boolean }>;
+  recent_orders?: Array<{ id: number; order_number: string; total_price: number; created_at: string; financial_status: string }>;
+}> {
+  function seededRandom(seed: number): number {
+    let s = (seed * 1664525 + 1013904223) & 0xffffffff;
+    s = (s * 1664525 + 1013904223) & 0xffffffff;
+    return (s >>> 0) / 0xffffffff;
+  }
+  const firstNames = ["Alex", "Sarah", "Emma", "Liam", "Olivia", "Noah", "Ava", "James", "Mia", "Lucas", "Sophia", "Ethan", "Isabella", "Mason", "Charlotte", "Logan", "Amelia", "Benjamin", "Harper", "Elijah"];
+  const lastNames = ["Chen", "Kim", "Wilson", "Brown", "Johnson", "Davis", "Martinez", "Lee", "Taylor", "Anderson", "Thomas", "Garcia", "Robinson", "Clark", "Walker", "Hall", "Young", "Allen", "King", "Wright"];
+  const countries = ["US", "US", "US", "GB", "DE", "FR", "AU", "JP", "CA", "US"];
+  const cities: Record<string, string[]> = { US: ["New York", "Los Angeles", "Chicago", "San Francisco", "Austin", "Seattle"], GB: ["London", "Manchester", "Birmingham"], DE: ["Berlin", "Munich", "Hamburg"], FR: ["Paris", "Lyon"], AU: ["Sydney", "Melbourne"], JP: ["Tokyo", "Osaka"], CA: ["Toronto", "Vancouver"] };
+  const provinces: Record<string, string[]> = { US: ["NY", "CA", "IL", "TX", "WA"], GB: ["England", "England"], DE: ["Berlin", "Bayern"], FR: ["Île-de-France"], AU: ["NSW", "VIC"], JP: ["Tokyo", "Osaka"], CA: ["ON", "BC"] };
+  const statuses = ["paid", "paid", "paid", "paid", "pending", "refunded"];
+
+  const count = 62 + Math.floor(seededRandom(99) * 18);
+
+  return Array.from({ length: count }, (_, i) => {
+    const fn = firstNames[i % firstNames.length];
+    const ln = lastNames[Math.floor(seededRandom(i * 7 + 1) * lastNames.length)];
+    const country = countries[i % countries.length];
+    const city = cities[country]?.[Math.floor(seededRandom(i * 3 + 5) * (cities[country]?.length ?? 1))] ?? "City";
+    const province = provinces[country]?.[Math.floor(seededRandom(i * 11) * (provinces[country]?.length ?? 1))] ?? "";
+    const daysAgo = Math.floor(seededRandom(i * 13 + 3) * 90);
+    const date = new Date();
+    date.setDate(date.getDate() - daysAgo);
+    const orderCount = 1 + Math.floor(seededRandom(i * 17 + 7) * 12);
+    const avgOrder = 50 + seededRandom(i * 23 + 9) * 350;
+    const hasPhone = seededRandom(i * 31) > 0.3;
+    const tags: string[] = [];
+    if (orderCount > 5) tags.push("VIP");
+    if (seededRandom(i * 43) > 0.7) tags.push("高价值客户");
+    if (orderCount === 1) tags.push("新客户");
+    if (seededRandom(i * 53) > 0.85) tags.push("批发");
+
+    const addr = (n: number) => ({
+      address1: (100 + Math.floor(seededRandom(i * n + n) * 900)) + " " + ["Main St", "Oak Ave", "Elm Rd", "5th Ave", "Park Blvd"][Math.floor(seededRandom(i * n + n + 1) * 5)],
+      city: cities[country]?.[Math.floor(seededRandom(i * n + n + 3) * (cities[country]?.length ?? 1))] ?? city,
+      province,
+      country,
+      zip: String(10000 + Math.floor(seededRandom(i * n + n + 7) * 90000)),
+    });
+
+    return {
+      id: 40000 + i,
+      email: fn.toLowerCase() + "." + ln.toLowerCase() + i + "@email.com",
+      first_name: fn,
+      last_name: ln,
+      phone: hasPhone ? "+1 (555) " + Math.floor(100 + seededRandom(i * 37) * 900) + "-" + Math.floor(1000 + seededRandom(i * 41) * 9000) : null,
+      orders_count: orderCount,
+      total_spent: Math.round(avgOrder * orderCount * 100) / 100,
+      currency: "USD",
+      created_at: date.toISOString(),
+      updated_at: date.toISOString(),
+      state: seededRandom(i * 59) > 0.95 ? "disabled" : "enabled",
+      tags: tags.join(", "),
+      accepts_marketing: seededRandom(i * 61) > 0.4,
+      default_address: addr(67),
+      addresses: Array.from({ length: 1 + Math.floor(seededRandom(i * 71) * 2) }, (_, j) => ({
+        ...addr(67 + j * 13),
+        default: j === 0,
+      })),
+      recent_orders: Array.from({ length: Math.min(orderCount, 5) }, (_, j) => {
+        const oDate = new Date();
+        oDate.setDate(oDate.getDate() - Math.floor(seededRandom(i * 79 + j * 3) * 60));
+        return {
+          id: 20000 + i * 10 + j,
+          order_number: "#" + (10800 + i * 31 + j),
+          total_price: Math.round((20 + seededRandom(i * 83 + j * 7) * 200) * 100) / 100,
+          created_at: oDate.toISOString(),
+          financial_status: statuses[Math.floor(seededRandom(i * 89 + j * 11) * statuses.length)],
+        };
+      }),
+    };
+  });
+}
