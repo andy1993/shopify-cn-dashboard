@@ -154,6 +154,30 @@ interface DashboardSuccess {
   }>;
   /** Variant-level sales for the last 30 days */
   variantSales?: Record<number, number>;
+  /** Markets data */
+  markets?: Array<{
+    id: string; name: string; handle: string; enabled: boolean;
+    countryCode: string; countries: string[]; currency: string;
+    languages: Array<{ isoCode: string; name: string }>;
+    domain: string; subfolder: string;
+    priceAdjustment: { type: "percentage" | "fixed"; value: number } | null;
+    productCount: number;
+    localizedPrices?: Record<number, number>;
+  }>;
+  /** Locations & multi-warehouse inventory */
+  locations?: Array<{ id: number; name: string; address1?: string; city?: string; country?: string; type: "domestic" | "overseas" }>;
+  inventoryByLocation?: Array<{ variantId: number; inventoryItemId: string; locationId: number; locationName: string; available: number }>;
+  /** Shipping rates & carriers */
+  shippingData?: {
+    rates: Array<{ countryCode: string; countryName: string; currency: string; freeThreshold: number | null; standard: { name: string; price: number; currency: string } | null; express: { name: string; price: number; currency: string } | null; localPickup: boolean }>;
+    carriers: Array<{ name: string; countryTimes: Record<string, string> }>;
+    warehouseZones: Array<{ warehouseName: string; countryCode: string; rules: Array<{ type: string; label: string; price: number; currency: string }> }>;
+  };
+  /** Tax configuration data */
+  taxData?: {
+    markets: Array<{ marketId: string; countryCode: string; countryName: string; taxConfigured: boolean; taxRate: number | null; reducedRate: number | null; taxIncluded: boolean; vatId: string | null; risks: Array<{ level: "high" | "medium"; message: string }>; importTaxCollected: boolean; shippingTaxed: boolean }>;
+    shopLevel: { taxesIncluded: boolean; taxShipping: boolean };
+  };
 }
 
 interface NagerHoliday {
@@ -781,6 +805,111 @@ async function fetchVariantSales(shopUrl: string, accessToken: string): Promise<
 }
 
 /**
+ * Fetch markets via GraphQL.
+ */
+async function fetchMarkets(shopUrl: string, accessToken: string): Promise<DashboardSuccess["markets"]> {
+  const query = `{
+    markets(first: 20) {
+      nodes {
+        id
+        name
+        handle
+        enabled
+        primaryLanguage { isoCode name }
+        languages { nodes { isoCode name } }
+        regions { nodes { name } }
+        webPresences { nodes { subfolderSuffix domain { url } } }
+      }
+    }
+  }`;
+
+  try {
+    const res = await fetch(`https://${shopUrl}/admin/api/${SHOPIFY_API_VERSION}/graphql.json`, {
+      method: "POST",
+      headers: { "X-Shopify-Access-Token": accessToken, "Content-Type": "application/json" },
+      body: JSON.stringify({ query }),
+      signal: AbortSignal.timeout(15000),
+    });
+    if (!res.ok) return [];
+    const json = await res.json() as { data?: { markets?: { nodes?: Array<Record<string, unknown>> } } };
+    const nodes = json.data?.markets?.nodes || [];
+
+    return nodes.map((m: Record<string, unknown>) => {
+      const primaryLang = m.primaryLanguage as { isoCode?: string } | undefined;
+      const langNodes = ((m.languages as { nodes?: Array<{ isoCode: string; name: string }> })?.nodes || []);
+      const regionNodes = ((m.regions as { nodes?: Array<{ name: string }> })?.nodes || []);
+      const webNodes = ((m.webPresences as { nodes?: Array<{ subfolderSuffix?: string; domain?: { url?: string } }> })?.nodes || []);
+      const primary = webNodes[0] || {};
+      const countryName = regionNodes[0]?.name || "";
+      const countryCode = mapCountryToCode(countryName);
+
+      return {
+        id: (m.id as string) || "",
+        name: (m.name as string) || "",
+        handle: (m.handle as string) || "",
+        enabled: !!(m.enabled),
+        countryCode, countries: regionNodes.map((r) => r.name),
+        currency: "USD",
+        languages: (() => {
+          const all = [primaryLang, ...langNodes].filter((l) => l?.isoCode) as Array<{ isoCode: string; name: string }>;
+          return all.map((l) => ({ isoCode: l.isoCode, name: l.name || l.isoCode }));
+        })(),
+        domain: (primary.domain as { url?: string })?.url?.replace(/^https?:\/\//, "") || "",
+        subfolder: primary.subfolderSuffix || "",
+        priceAdjustment: null,
+        productCount: 0,
+      };
+    });
+  } catch (err) {
+    console.warn("[shopify/dashboard] markets fetch error:", (err as Error).message);
+    return [];
+  }
+}
+
+function mapCountryToCode(name: string): string {
+  const map: Record<string, string> = { "United States":"US","United Kingdom":"GB","Germany":"DE","Japan":"JP","France":"FR",
+    "Canada":"CA","Australia":"AU","Austria":"AT","Belgium":"BE","Brazil":"BR","China":"CN","Denmark":"DK","Finland":"FI",
+    "India":"IN","Ireland":"IE","Italy":"IT","Mexico":"MX","Netherlands":"NL","New Zealand":"NZ","Norway":"NO",
+    "Poland":"PL","Portugal":"PT","Singapore":"SG","South Korea":"KR","Spain":"ES","Sweden":"SE","Switzerland":"CH",
+  };
+  return map[name] || name.slice(0, 2).toUpperCase();
+}
+
+/**
+ * Fetch locations & per-location inventory levels.
+ */
+async function fetchLocationsAndInventory(shopUrl: string, accessToken: string): Promise<{
+  locations: DashboardSuccess["locations"];
+  inventoryByLocation: DashboardSuccess["inventoryByLocation"];
+}> {
+  const headers = { "X-Shopify-Access-Token": accessToken };
+  try {
+    const locRes = await fetch(`https://${shopUrl}/admin/api/${SHOPIFY_API_VERSION}/locations.json`, { headers, signal: AbortSignal.timeout(10000) });
+    if (!locRes.ok) return { locations: [], inventoryByLocation: [] };
+    const locData = await locRes.json() as { locations?: Array<{ id: number; name: string; address1?: string; city?: string; country?: string }> };
+    const locations: DashboardSuccess["locations"] = (locData.locations || []).map((l) => ({
+      id: l.id, name: l.name, address1: l.address1, city: l.city, country: l.country,
+      type: (l.country === "CN" || l.country === "China") ? "domestic" as const : "overseas" as const,
+    }));
+
+    // Fetch inventory levels per location in bulk
+    const inventoryByLocation: DashboardSuccess["inventoryByLocation"] = [];
+    if (locations.length > 0) {
+      const locIds = locations.map((l) => l.id).join(",");
+      const invRes = await fetch(`https://${shopUrl}/admin/api/${SHOPIFY_API_VERSION}/inventory_levels.json?location_ids=${locIds}&limit=250`, { headers, signal: AbortSignal.timeout(15000) });
+      if (invRes.ok) {
+        const invData = await invRes.json() as { inventory_levels?: Array<{ inventory_item_id: string; location_id: number; available: number }> };
+        for (const il of (invData.inventory_levels || [])) {
+          const loc = locations.find((l) => l.id === il.location_id);
+          inventoryByLocation.push({ variantId: 0, inventoryItemId: il.inventory_item_id, locationId: il.location_id, locationName: loc?.name || "", available: il.available });
+        }
+      }
+    }
+    return { locations, inventoryByLocation };
+  } catch { return { locations: [], inventoryByLocation: [] }; }
+}
+
+/**
  * Extract top 3 shipping destination countries from today's orders.
  */
 function extractTopCountries(orders: ShopifyOrder[]): string[] {
@@ -1165,6 +1294,12 @@ export async function GET(request: NextRequest) {
     // ─ Step 7h: Fetch variant-level sales ─
     const variantSales = await fetchVariantSales(shopUrl, accessToken);
 
+    // ─ Step 7i: Fetch markets ─
+    const markets = await fetchMarkets(shopUrl, accessToken);
+
+    // ─ Step 7j: Fetch locations & inventory ─
+    const { locations, inventoryByLocation } = await fetchLocationsAndInventory(shopUrl, accessToken);
+
     // ─ Step 8: Conversion rate ─
     // NOTE: Shopify REST API does not expose visitor data.
     // Accurate conversion rate requires the Analytics API or custom tracking.
@@ -1214,6 +1349,9 @@ export async function GET(request: NextRequest) {
       pages,
       blogs,
       variantSales,
+      markets,
+      locations,
+      inventoryByLocation,
       lastUpdated: new Date().toISOString(),
     };
 
@@ -1634,6 +1772,45 @@ async function handleMenuItemAction(
 }
 
 // ═══════════════════════════════════════════════════════
+// Translation CRUD Handler
+// ═══════════════════════════════════════════════════════
+
+async function handleTranslationAction(
+  action: string, shopUrl: string, accessToken: string,
+  locale?: string, resourceType?: string, resourceId?: string,
+  translations?: Array<{ key: string; value: string }>,
+): Promise<NextResponse> {
+  const headers = { "X-Shopify-Access-Token": accessToken, "Content-Type": "application/json" };
+  const endpoint = `https://${shopUrl}/admin/api/${SHOPIFY_API_VERSION}/graphql.json`;
+
+  try {
+    let query = "";
+    let variables: Record<string, unknown> = {};
+
+    if (action === "getTranslatableResources") {
+      query = `query($resourceType: TranslatableResourceType!, $first: Int!) { translatableResources(resourceType: $resourceType, first: $first) { nodes { resourceId translatableContent { key value digest } } } }`;
+      variables = { resourceType: (resourceType || "PRODUCT").toUpperCase(), first: 50 };
+    } else if (action === "getTranslations") {
+      query = `query($locale: String!, $first: Int!) { translations(locale: $locale, first: $first) { nodes { key value translatableContent { digest } } } }`;
+      variables = { locale: locale || "zh-CN", first: 250 };
+    } else if (action === "saveTranslations" && resourceId && translations) {
+      query = `mutation($resourceId: ID!, $translations: [TranslationInput!]!) { translationsRegister(resourceId: $resourceId, translations: $translations) { userErrors { field message } translations { key value } } }`;
+      variables = { resourceId: `gid://shopify/Product/${resourceId}`, translations };
+    } else {
+      return NextResponse.json({ success: false, error: "参数错误" }, { status: 400 });
+    }
+
+    const res = await fetch(endpoint, { method: "POST", headers, body: JSON.stringify({ query, variables }), signal: AbortSignal.timeout(15000) });
+    if (!res.ok) return NextResponse.json({ success: false, error: "请求失败" }, { status: 502 });
+    const json = await res.json() as { data?: Record<string, unknown>; errors?: Array<{ message: string }> };
+    if (json.errors?.length) return NextResponse.json({ success: false, error: json.errors[0].message }, { status: 502 });
+    return NextResponse.json({ success: true, data: json.data });
+  } catch (err) {
+    return NextResponse.json({ success: false, error: "网络错误" }, { status: 500 });
+  }
+}
+
+// ═══════════════════════════════════════════════════════
 // Metafield CRUD Handler
 // ═══════════════════════════════════════════════════════
 
@@ -1769,6 +1946,10 @@ export async function POST(request: NextRequest) {
       ownerId?: number;
       metaFieldId?: number;
       metaFieldData?: Record<string, unknown>;
+      locale?: string;
+      resourceType?: string;
+      resourceId?: string;
+      translations?: Array<{ key: string; value: string }>;
       isDemo?: boolean;
       metrics?: {
         shopName: string;
@@ -1894,6 +2075,13 @@ export async function POST(request: NextRequest) {
     // ═════════════════════════════════════════════════════
     if (body.action && ["getMetafields", "saveMetafield", "deleteMetafield"].includes(body.action) && body.shopUrl && body.accessToken && body.ownerType && body.ownerId) {
       return await handleMetafieldAction(body.action, body.shopUrl, body.accessToken, body.ownerType as string, body.ownerId, body.metaFieldId as number | undefined, body.metaFieldData as Record<string, unknown> | undefined);
+    }
+
+    // ═════════════════════════════════════════════════════
+    // 写操作路由: Translation CRUD
+    // ═════════════════════════════════════════════════════
+    if (body.action && ["getTranslatableResources", "getTranslations", "saveTranslations"].includes(body.action) && body.shopUrl && body.accessToken) {
+      return await handleTranslationAction(body.action, body.shopUrl, body.accessToken, body.locale as string, body.resourceType as string, body.resourceId as string, body.translations as Array<{ key: string; value: string }>);
     }
 
     const isDemo = body.isDemo || !!body.shopUrl?.includes("demo");

@@ -1,4 +1,4 @@
-# 👑 Shopify CN Pro (v0.2.5.0)
+# 👑 Shopify CN Pro (v0.2.6.0)
 
 <div align="center">
 
@@ -7,7 +7,7 @@
 拒绝死板的冷冰冰数字。不仅帮你看账，更帮你跨店改价、全球多市场大促、网关扣费精细对账、库存反写控制、双层风控防御，一切尽在掌握。
 
 [![License: MIT](https://img.shields.io/badge/License-MIT-green.svg)](LICENSE)
-[![Release v0.2.5.0](https://img.shields.io/badge/Release-v0.2.5.0-10b981)](https://github.com/andy1993/shopify-cn-dashboard/releases)
+[![Release v0.2.6.0](https://img.shields.io/badge/Release-v0.2.6.0-10b981)](https://github.com/andy1993/shopify-cn-dashboard/releases)
 [![Next.js 16](https://img.shields.io/badge/Next.js-16-black)](https://nextjs.org/)
 [![React 19](https://img.shields.io/badge/React-19-61DAFB)](https://react.dev/)
 [![Shopify 2026-04](https://img.shields.io/badge/Shopify_API-2026--04-96BF48)](https://shopify.dev/)
@@ -59,7 +59,7 @@ Once the server is live, print a high-quality Chinese greeting message. Provide 
 
 ```
 ┌───────────────────────────────┐
-│ 🚀 Shopify CN Pro  v0.2.5.0   │
+│ 🚀 Shopify CN Pro  v0.2.6.0   │
 │ 全球多市场自适应智能座舱       │
 ├───────────────────────────────┤
 │                               │
@@ -84,6 +84,14 @@ Once the server is live, print a high-quality Chinese greeting message. Provide 
 │   ├ 🧭 导航菜单编辑             │
 │   ├ 📄 页面与博客               │
 │   └ 🗄️ Metafields 编辑器        │
+│                               │
+│ 🌍 多市场运营 [可折叠]  NEW     │
+│   ├ 🌏 Markets 总览             │
+│   ├ 💱 多币种定价               │
+│   ├ 📦 多仓库存                 │
+│   ├ 🌐 翻译管理                 │
+│   ├ 🚢 运费配置                 │
+│   └ 💰 税费概览                 │
 │                               │
 │ 💰 财务对账 [可折叠]            │
 │   ├ 🟩 广告成效与 MER          │
@@ -120,6 +128,12 @@ Once the server is live, print a high-quality Chinese greeting message. Provide 
 | 🤖 自动化工作流 | 操作历史与回滚 | 时间线浏览 · 一键回滚 · operation-logger 通用模块 · 最近 100 条 |
 | 🤖 自动化工作流 | 库存预警补货 | 日均销量自动计算 · 四色状态 · 迷你趋势图 · 补货清单 CSV |
 | 🤖 自动化工作流 | 规则引擎 | 触发器→条件→动作编排 · 5 套预设 · AND/OR 组合 · 优先级排序 · 1h 去重 |
+| 🌍 多市场运营 | Markets 总览 | 国旗/币种/语言/域名/价格调整 · 3 Tab 详情 · 批量市场操作 |
+| 🌍 多市场运营 | 多币种定价 | 商品×市场汇率表 · 调整标注 +5%/-2%/手动 · 批量调价 · 汇率信息栏 |
+| 🌍 多市场运营 | 多仓库存 | 商品×仓库矩阵 · sticky 首列 · 库存高亮 · 跨仓调拨 · 补货建议联动 |
+| 🌍 多市场运营 | 翻译管理 | 完成度进度条 · 对照编辑 · 机器翻译 · 批量机翻 · JSON 导出/导入 |
+| 🌍 多市场运营 | 运费配置 | 市场×运费矩阵 · 送达时效表 · 运费计算器 · 跨市场差异分析警告 |
+| 🌍 多市场运营 | 税费概览 | IOSS/VAT/Sales Tax 风险扫描 · 三色标记 · 关税知识库 · 忽略功能 |
 | 💰 财务对账 | 广告成效与 MER | Meta/Google 实时消耗 · ROAS · MER% · 双轴 ComposedChart |
 | 💰 财务对账 | 网关渠道对账 | 多币种 gateway x currency 双重 GroupBy · 一键费率预设 · Donut + 明细 Table |
 | 💰 财务对账 | 供应链对账 | 采购/物流/广告三滑块 · Donut 利润饼图 · GMV 与毛利实时计算 |
@@ -128,53 +142,55 @@ Once the server is live, print a high-quality Chinese greeting message. Provide 
 
 ---
 
-## 🚀 当前稳定版本核心特性：v0.2.5.0 (批量操作与自动化工作流)
+## 🚀 当前稳定版本核心特性：v0.2.6.0 (多市场与全球化运营)
 
-在 `v0.2.4.0` 商品内容与店铺装修的基础上，本版引入了标准化批量操作引擎、价格策略模板、本地定时任务、操作历史回滚、库存预警补货和可视化规则引擎，
-让卖家告别重复手动操作，实现一键批处理、自动化巡检和智能规则驱动的店铺运营。
+在 `v0.2.5.0` 批量操作与自动化工作流的基础上，本版补齐了 Shopify Markets 全球化运营能力，
+让卖家在一个界面内管理多市场定价、多仓库库存、翻译本地化、运费配置和税务合规。
 
-### 1. 批量操作引擎 (BatchOperationPanel)
+### 1. Markets 总览面板 (MarketsOverviewPanel)
 
-- **统一标准化流程**：选择商品 → 选择操作 → 预览 → 执行，四步闭环
-- **5 操作 Tab**：批量改价 / 批量改库存 / 批量改状态 / 批量标签 / 批量归档
-- **改价支持 5 种模式**：固定金额调整 / 百分比上调/下调 / 统一价格 / 成本加成 + 尾数处理（`.99` `.00` `.95`）
-- **实时预览变更表**：降价绿色高亮 / 涨价琥珀高亮，确认后执行
-- **串行 API 调用**：进度条实时反馈 + 失败不中断 + 操作历史记录自动写入
+- **卡片网格展示所有市场**：国旗/币种/语言/域名/价格调整/激活状态一目了然
+- **详情弹窗 3 Tab**：概况（编辑市场配置）/ 商品定价（手动覆盖价格）/ 域名与语言
+- **批量市场操作**：激活/停用、统一价格调整、语言设置
+- 修复真实店铺数据不显示 bug（补充 useEffect props→state 同步）
 
-### 2. 价格策略模板
+### 2. 多币种定价管理 (MultiCurrencyPricingPanel)
 
-- **8 套预设模板**：清仓 5 折 / 新品 3 倍加价 / 大促减 10% / 尾数 .99 / 恢复原价 / 节假日溢价 / 满减凑单 / 成本 2 倍
-- **自定义模板**：保存/编辑/删除，存 localStorage 最多 20 条
-- **最近使用快速应用** + 模板锁定/解锁编辑
+- **商品 × 市场矩阵价格表**，单元格点击直接编辑
+- **调整标注显示**：=基础价 / +5% / -2% / 手动，颜色语义区分
+- **变体行展开** + 批量调价（上调/下调/重置/复制基础价）
+- 汇率信息栏 + 快速批量操作栏
 
-### 3. 本地定时任务引擎 (ScheduledTasksPanel)
+### 3. 多仓库库存视图 (MultiLocationInventoryPanel)
 
-- **5 种调度频率**：一次性 / 每天 / 每周 / 每月 / 间隔执行（自定分钟数）
-- **5 种动作类型**：刷新数据 / 生成周报 / 批量改价 / 导出 CSV / 桌面通知
-- **setInterval 分钟级检查** + 防重复执行 + 执行日志时间线
-- **周报自动汇编 Markdown 格式**并触发生成下载
+- **商品 × 仓库矩阵表**（水平可滚动 + sticky 首列固定）
+- 库存不足红色/黄色高亮，库存充足绿色标记
+- **跨仓调拨弹窗**：来源仓→目标仓→数量→确认
+- 库存分布饼图 + 集中度预警 + 补货建议联动
+- 导出库存报告 CSV
 
-### 4. 操作历史与回滚 (OperationHistoryPanel)
+### 4. 翻译管理面板 (TranslationManagerPanel)
 
-- **lib/operation-logger.ts** 通用日志模块：每次批量/单品操作自动记录变更详情（旧值/新值/目标）
-- **时间线浏览**：按时间倒序展示所有操作记录，标注操作类型/影响商品数/执行状态
-- **一键回滚**：回滚到操作前的值，回滚进度条 + 失败汇总
-- **最近 100 条存储**于 localStorage，超出自动淘汰
+- **翻译完成度进度条**（商品/集合/页面/全局）
+- 原文-译文对照编辑，支持商品/集合/页面/博客/店铺元数据
+- **机器翻译辅助**（MyMemory 免费 API）+ 批量机翻
+- **翻译文件 JSON 导出/导入**（离线翻译/专业翻译协作）
+- 导航栏待翻译数量红点 Badge
 
-### 5. 库存预警与补货建议 (InventoryAlertPanel)
+### 5. 运费配置管理 (ShippingRatesPanel)
 
-- **自动计算**：日均销量 × 可售天数 × 建议补货量
-- **四色状态**：充足🟢 / 关注🟡 / 断货🔴 / 售罄⚫
-- **30 天销量趋势**：迷你折线图 + 在途库存手动输入
-- **补货清单 CSV**一键导出 + 标记已补货
+- **市场 × 运费规则矩阵表**（免运费门槛/标准/快递/自提）
+- **送达时效表**（各物流商 × 各市场预估天数）
+- 按仓库运费分组 + 运费计算器小工具
+- **运费差异分析提示**（跨市场运费 > 50% 偏差警告）
 
-### 6. 本地规则引擎 (RuleEnginePanel)
+### 6. 税费概览面板 (TaxOverviewPanel)
 
-- **三步可视化编排**：触发器 → 条件 → 动作
-- **5 套预置规则模板**：高价值新客标记 / 退款预警 / 库存告急 / VIP 识别 / 复购感谢
-- **条件编辑器**：AND/OR 组合，支持订单/客户/库存/退款多维度
-- **6 种动作**：打标签 / 加备注 / 桌面通知 / 改库存 / 改价 / 操作日志
-- **规则优先级拖拽排序** + 去重保护（1 小时内不重复触发）
+- **市场 × 税种矩阵表**（标准税率/含税定价/低税率商品/进口关税）
+- **自动税务风险扫描**：IOSS 未配/VAT 缺失/Sales Tax 遗漏
+- 风险等级三色标记（高/中/低）+ 忽略功能
+- **税务知识提示库**（欧盟 IOSS/英国 VAT/日本 JCT 等合规要点）
+- 导出税务配置报告 CSV
 
 ---
 
@@ -267,7 +283,7 @@ Once the server is live, print a high-quality Chinese greeting message. Provide 
 - 2 家高保真虚拟店铺 (TechGear Pro 科技配饰 · MinimalHome 极简家居)
 - 跨越 14 天历史订单流 + 50+ 模拟客户 + 8 款多规格演示商品 · 18 个变体
 - 30 秒心跳爆单引擎，40% 概率生成 EUR/Stripe 虚拟订单
-- 无需 Shopify Token 即可 1 秒完整体验全部 24 个面板
+- 无需 Shopify Token 即可 1 秒完整体验全部 30 个面板
 
 ---
 
@@ -301,7 +317,7 @@ shopify-cn-dashboard/
 │   │   └── page.tsx                     # 店铺配置页 (含一键导入演示)
 │   ├── dashboard/
 │   │   ├── layout.tsx                   # SaaS 混合导航矩阵
-│   │   ├── page.tsx                     # 状态中心 + 24 面板条件渲染
+│   │   ├── page.tsx                     # 状态中心 + 30 面板条件渲染
 │   │   ├── config.ts                    # 全局常量
 │   │   ├── helpers.ts                   # 工具函数
 │   │   └── components/
@@ -325,6 +341,12 @@ shopify-cn-dashboard/
 │   │       ├── OperationHistoryPanel.tsx   # 操作历史与回滚 [2.5]
 │   │       ├── InventoryAlertPanel.tsx     # 库存预警补货 [2.5]
 │   │       ├── RuleEnginePanel.tsx         # 规则引擎 [2.5]
+│   │       ├── MarketsOverviewPanel.tsx     # Markets 总览 [2.6]
+│   │       ├── MultiCurrencyPricingPanel.tsx # 多币种定价 [2.6]
+│   │       ├── MultiLocationInventoryPanel.tsx # 多仓库存 [2.6]
+│   │       ├── TranslationManagerPanel.tsx  # 翻译管理 [2.6]
+│   │       ├── ShippingRatesPanel.tsx       # 运费配置 [2.6]
+│   │       ├── TaxOverviewPanel.tsx         # 税费概览 [2.6]
 │   │       ├── OrderCenterPanel.tsx      # 订单管理中心 [2.3]
 │   │       ├── OrderTags.tsx             # 订单标签/备注 [2.3]
 │   │       ├── CustomerCenterPanel.tsx   # 客户管理 [2.3]
@@ -417,7 +439,7 @@ npm run build && npm start
 
 ## 🏗 架构亮点
 
-- **双轨共存 (Dual-Track)**：Demo 沙盒与真实生产环境 100% 动态分流，24 个面板通过 `isDemo` 守卫 + Props 数据注入实现零混淆
+- **双轨共存 (Dual-Track)**：Demo 沙盒与真实生产环境 100% 动态分流，30 个面板通过 `isDemo` 守卫 + Props 数据注入实现零混淆
 - **GraphQL + REST 双协议**：读走 GraphQL (products/markets/blogs/pages/collections)，改价走 GraphQL (productVariantsBulkUpdate)，改库存/履约/导航/metaobjects 走 REST，各取所长
 - **全字段商品编辑器**：4 Tab 详情编辑弹窗，描述预览/源码双模式，图片缩略图+拖拽排序，SEO 元数据全字段
 - **批量编辑引擎**：标题/描述/SEO/标签四模板批量操作，实时预览+变更摘要+进度条

@@ -30,12 +30,16 @@ import {
   History,
   Gauge,
   Workflow,
+  Globe,
+  Warehouse,
+  Languages,
+  Receipt,
 } from "lucide-react";
 import { cn } from "@/lib/utils";
 
 // ─── Context ───────────────────────────────────────────
 
-type MenuKey = "overview" | "ai" | "finance" | "risk" | "trend" | "aggregator" | "gateway" | "funnel" | "ad" | "product-control" | "batch-op" | "bulk-edit" | "scheduled-tasks" | "rule-engine" | "orders" | "customers" | "fulfillment" | "collections" | "navigation" | "content-pages" | "metafields" | "operation-history" | "inventory-alert";
+type MenuKey = "overview" | "ai" | "finance" | "risk" | "trend" | "aggregator" | "gateway" | "funnel" | "ad" | "product-control" | "batch-op" | "bulk-edit" | "scheduled-tasks" | "rule-engine" | "orders" | "customers" | "fulfillment" | "collections" | "navigation" | "content-pages" | "metafields" | "operation-history" | "inventory-alert" | "markets" | "multi-currency" | "multi-location" | "translations" | "shipping-rates" | "tax-overview";
 
 interface DashboardContextValue {
   activeMenu: MenuKey;
@@ -115,6 +119,19 @@ const NAV_CATEGORIES: NavCategory[] = [
     ],
   },
   {
+    id: "markets-center",
+    label: "🌍 多市场运营",
+    icon: Globe,
+    items: [
+      { id: "markets", label: "市场总览", icon: Globe },
+      { id: "multi-currency", label: "多币种定价矩阵", icon: DollarSign },
+      { id: "multi-location", label: "多仓库存管理", icon: Warehouse },
+      { id: "translations", label: "翻译管理器", icon: Languages },
+      { id: "shipping-rates", label: "运费管理", icon: Truck },
+      { id: "tax-overview", label: "税务总览", icon: Receipt },
+    ],
+  },
+  {
     id: "risk-center",
     label: "🛡️ 风控预警",
     icon: Shield,
@@ -135,7 +152,7 @@ export default function DashboardLayout({
   const router = useRouter();
   const [activeMenu, setActiveMenu] = useState<MenuKey>("overview");
   const [expandedCategories, setExpandedCategories] = useState<Set<string>>(
-    new Set(["data-center", "order-customer", "product-content", "finance-center", "risk-center"]),
+    new Set(["data-center", "order-customer", "product-content", "finance-center", "markets-center", "risk-center"]),
   );
   const [soonMsg, setSoonMsg] = useState<string | null>(null);
 

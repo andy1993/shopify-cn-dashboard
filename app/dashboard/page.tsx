@@ -29,6 +29,12 @@ import ScheduledTasksPanel from "./components/ScheduledTasksPanel";
 import OperationHistoryPanel from "./components/OperationHistoryPanel";
 import InventoryAlertPanel from "./components/InventoryAlertPanel";
 import RuleEnginePanel from "./components/RuleEnginePanel";
+import MarketsOverviewPanel from "./components/MarketsOverviewPanel";
+import MultiCurrencyPricingPanel from "./components/MultiCurrencyPricingPanel";
+import MultiLocationInventoryPanel from "./components/MultiLocationInventoryPanel";
+import TranslationManagerPanel from "./components/TranslationManagerPanel";
+import ShippingRatesPanel from "./components/ShippingRatesPanel";
+import TaxOverviewPanel from "./components/TaxOverviewPanel";
 
 // ─── Types ────────────────────────────────────────────
 
@@ -68,6 +74,18 @@ interface DashboardData {
   pages?: Array<{ id: number; title: string; handle: string; bodyHtml: string; published: boolean; seoTitle: string; seoDescription: string; created_at: string; updated_at: string }>;
   blogs?: Array<{ id: number; title: string; handle: string; articles: Array<{ id: number; title: string; handle: string; bodyHtml: string; summaryHtml: string; author: string; tags: string[]; published: boolean; seoTitle: string; seoDescription: string; createdAt: string; updatedAt: string }> }>;
   variantSales?: Record<number, number>;
+  markets?: Array<{ id: string; name: string; handle: string; enabled: boolean; countryCode: string; countries: string[]; currency: string; languages: Array<{ isoCode: string; name: string }>; domain: string; subfolder: string; priceAdjustment: { type: "percentage" | "fixed"; value: number } | null; productCount: number }>;
+  locations?: Array<{ id: number; name: string; address1?: string; city?: string; country?: string; type: "domestic" | "overseas" }>;
+  inventoryByLocation?: Array<{ variantId: number; inventoryItemId: string; locationId: number; locationName: string; available: number }>;
+  shippingData?: {
+    rates: Array<{ countryCode: string; countryName: string; currency: string; freeThreshold: number | null; standard: { name: string; price: number; currency: string } | null; express: { name: string; price: number; currency: string } | null; localPickup: boolean }>;
+    carriers: Array<{ name: string; countryTimes: Record<string, string> }>;
+    warehouseZones: Array<{ warehouseName: string; countryCode: string; rules: Array<{ type: string; label: string; price: number; currency: string }> }>;
+  };
+  taxData?: {
+    markets: Array<{ marketId: string; countryCode: string; countryName: string; taxConfigured: boolean; taxRate: number | null; reducedRate: number | null; taxIncluded: boolean; vatId: string | null; risks: Array<{ level: "high" | "medium"; message: string }>; importTaxCollected: boolean; shippingTaxed: boolean }>;
+    shopLevel: { taxesIncluded: boolean; taxShipping: boolean };
+  };
 }
 
 interface DiagnosisReport { overview: string; conversionAnalysis: string; inventoryAlerts: string[]; recommendations: string[]; riskLevel: "low" | "medium" | "high"; }
@@ -568,6 +586,64 @@ export default function DashboardPage() {
           orders={data.orders as any}
           customers={data.customers as any}
           fullProducts={data.fullProducts as any}
+        />
+      )}
+      {activeMenu === "markets" && (
+        <MarketsOverviewPanel
+          isDemo={!!currentStore?.isDemo}
+          shopUrl={currentStore?.shopUrl || ""}
+          accessToken={currentStore?.accessToken || ""}
+          shopName={data.shopName}
+          markets={data.markets}
+          fullProducts={data.fullProducts as any}
+        />
+      )}
+      {activeMenu === "multi-currency" && (
+        <MultiCurrencyPricingPanel
+          isDemo={!!currentStore?.isDemo}
+          shopUrl={currentStore?.shopUrl || ""}
+          accessToken={currentStore?.accessToken || ""}
+          shopName={data.shopName}
+          markets={data.markets as any}
+          fullProducts={data.fullProducts as any}
+        />
+      )}
+      {activeMenu === "multi-location" && (
+        <MultiLocationInventoryPanel
+          isDemo={!!currentStore?.isDemo}
+          shopUrl={currentStore?.shopUrl || ""}
+          accessToken={currentStore?.accessToken || ""}
+          shopName={data.shopName}
+          locations={data.locations}
+          inventoryByLocation={data.inventoryByLocation}
+          fullProducts={data.fullProducts as any}
+          variantSales={data.variantSales}
+        />
+      )}
+      {activeMenu === "translations" && (
+        <TranslationManagerPanel
+          isDemo={!!currentStore?.isDemo}
+          shopUrl={currentStore?.shopUrl || ""}
+          accessToken={currentStore?.accessToken || ""}
+          shopName={data.shopName}
+        />
+      )}
+      {activeMenu === "shipping-rates" && (
+        <ShippingRatesPanel
+          isDemo={!!currentStore?.isDemo}
+          shopUrl={currentStore?.shopUrl || ""}
+          accessToken={currentStore?.accessToken || ""}
+          shopName={data.shopName}
+          shippingData={data.shippingData as any}
+        />
+      )}
+      {activeMenu === "tax-overview" && (
+        <TaxOverviewPanel
+          isDemo={!!currentStore?.isDemo}
+          shopUrl={currentStore?.shopUrl || ""}
+          accessToken={currentStore?.accessToken || ""}
+          shopName={data.shopName}
+          taxData={data.taxData as any}
         />
       )}
     </div>
