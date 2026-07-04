@@ -24,6 +24,11 @@ import CollectionManagerPanel from "./components/CollectionManagerPanel";
 import NavigationEditorPanel from "./components/NavigationEditorPanel";
 import ContentPagesPanel from "./components/ContentPagesPanel";
 import MetafieldsEditorPanel from "./components/MetafieldsEditorPanel";
+import BatchOperationPanel from "./components/BatchOperationPanel";
+import ScheduledTasksPanel from "./components/ScheduledTasksPanel";
+import OperationHistoryPanel from "./components/OperationHistoryPanel";
+import InventoryAlertPanel from "./components/InventoryAlertPanel";
+import RuleEnginePanel from "./components/RuleEnginePanel";
 
 // ─── Types ────────────────────────────────────────────
 
@@ -62,6 +67,7 @@ interface DashboardData {
   menus?: Array<{ id: number; title: string; handle: string; items: Array<{ id: number; title: string; url: string; type: string; parent_id: number | null; position: number }> }>;
   pages?: Array<{ id: number; title: string; handle: string; bodyHtml: string; published: boolean; seoTitle: string; seoDescription: string; created_at: string; updated_at: string }>;
   blogs?: Array<{ id: number; title: string; handle: string; articles: Array<{ id: number; title: string; handle: string; bodyHtml: string; summaryHtml: string; author: string; tags: string[]; published: boolean; seoTitle: string; seoDescription: string; createdAt: string; updatedAt: string }> }>;
+  variantSales?: Record<number, number>;
 }
 
 interface DiagnosisReport { overview: string; conversionAnalysis: string; inventoryAlerts: string[]; recommendations: string[]; riskLevel: "low" | "medium" | "high"; }
@@ -516,6 +522,52 @@ export default function DashboardPage() {
           accessToken={currentStore?.accessToken || ""}
           shopName={data.shopName}
           fullProducts={data.fullProducts}
+        />
+      )}
+      {activeMenu === "batch-op" && (
+        <BatchOperationPanel
+          isDemo={!!currentStore?.isDemo}
+          shopUrl={currentStore?.shopUrl || ""}
+          accessToken={currentStore?.accessToken || ""}
+          shopName={data.shopName}
+          fullProducts={data.fullProducts as any}
+        />
+      )}
+      {activeMenu === "scheduled-tasks" && (
+        <ScheduledTasksPanel
+          isDemo={!!currentStore?.isDemo}
+          shopUrl={currentStore?.shopUrl || ""}
+          accessToken={currentStore?.accessToken || ""}
+          shopName={data.shopName}
+        />
+      )}
+      {activeMenu === "operation-history" && (
+        <OperationHistoryPanel
+          isDemo={!!currentStore?.isDemo}
+          shopUrl={currentStore?.shopUrl || ""}
+          accessToken={currentStore?.accessToken || ""}
+          shopName={data.shopName}
+        />
+      )}
+      {activeMenu === "inventory-alert" && (
+        <InventoryAlertPanel
+          isDemo={!!currentStore?.isDemo}
+          shopUrl={currentStore?.shopUrl || ""}
+          accessToken={currentStore?.accessToken || ""}
+          shopName={data.shopName}
+          fullProducts={data.fullProducts as any}
+          variantSales={data.variantSales}
+        />
+      )}
+      {activeMenu === "rule-engine" && (
+        <RuleEnginePanel
+          isDemo={!!currentStore?.isDemo}
+          shopUrl={currentStore?.shopUrl || ""}
+          accessToken={currentStore?.accessToken || ""}
+          shopName={data.shopName}
+          orders={data.orders as any}
+          customers={data.customers as any}
+          fullProducts={data.fullProducts as any}
         />
       )}
     </div>

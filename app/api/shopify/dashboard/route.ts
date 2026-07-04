@@ -152,6 +152,8 @@ interface DashboardSuccess {
       createdAt: string; updatedAt: string;
     }>;
   }>;
+  /** Variant-level sales for the last 30 days */
+  variantSales?: Record<number, number>;
 }
 
 interface NagerHoliday {
@@ -752,6 +754,33 @@ async function fetchBlogs(shopUrl: string, accessToken: string): Promise<Dashboa
 }
 
 /**
+ * Aggregate variant-level sales over the past 30 days from orders.
+ */
+async function fetchVariantSales(shopUrl: string, accessToken: string): Promise<Record<number, number>> {
+  const daysAgo = new Date(Date.now() - 30 * 86400000).toISOString();
+  const headers = { "X-Shopify-Access-Token": accessToken };
+  const sales: Record<number, number> = {};
+  try {
+    const res = await fetch(
+      `https://${shopUrl}/admin/api/${SHOPIFY_API_VERSION}/orders.json?status=any&created_at_min=${daysAgo}&limit=250&fields=id,line_items`,
+      { headers, signal: AbortSignal.timeout(15000) },
+    );
+    if (!res.ok) return {};
+    const data = await res.json();
+    for (const order of (data.orders || [])) {
+      for (const item of (order.line_items || [])) {
+        if (item.variant_id) {
+          sales[item.variant_id] = (sales[item.variant_id] || 0) + (item.quantity || 0);
+        }
+      }
+    }
+  } catch (err) {
+    console.warn("[shopify/dashboard] variantSales fetch error:", (err as Error).message);
+  }
+  return sales;
+}
+
+/**
  * Extract top 3 shipping destination countries from today's orders.
  */
 function extractTopCountries(orders: ShopifyOrder[]): string[] {
@@ -1133,6 +1162,9 @@ export async function GET(request: NextRequest) {
     // ─ Step 7g: Fetch blogs with articles ─
     const blogs = await fetchBlogs(shopUrl, accessToken);
 
+    // ─ Step 7h: Fetch variant-level sales ─
+    const variantSales = await fetchVariantSales(shopUrl, accessToken);
+
     // ─ Step 8: Conversion rate ─
     // NOTE: Shopify REST API does not expose visitor data.
     // Accurate conversion rate requires the Analytics API or custom tracking.
@@ -1181,6 +1213,7 @@ export async function GET(request: NextRequest) {
       menus,
       pages,
       blogs,
+      variantSales,
       lastUpdated: new Date().toISOString(),
     };
 

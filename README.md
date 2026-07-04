@@ -1,4 +1,4 @@
-# 👑 Shopify CN Pro (v0.2.3.0)
+# 👑 Shopify CN Pro (v0.2.5.0)
 
 <div align="center">
 
@@ -7,7 +7,7 @@
 拒绝死板的冷冰冰数字。不仅帮你看账，更帮你跨店改价、全球多市场大促、网关扣费精细对账、库存反写控制、双层风控防御，一切尽在掌握。
 
 [![License: MIT](https://img.shields.io/badge/License-MIT-green.svg)](LICENSE)
-[![Release v0.2.3.0](https://img.shields.io/badge/Release-v0.2.3.0-10b981)](https://github.com/andy1993/shopify-cn-dashboard/releases)
+[![Release v0.2.5.0](https://img.shields.io/badge/Release-v0.2.5.0-10b981)](https://github.com/andy1993/shopify-cn-dashboard/releases)
 [![Next.js 16](https://img.shields.io/badge/Next.js-16-black)](https://nextjs.org/)
 [![React 19](https://img.shields.io/badge/React-19-61DAFB)](https://react.dev/)
 [![Shopify 2026-04](https://img.shields.io/badge/Shopify_API-2026--04-96BF48)](https://shopify.dev/)
@@ -59,7 +59,7 @@ Once the server is live, print a high-quality Chinese greeting message. Provide 
 
 ```
 ┌───────────────────────────────┐
-│ 🚀 Shopify CN Pro  v0.2.4.0   │
+│ 🚀 Shopify CN Pro  v0.2.5.0   │
 │ 全球多市场自适应智能座舱       │
 ├───────────────────────────────┤
 │                               │
@@ -114,6 +114,12 @@ Once the server is live, print a high-quality Chinese greeting message. Provide 
 | 📦 商品与内容 | 导航菜单编辑 | 树形层级编辑 · 拖拽排序 · 链接类型选择器 · 变更摘要 · 批量保存 |
 | 📦 商品与内容 | 页面与博客 | Pages + Blog Posts 双 Tab · 预览/编辑双模式 · SEO 预览卡片 · 内联 CRUD |
 | 📦 商品与内容 | Metafields 编辑器 | 11 种类型动态输入 · JSON 校验 · CSV 导入导出 · 按需 API 拉取 |
+| 🤖 自动化工作流 | 批量操作引擎 | 统一标准化流程 · 5 Tab 操作区 · 5 种改价模式 · 预览确认 · 进度条 · 历史记录 |
+| 🤖 自动化工作流 | 价格策略模板 | 8 套预设模板 · 自定义保存 20 条 · 尾数处理 · 最近使用快速应用 |
+| 🤖 自动化工作流 | 定时任务引擎 | 5 种调度频率 · 5 种动作类型 · 防重复执行 · 周报自动汇编下载 |
+| 🤖 自动化工作流 | 操作历史与回滚 | 时间线浏览 · 一键回滚 · operation-logger 通用模块 · 最近 100 条 |
+| 🤖 自动化工作流 | 库存预警补货 | 日均销量自动计算 · 四色状态 · 迷你趋势图 · 补货清单 CSV |
+| 🤖 自动化工作流 | 规则引擎 | 触发器→条件→动作编排 · 5 套预设 · AND/OR 组合 · 优先级排序 · 1h 去重 |
 | 💰 财务对账 | 广告成效与 MER | Meta/Google 实时消耗 · ROAS · MER% · 双轴 ComposedChart |
 | 💰 财务对账 | 网关渠道对账 | 多币种 gateway x currency 双重 GroupBy · 一键费率预设 · Donut + 明细 Table |
 | 💰 财务对账 | 供应链对账 | 采购/物流/广告三滑块 · Donut 利润饼图 · GMV 与毛利实时计算 |
@@ -122,58 +128,53 @@ Once the server is live, print a high-quality Chinese greeting message. Provide 
 
 ---
 
-## 🚀 当前稳定版本核心特性：v0.2.4.0 (商品内容与店铺装修管理)
+## 🚀 当前稳定版本核心特性：v0.2.5.0 (批量操作与自动化工作流)
 
-在 `v0.2.3.0` 订单与客户管理的基础上，本版补齐了 Shopify 原生后台的商品内容编辑和店铺装修能力，
-让卖家在一个界面内完成商品全字段编辑、批量操作、集合管理、导航菜单、页面博客、元字段配置。
+在 `v0.2.4.0` 商品内容与店铺装修的基础上，本版引入了标准化批量操作引擎、价格策略模板、本地定时任务、操作历史回滚、库存预警补货和可视化规则引擎，
+让卖家告别重复手动操作，实现一键批处理、自动化巡检和智能规则驱动的店铺运营。
 
-### 1. 商品编辑器全面升级 (ProductControlPanel)
+### 1. 批量操作引擎 (BatchOperationPanel)
 
-- **详情编辑弹窗 4 Tab**：基本信息 / 图片管理 / SEO 元数据 / 变体编辑
-- 补齐 `descriptionHtml` 字段同步（修复 `bodyHtml` 命名不匹配 bug）
-- **图片管理 Tab**：真实渲染缩略图 + alt 文本编辑 + 拖拽排序
-- **描述预览/编辑双模式切换**：富文本渲染 + HTML 源码编辑
-- 供应商、品类、标签、SEO 标题/描述、URL 句柄全字段编辑
+- **统一标准化流程**：选择商品 → 选择操作 → 预览 → 执行，四步闭环
+- **5 操作 Tab**：批量改价 / 批量改库存 / 批量改状态 / 批量标签 / 批量归档
+- **改价支持 5 种模式**：固定金额调整 / 百分比上调/下调 / 统一价格 / 成本加成 + 尾数处理（`.99` `.00` `.95`）
+- **实时预览变更表**：降价绿色高亮 / 涨价琥珀高亮，确认后执行
+- **串行 API 调用**：进度条实时反馈 + 失败不中断 + 操作历史记录自动写入
 
-### 2. 批量商品编辑引擎 (BulkEditPanel)
+### 2. 价格策略模板
 
-- **左侧商品选择 + 右侧 4 Tab 操作区**：标题模板 / 描述替换 / SEO 批量 / 标签批量
-- 标题模板支持追加前缀/后缀、查找替换、完全替换
-- **实时预览修改前后对比**
-- 提交前变更摘要 + 进度条 + 失败详情汇总
-- **变量插入**：`{title}` `{price}` `{type}` 占位符
+- **8 套预设模板**：清仓 5 折 / 新品 3 倍加价 / 大促减 10% / 尾数 .99 / 恢复原价 / 节假日溢价 / 满减凑单 / 成本 2 倍
+- **自定义模板**：保存/编辑/删除，存 localStorage 最多 20 条
+- **最近使用快速应用** + 模板锁定/解锁编辑
 
-### 3. 集合管理面板 (CollectionManagerPanel)
+### 3. 本地定时任务引擎 (ScheduledTasksPanel)
 
-- **双 Tab**：智能集合（条件规则编辑器 AND/OR）+ 手动集合（商品挑选器拖拽排序）
-- **条件规则可视化**：字段下拉 × 比较符 × 值，动态增删行
-- SEO 编辑 + Google 搜索结果预览卡片
+- **5 种调度频率**：一次性 / 每天 / 每周 / 每月 / 间隔执行（自定分钟数）
+- **5 种动作类型**：刷新数据 / 生成周报 / 批量改价 / 导出 CSV / 桌面通知
+- **setInterval 分钟级检查** + 防重复执行 + 执行日志时间线
+- **周报自动汇编 Markdown 格式**并触发生成下载
 
-### 4. 导航菜单编辑器 (NavigationEditorPanel)
+### 4. 操作历史与回滚 (OperationHistoryPanel)
 
-- **树形菜单项编辑器**，支持三级嵌套
-- HTML5 Drag & Drop 拖拽排序/升降级
-- **添加菜单项弹窗**：链接类型选择器（首页/商品/集合/页面/博客/自定义）
-- 批量提交 diff 变更摘要
+- **lib/operation-logger.ts** 通用日志模块：每次批量/单品操作自动记录变更详情（旧值/新值/目标）
+- **时间线浏览**：按时间倒序展示所有操作记录，标注操作类型/影响商品数/执行状态
+- **一键回滚**：回滚到操作前的值，回滚进度条 + 失败汇总
+- **最近 100 条存储**于 localStorage，超出自动淘汰
 
-### 5. 页面与博客管理 (ContentPagesPanel)
+### 5. 库存预警与补货建议 (InventoryAlertPanel)
 
-- **双 Tab**：页面 Pages / 博客文章 Blog Posts
-- 博客选择器 + 文章列表 + 内联编辑
-- 内容预览/编辑双模式 + SEO 预览卡片
-- 修复 blog 数据 API 对接（GraphQL→REST 降级 + selectedBlogId 匹配）
+- **自动计算**：日均销量 × 可售天数 × 建议补货量
+- **四色状态**：充足🟢 / 关注🟡 / 断货🔴 / 售罄⚫
+- **30 天销量趋势**：迷你折线图 + 在途库存手动输入
+- **补货清单 CSV**一键导出 + 标记已补货
 
-### 6. Metafields 编辑器 (MetafieldsEditorPanel)
+### 6. 本地规则引擎 (RuleEnginePanel)
 
-- 商品/变体/集合三类型切换
-- **11 种类型动态输入控件**：文本/数字/布尔/JSON/颜色/URL/日期等
-- JSON 格式校验 + 批量 CSV 导入导出
-- 修复类型切换后数据丢失 bug（Record 多键状态保持）
-
-### 7. 侧边栏分类重构
-
-- 从 3 个臃肿大类重组为 **5 个按工作流划分的分类**：
-  📊 数据中心 → 🏪 订单与客户 → 📦 商品与内容 → 💰 财务对账 → 🛡️ 风控预警
+- **三步可视化编排**：触发器 → 条件 → 动作
+- **5 套预置规则模板**：高价值新客标记 / 退款预警 / 库存告急 / VIP 识别 / 复购感谢
+- **条件编辑器**：AND/OR 组合，支持订单/客户/库存/退款多维度
+- **6 种动作**：打标签 / 加备注 / 桌面通知 / 改库存 / 改价 / 操作日志
+- **规则优先级拖拽排序** + 去重保护（1 小时内不重复触发）
 
 ---
 
@@ -266,7 +267,7 @@ Once the server is live, print a high-quality Chinese greeting message. Provide 
 - 2 家高保真虚拟店铺 (TechGear Pro 科技配饰 · MinimalHome 极简家居)
 - 跨越 14 天历史订单流 + 50+ 模拟客户 + 8 款多规格演示商品 · 18 个变体
 - 30 秒心跳爆单引擎，40% 概率生成 EUR/Stripe 虚拟订单
-- 无需 Shopify Token 即可 1 秒完整体验全部 18 个面板
+- 无需 Shopify Token 即可 1 秒完整体验全部 24 个面板
 
 ---
 
@@ -300,7 +301,7 @@ shopify-cn-dashboard/
 │   │   └── page.tsx                     # 店铺配置页 (含一键导入演示)
 │   ├── dashboard/
 │   │   ├── layout.tsx                   # SaaS 混合导航矩阵
-│   │   ├── page.tsx                     # 状态中心 + 18 面板条件渲染
+│   │   ├── page.tsx                     # 状态中心 + 24 面板条件渲染
 │   │   ├── config.ts                    # 全局常量
 │   │   ├── helpers.ts                   # 工具函数
 │   │   └── components/
@@ -319,6 +320,11 @@ shopify-cn-dashboard/
 │   │       ├── NavigationEditorPanel.tsx  # 导航菜单编辑器 [2.4]
 │   │       ├── ContentPagesPanel.tsx      # 页面与博客管理 [2.4]
 │   │       ├── MetafieldsEditorPanel.tsx  # 元字段编辑器 [2.4]
+│   │       ├── BatchOperationPanel.tsx     # 批量操作引擎 [2.5]
+│   │       ├── ScheduledTasksPanel.tsx     # 定时任务引擎 [2.5]
+│   │       ├── OperationHistoryPanel.tsx   # 操作历史与回滚 [2.5]
+│   │       ├── InventoryAlertPanel.tsx     # 库存预警补货 [2.5]
+│   │       ├── RuleEnginePanel.tsx         # 规则引擎 [2.5]
 │   │       ├── OrderCenterPanel.tsx      # 订单管理中心 [2.3]
 │   │       ├── OrderTags.tsx             # 订单标签/备注 [2.3]
 │   │       ├── CustomerCenterPanel.tsx   # 客户管理 [2.3]
@@ -331,7 +337,8 @@ shopify-cn-dashboard/
 ├── lib/
 │   ├── utils.ts
 │   ├── demo-data.ts                     # 演示数据引擎
-│   └── export-utils.ts                  # 通用 CSV 导出工具 [2.3]
+│   ├── export-utils.ts                  # 通用 CSV 导出工具 [2.3]
+│   └── operation-logger.ts              # 通用操作日志模块 [2.5]
 └── README.md
 ```
 
@@ -410,7 +417,7 @@ npm run build && npm start
 
 ## 🏗 架构亮点
 
-- **双轨共存 (Dual-Track)**：Demo 沙盒与真实生产环境 100% 动态分流，18 个面板通过 `isDemo` 守卫 + Props 数据注入实现零混淆
+- **双轨共存 (Dual-Track)**：Demo 沙盒与真实生产环境 100% 动态分流，24 个面板通过 `isDemo` 守卫 + Props 数据注入实现零混淆
 - **GraphQL + REST 双协议**：读走 GraphQL (products/markets/blogs/pages/collections)，改价走 GraphQL (productVariantsBulkUpdate)，改库存/履约/导航/metaobjects 走 REST，各取所长
 - **全字段商品编辑器**：4 Tab 详情编辑弹窗，描述预览/源码双模式，图片缩略图+拖拽排序，SEO 元数据全字段
 - **批量编辑引擎**：标题/描述/SEO/标签四模板批量操作，实时预览+变更摘要+进度条

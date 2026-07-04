@@ -13,6 +13,7 @@ import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { formatCny } from "../helpers";
 import { EXCHANGE_RATE } from "../config";
+import { addOperationLog } from "@/lib/operation-logger";
 
 /* ─── Types ──────────────────────────────────────────── */
 
@@ -334,6 +335,14 @@ export default function ProductControlPanel({
       if (json.success) {
         setCatalog((prev) => prev.map((p) => p.id === editProduct.id ? { ...p, title: editFields.title, status: editFields.status === "active" ? "ACTIVE" : "DRAFT", vendor: editFields.vendor, productType: editFields.productType, tags: editFields.tags, bodyHtml: editFields.bodyHtml, seoTitle: editFields.seoTitle, seoDescription: editFields.seoDescription } : p));
         showToast("商品 \"" + editFields.title + "\" 已更新");
+
+        // Record for operation history
+        addOperationLog({
+          id: crypto.randomUUID(), timestamp: new Date().toISOString(), actionType: "product_update",
+          summary: `编辑商品 "${editFields.title}"`,
+          details: [{ targetType: "product", targetId: editProduct.id, targetName: editFields.title, field: "title", oldValue: editProduct.title, newValue: editFields.title, shopUrl: store.shopUrl, rolledBack: false }],
+          status: "completed", totalItems: 1, successCount: 1, failCount: 0,
+        });
       } else {
         showToast("保存失败: " + (json.error || "未知错误"));
       }

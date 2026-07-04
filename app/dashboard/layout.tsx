@@ -25,12 +25,17 @@ import {
   Menu,
   FileText,
   Database,
+  Play,
+  CalendarClock,
+  History,
+  Gauge,
+  Workflow,
 } from "lucide-react";
 import { cn } from "@/lib/utils";
 
 // ─── Context ───────────────────────────────────────────
 
-type MenuKey = "overview" | "ai" | "finance" | "risk" | "trend" | "aggregator" | "gateway" | "funnel" | "ad" | "product-control" | "bulk-edit" | "orders" | "customers" | "fulfillment" | "collections" | "navigation" | "content-pages" | "metafields";
+type MenuKey = "overview" | "ai" | "finance" | "risk" | "trend" | "aggregator" | "gateway" | "funnel" | "ad" | "product-control" | "batch-op" | "bulk-edit" | "scheduled-tasks" | "rule-engine" | "orders" | "customers" | "fulfillment" | "collections" | "navigation" | "content-pages" | "metafields" | "operation-history" | "inventory-alert";
 
 interface DashboardContextValue {
   activeMenu: MenuKey;
@@ -79,6 +84,7 @@ const NAV_CATEGORIES: NavCategory[] = [
       { id: "orders", label: "订单管理中心", icon: ShoppingBag },
       { id: "customers", label: "客户管理中心", icon: Users },
       { id: "fulfillment", label: "履约看板", icon: Truck },
+      { id: "inventory-alert", label: "库存健康面板", icon: Gauge },
     ],
   },
   {
@@ -87,11 +93,15 @@ const NAV_CATEGORIES: NavCategory[] = [
     icon: Package,
     items: [
       { id: "product-control", label: "跨店改价控制", icon: Zap },
+      { id: "batch-op", label: "批量操作引擎", icon: Play },
+      { id: "scheduled-tasks", label: "定时任务", icon: CalendarClock },
+      { id: "rule-engine", label: "规则引擎", icon: Workflow },
       { id: "bulk-edit", label: "批量编辑面板", icon: Layers },
       { id: "collections", label: "集合管理", icon: FolderTree },
       { id: "navigation", label: "导航菜单编辑", icon: Menu },
       { id: "content-pages", label: "页面与博客", icon: FileText },
       { id: "metafields", label: "Metafields 编辑器", icon: Database },
+      { id: "operation-history", label: "操作历史", icon: History },
     ],
   },
   {
