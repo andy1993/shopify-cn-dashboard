@@ -1,6 +1,7 @@
 "use client";
 
 import { useState } from "react";
+import { encryptData, decryptData } from "@/lib/crypto-utils";
 import { useRouter } from "next/navigation";
 import {
   Loader2,
@@ -30,23 +31,47 @@ export default function ConfigPage() {
   const [token, setToken] = useState("");
   const [loading, setLoading] = useState(false);
   const [demoLoading, setDemoLoading] = useState(false);
+  const [masterPassword, setMasterPassword] = useState("");
+  const [showPasswordSetup, setShowPasswordSetup] = useState(false);
 
   // ── Connect real store ──
   const handleConnect = async () => {
     setLoading(true);
 
-    const newStore = {
+    var hasPassword = localStorage.getItem("shopify_has_password");
+    if (!hasPassword && !masterPassword.trim()) {
+      setShowPasswordSetup(true);
+      setLoading(false);
+      return;
+    }
+
+    var newStore = {
       id: crypto.randomUUID(),
       shopUrl: domain.trim(),
       accessToken: token.trim(),
       shopName: domain.trim().replace(".myshopify.com", ""),
     };
 
-    const raw = localStorage.getItem("shopify_stores");
-    const stores = raw ? JSON.parse(raw) : [];
+    var raw = localStorage.getItem("shopify_stores_encrypted");
+    var stores: any[] = [];
+    if (raw && masterPassword.trim()) {
+      try {
+        var decrypted = await decryptData(raw, masterPassword.trim());
+        stores = JSON.parse(decrypted);
+      } catch {
+        setLoading(false);
+        setShowPasswordSetup(true);
+        return;
+      }
+    }
+
     stores.push(newStore);
-    localStorage.setItem("shopify_stores", JSON.stringify(stores));
+    var plaintext = JSON.stringify(stores);
+    var encrypted = await encryptData(plaintext, masterPassword.trim());
+    localStorage.setItem("shopify_stores_encrypted", encrypted);
     localStorage.setItem("shopify_current_store_id", newStore.id);
+    localStorage.setItem("shopify_has_password", "true");
+    localStorage.removeItem("shopify_stores");
 
     await new Promise((resolve) => setTimeout(resolve, 1000));
     router.push("/dashboard");
@@ -55,19 +80,24 @@ export default function ConfigPage() {
   // ── Load demo stores ──
   const handleLoadDemo = async () => {
     setDemoLoading(true);
-
-    // 800ms delay for smooth UX
     await new Promise((resolve) => setTimeout(resolve, 800));
 
-    const demoStores = DEMO_STORES.map((store, i) => ({
-      id: `demo-${i}`,
+    var demoStores = DEMO_STORES.map((store, i) => ({
+      id: "demo-" + i,
       shopUrl: store.domain,
       accessToken: "demo-mode",
       shopName: store.shopName,
       isDemo: true,
     }));
 
-    localStorage.setItem("shopify_stores", JSON.stringify(demoStores));
+    var plaintext = JSON.stringify(demoStores);
+    var hasPassword = localStorage.getItem("shopify_has_password");
+    if (hasPassword && masterPassword.trim()) {
+      var encrypted = await encryptData(plaintext, masterPassword.trim());
+      localStorage.setItem("shopify_stores_encrypted", encrypted);
+    } else {
+      localStorage.setItem("shopify_stores_encrypted", plaintext);
+    }
     localStorage.setItem("shopify_current_store_id", "demo-0");
     router.push("/dashboard");
   };
@@ -107,6 +137,31 @@ export default function ConfigPage() {
         </CardHeader>
 
         <CardContent className="space-y-5">
+          {/* Password Setup / Input */}
+          {showPasswordSetup && (
+            <div className="rounded-lg border border-amber-500/20 bg-amber-500/10 p-4 text-center">
+              <p className="text-sm font-medium text-amber-300 mb-2">首次使用 — 请设置主密码</p>
+              <p className="text-xs text-amber-400/70 mb-3">此密码用于本地加密您的 API Token，请牢记，丢失后无法恢复</p>
+              <Input
+                type="password"
+                value={masterPassword}
+                onChange={function (e) { setMasterPassword(e.target.value); }}
+                placeholder="设置主密码（至少 8 位）"
+                className="h-10 text-sm text-center"
+              />
+            </div>
+          )}
+          {!showPasswordSetup && (
+            <div>
+              <Input
+                type="password"
+                value={masterPassword}
+                onChange={function (e) { setMasterPassword(e.target.value); }}
+                placeholder="主密码（解密 Token）"
+                className="h-9 text-sm"
+              />
+            </div>
+          )}
           {/* Domain */}
           <div className="space-y-2">
             <label

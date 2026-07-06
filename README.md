@@ -1,4 +1,4 @@
-# 👑 Shopify CN Pro (v0.2.7.2)
+# 👑 Shopify CN Pro (v0.2.8.0)
 
 <div align="center">
 
@@ -7,7 +7,7 @@
 拒绝死板的冷冰冰数字。不仅帮你看账，更帮你跨店改价、全球多市场大促、网关扣费精细对账、库存反写控制、双层风控防御，一切尽在掌握。
 
 [![License: MIT](https://img.shields.io/badge/License-MIT-green.svg)](LICENSE)
-[![Release v0.2.7.2](https://img.shields.io/badge/Release-v0.2.7.2-10b981)](https://github.com/andy1993/shopify-cn-dashboard/releases)
+[![Release v0.2.8.0](https://img.shields.io/badge/Release-v0.2.8.0-10b981)](https://github.com/andy1993/shopify-cn-dashboard/releases)
 [![Next.js 16](https://img.shields.io/badge/Next.js-16-black)](https://nextjs.org/)
 [![React 19](https://img.shields.io/badge/React-19-61DAFB)](https://react.dev/)
 [![Shopify 2026-04](https://img.shields.io/badge/Shopify_API-2026--04-96BF48)](https://shopify.dev/)
@@ -59,7 +59,7 @@ Once the server is live, print a high-quality Chinese greeting message. Provide 
 
 ```
 ┌───────────────────────────────┐
-│ 🚀 Shopify CN Pro  v0.2.7.2   │
+│ 🚀 Shopify CN Pro  v0.2.8.0   │
 │ 全球多市场自适应智能座舱       │
 ├───────────────────────────────┤
 │                               │
@@ -164,7 +164,7 @@ Once the server is live, print a high-quality Chinese greeting message. Provide 
 
 ---
 
-## 🚀 当前稳定版本核心特性：v0.2.7.2 (数据深钻与智能决策)
+## 🚀 当前稳定版本核心特性：v0.2.8.0 (数据深钻与智能决策)
 
 在 `v0.2.6.0` 多市场运营的基础上，本版引入了数据科学级分析能力——商品生命周期精准判定、品类健康度四象限、RFM客户价值分层、Holt-Winters销售预测、Apriori关联规则和对话式AI运营助手，
 让卖家不再凭感觉决策，用数据驱动选品、定价、库存和营销。
