@@ -1190,6 +1190,42 @@ function buildProducts(orders: ShopifyOrder[]): Array<{
 async function handleGetDashboard(shopUrl: string, accessToken: string) {
   const exchangeRate = getExchangeRate();
 
+  // Demo 模式直接返回模拟数据，不调真实 Shopify API
+  var demoIdx = DEMO_DOMAINS.indexOf(shopUrl);
+  if (demoIdx !== -1) {
+    var demoStore = DEMO_STORES[demoIdx];
+    var demoOrders = demoIdx === 0 ? DEMO_ORDERS_A : DEMO_ORDERS_B;
+    var demoCharts = demoIdx === 0 ? DEMO_CHARTS_A : DEMO_CHARTS_B;
+    var demoGmvUsd = demoOrders.reduce(function (s: number, o: any) { return s + parseFloat(o.total_price); }, 0);
+    var demoGmv = Math.round(demoGmvUsd * exchangeRate * 100) / 100;
+    var demoCompactOrders = demoOrders.map(function (o: any) {
+      return {
+        id: o.id, created_at: o.created_at, total_price: o.total_price,
+        financial_status: o.financial_status, gateway: o.gateway ?? "",
+        customer_orders_count: o.customer?.orders_count ?? 1,
+        shipping_country: o.shipping_address?.country_code ?? "",
+      };
+    });
+    var demoResponse: any = {
+      success: true, shopName: demoStore.shopName, domain: demoStore.domain,
+      currency: demoStore.currency || "USD", exchangeRate: exchangeRate,
+      gmv: demoGmv, orderCount: demoOrders.length, conversionRate: 0,
+      charts: demoCharts, products: demoStore.products,
+      orders: demoCompactOrders, holidaysData: [],
+      topCountries: ["US", "JP", "GB", "DE", "FR"],
+      fullProducts: [], customers: [], collections: null,
+      menus: [], pages: [], blogs: [], variantSales: {},
+      markets: [], locations: [],
+      inventoryByLocation: [],
+      shippingData: { rates: [], carriers: [], warehouseZones: [] },
+      taxData: { shopLevel: { taxesIncluded: false, taxShipping: false } },
+      dailyGMV: [],
+      warnings: undefined,
+      lastUpdated: new Date().toISOString(),
+    };
+    return NextResponse.json(demoResponse);
+  }
+
   try {
     const shop = await fetchShopInfo(shopUrl, accessToken);
     const orders = await fetchAllTodayOrders(shopUrl, accessToken);
