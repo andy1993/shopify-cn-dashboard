@@ -1,7 +1,6 @@
 "use client";
 
 import { useState } from "react";
-import { encryptData, decryptData } from "@/lib/crypto-utils";
 import { useRouter } from "next/navigation";
 import {
   Loader2,
@@ -26,24 +25,15 @@ import {
 } from "@/components/ui/card";
 
 export default function ConfigPage() {
-  const router = useRouter();
-  const [domain, setDomain] = useState("");
-  const [token, setToken] = useState("");
-  const [loading, setLoading] = useState(false);
-  const [demoLoading, setDemoLoading] = useState(false);
-  const [masterPassword, setMasterPassword] = useState("");
-  const [showPasswordSetup, setShowPasswordSetup] = useState(false);
+  var router = useRouter();
+  var [domain, setDomain] = useState("");
+  var [token, setToken] = useState("");
+  var [loading, setLoading] = useState(false);
+  var [demoLoading, setDemoLoading] = useState(false);
 
   // ── Connect real store ──
-  const handleConnect = async () => {
+  var handleConnect = function () {
     setLoading(true);
-
-    var hasPassword = localStorage.getItem("shopify_has_password");
-    if (!hasPassword && !masterPassword.trim()) {
-      setShowPasswordSetup(true);
-      setLoading(false);
-      return;
-    }
 
     var newStore = {
       id: crypto.randomUUID(),
@@ -52,59 +42,37 @@ export default function ConfigPage() {
       shopName: domain.trim().replace(".myshopify.com", ""),
     };
 
-    var raw = localStorage.getItem("shopify_stores_encrypted");
+    var raw = localStorage.getItem("shopify_stores");
     var stores: any[] = [];
-    if (raw && masterPassword.trim()) {
-      try {
-        var decrypted = await decryptData(raw, masterPassword.trim());
-        stores = JSON.parse(decrypted);
-      } catch {
-        setLoading(false);
-        setShowPasswordSetup(true);
-        return;
-      }
-    }
-
+    try { stores = raw ? JSON.parse(raw) : []; } catch { stores = []; }
     stores.push(newStore);
-    var plaintext = JSON.stringify(stores);
-    var encrypted = await encryptData(plaintext, masterPassword.trim());
-    localStorage.setItem("shopify_stores_encrypted", encrypted);
-    localStorage.setItem("shopify_stores", plaintext);
+    localStorage.setItem("shopify_stores", JSON.stringify(stores));
     localStorage.setItem("shopify_current_store_id", newStore.id);
-    localStorage.setItem("shopify_has_password", "true");
 
-    await new Promise((resolve) => setTimeout(resolve, 1000));
-    router.push("/dashboard");
+    setTimeout(function () { router.push("/dashboard"); }, 1000);
   };
 
   // ── Load demo stores ──
-  const handleLoadDemo = async () => {
+  var handleLoadDemo = function () {
     setDemoLoading(true);
-    await new Promise((resolve) => setTimeout(resolve, 800));
+    setTimeout(function () {
+      var demoStores = DEMO_STORES.map(function (store, i) {
+        return {
+          id: "demo-" + i,
+          shopUrl: store.domain,
+          accessToken: "demo-mode",
+          shopName: store.shopName,
+          isDemo: true,
+        };
+      });
 
-    var demoStores = DEMO_STORES.map((store, i) => ({
-      id: "demo-" + i,
-      shopUrl: store.domain,
-      accessToken: "demo-mode",
-      shopName: store.shopName,
-      isDemo: true,
-    }));
-
-    var plaintext = JSON.stringify(demoStores);
-    var hasPassword = localStorage.getItem("shopify_has_password");
-    if (hasPassword && masterPassword.trim()) {
-      var encrypted = await encryptData(plaintext, masterPassword.trim());
-      localStorage.setItem("shopify_stores_encrypted", encrypted);
-      localStorage.setItem("shopify_stores", plaintext);
-    } else {
-      localStorage.setItem("shopify_stores_encrypted", plaintext);
-      localStorage.setItem("shopify_stores", plaintext);
-    }
-    localStorage.setItem("shopify_current_store_id", "demo-0");
-    router.push("/dashboard");
+      localStorage.setItem("shopify_stores", JSON.stringify(demoStores));
+      localStorage.setItem("shopify_current_store_id", "demo-0");
+      router.push("/dashboard");
+    }, 800);
   };
 
-  const isValid = domain.trim().length > 0 && token.trim().length > 0;
+  var isValid = domain.trim().length > 0 && token.trim().length > 0;
 
   // ── Render ──
   return (
@@ -139,31 +107,6 @@ export default function ConfigPage() {
         </CardHeader>
 
         <CardContent className="space-y-5">
-          {/* Password Setup / Input */}
-          {showPasswordSetup && (
-            <div className="rounded-lg border border-amber-500/20 bg-amber-500/10 p-4 text-center">
-              <p className="text-sm font-medium text-amber-300 mb-2">首次使用 — 请设置主密码</p>
-              <p className="text-xs text-amber-400/70 mb-3">此密码用于本地加密您的 API Token，请牢记，丢失后无法恢复</p>
-              <Input
-                type="password"
-                value={masterPassword}
-                onChange={function (e) { setMasterPassword(e.target.value); }}
-                placeholder="设置主密码（至少 8 位）"
-                className="h-10 text-sm text-center"
-              />
-            </div>
-          )}
-          {!showPasswordSetup && (
-            <div>
-              <Input
-                type="password"
-                value={masterPassword}
-                onChange={function (e) { setMasterPassword(e.target.value); }}
-                placeholder="主密码（解密 Token）"
-                className="h-9 text-sm"
-              />
-            </div>
-          )}
           {/* Domain */}
           <div className="space-y-2">
             <label
@@ -178,7 +121,7 @@ export default function ConfigPage() {
               type="text"
               placeholder="your-store.myshopify.com"
               value={domain}
-              onChange={(e) => setDomain(e.target.value)}
+              onChange={function (e) { setDomain(e.target.value); }}
               className="h-10"
             />
           </div>
@@ -197,7 +140,7 @@ export default function ConfigPage() {
               type="password"
               placeholder="shpat_xxxxxxxxxxxxxxxxxxxx"
               value={token}
-              onChange={(e) => setToken(e.target.value)}
+              onChange={function (e) { setToken(e.target.value); }}
               className="h-10 font-mono tracking-wide"
             />
             <p className="text-xs text-muted-foreground">
