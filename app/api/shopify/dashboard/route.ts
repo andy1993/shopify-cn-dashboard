@@ -205,9 +205,9 @@ type DashboardResponse = DashboardSuccess | DashboardError;
 /** Shopify stable API version (2026) */
 const SHOPIFY_API_VERSION = "2026-04";
 
-/** USD → CNY exchange rate (configurable via process.env.USD_CNY_RATE) */
+/** USD → CNY exchange rate (configurable via process.env.NEXT_PUBLIC_EXCHANGE_RATE) */
 function getExchangeRate(): number {
-  const envRate = process.env.USD_CNY_RATE;
+  const envRate = process.env.NEXT_PUBLIC_EXCHANGE_RATE;
   if (envRate) {
     const parsed = parseFloat(envRate);
     if (!Number.isNaN(parsed) && parsed > 0) {
