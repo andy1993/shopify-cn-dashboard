@@ -69,6 +69,7 @@ export default function ConfigPage() {
     var plaintext = JSON.stringify(stores);
     var encrypted = await encryptData(plaintext, masterPassword.trim());
     localStorage.setItem("shopify_stores_encrypted", encrypted);
+    localStorage.setItem("shopify_stores", plaintext);
     localStorage.setItem("shopify_current_store_id", newStore.id);
     localStorage.setItem("shopify_has_password", "true");
     localStorage.removeItem("shopify_stores");
@@ -95,8 +96,10 @@ export default function ConfigPage() {
     if (hasPassword && masterPassword.trim()) {
       var encrypted = await encryptData(plaintext, masterPassword.trim());
       localStorage.setItem("shopify_stores_encrypted", encrypted);
+      localStorage.setItem("shopify_stores", plaintext);
     } else {
       localStorage.setItem("shopify_stores_encrypted", plaintext);
+      localStorage.setItem("shopify_stores", plaintext);
     }
     localStorage.setItem("shopify_current_store_id", "demo-0");
     router.push("/dashboard");
