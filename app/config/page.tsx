@@ -72,7 +72,6 @@ export default function ConfigPage() {
     localStorage.setItem("shopify_stores", plaintext);
     localStorage.setItem("shopify_current_store_id", newStore.id);
     localStorage.setItem("shopify_has_password", "true");
-    localStorage.removeItem("shopify_stores");
 
     await new Promise((resolve) => setTimeout(resolve, 1000));
     router.push("/dashboard");
