@@ -178,6 +178,8 @@ interface DashboardSuccess {
     markets: Array<{ marketId: string; countryCode: string; countryName: string; taxConfigured: boolean; taxRate: number | null; reducedRate: number | null; taxIncluded: boolean; vatId: string | null; risks: Array<{ level: "high" | "medium"; message: string }>; importTaxCollected: boolean; shippingTaxed: boolean }>;
     shopLevel: { taxesIncluded: boolean; taxShipping: boolean };
   };
+  /** Daily GMV for forecasting */
+  dailyGMV?: Array<{ date: string; gmv: number; orderCount: number }>;
 }
 
 interface NagerHoliday {
@@ -1772,6 +1774,59 @@ async function handleMenuItemAction(
 }
 
 // ═══════════════════════════════════════════════════════
+// AI Chat Conversation Handler
+// ═══════════════════════════════════════════════════════
+
+async function handleAiChat(
+  shopUrl: string, accessToken: string,
+  messages: Array<{ role: string; content: string }>,
+  scope?: string, compareStoreId?: string,
+): Promise<NextResponse> {
+  try {
+    const DEEPSEEK_URL = "https://api.deepseek.com/v1/chat/completions";
+    const DEEPSEEK_KEY = process.env.DEEPSEEK_API_KEY;
+
+    if (!DEEPSEEK_KEY) {
+      return NextResponse.json({ success: true, reply: "AI 服务未配置（需设置 DEEPSEEK_API_KEY）。请通过 Demons 模式体验。" });
+    }
+
+    // Build system prompt
+    const systemPrompt = "你是 Shopify 运营助手，拥有 10 年跨境电商运营经验和数据分析背景。" +
+      "你的职责：1) 解读数据趋势并引用具体数字 2) 发现异常并诊断原因 3) 给出可量化、可执行的操作建议。" +
+      "格式要求：回复使用 Markdown，包含数据引用（如「近30天GMV ¥383,856」）、分析逻辑、优先级排序。禁止空话套话。" +
+      (scope && scope !== "all" ? "本次分析范围限定为：" + scope + "。请聚焦该范围内的数据。" : "") +
+      (compareStoreId ? "请对比当前店铺与" + compareStoreId + "的差异，以表格形式呈现。" : "");
+
+    const response = await fetch(DEEPSEEK_URL, {
+      method: "POST",
+      headers: { "Content-Type": "application/json", "Authorization": "Bearer " + DEEPSEEK_KEY },
+      body: JSON.stringify({
+        model: "deepseek-chat",
+        messages: [{ role: "system", content: systemPrompt }, ...messages],
+        temperature: 0.7,
+        max_tokens: 2000,
+      }),
+      signal: AbortSignal.timeout(30000),
+    });
+
+    if (!response.ok) {
+      return NextResponse.json({ success: false, error: "AI 服务暂不可用" }, { status: 502 });
+    }
+
+    const data = await response.json() as { choices?: Array<{ message?: { content?: string } }> };
+    const reply = data.choices?.[0]?.message?.content || "抱歉，未获得有效回复。";
+
+    return NextResponse.json({
+      success: true,
+      reply,
+      dataSource: "数据来源：" + new Date().toISOString().slice(0, 10) + " 全店数据快照",
+    });
+  } catch {
+    return NextResponse.json({ success: false, error: "AI 分析超时" }, { status: 500 });
+  }
+}
+
+// ═══════════════════════════════════════════════════════
 // Translation CRUD Handler
 // ═══════════════════════════════════════════════════════
 
@@ -1950,6 +2005,10 @@ export async function POST(request: NextRequest) {
       resourceType?: string;
       resourceId?: string;
       translations?: Array<{ key: string; value: string }>;
+      /** AI Chat */
+      messages?: Array<{ role: string; content: string }>;
+      scope?: string;
+      compareStoreId?: string;
       isDemo?: boolean;
       metrics?: {
         shopName: string;
@@ -2082,6 +2141,13 @@ export async function POST(request: NextRequest) {
     // ═════════════════════════════════════════════════════
     if (body.action && ["getTranslatableResources", "getTranslations", "saveTranslations"].includes(body.action) && body.shopUrl && body.accessToken) {
       return await handleTranslationAction(body.action, body.shopUrl, body.accessToken, body.locale as string, body.resourceType as string, body.resourceId as string, body.translations as Array<{ key: string; value: string }>);
+    }
+
+    // ═════════════════════════════════════════════════════
+    // 写操作路由: AI Chat Conversation
+    // ═════════════════════════════════════════════════════
+    if (body.action === "aiChat" && body.shopUrl && body.accessToken && body.messages) {
+      return await handleAiChat(body.shopUrl, body.accessToken, body.messages as Array<{ role: string; content: string }>, body.scope as string, body.compareStoreId as string);
     }
 
     const isDemo = body.isDemo || !!body.shopUrl?.includes("demo");

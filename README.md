@@ -1,4 +1,4 @@
-# 👑 Shopify CN Pro (v0.2.6.0)
+# 👑 Shopify CN Pro (v0.2.7.0)
 
 <div align="center">
 
@@ -7,7 +7,7 @@
 拒绝死板的冷冰冰数字。不仅帮你看账，更帮你跨店改价、全球多市场大促、网关扣费精细对账、库存反写控制、双层风控防御，一切尽在掌握。
 
 [![License: MIT](https://img.shields.io/badge/License-MIT-green.svg)](LICENSE)
-[![Release v0.2.6.0](https://img.shields.io/badge/Release-v0.2.6.0-10b981)](https://github.com/andy1993/shopify-cn-dashboard/releases)
+[![Release v0.2.7.0](https://img.shields.io/badge/Release-v0.2.7.0-10b981)](https://github.com/andy1993/shopify-cn-dashboard/releases)
 [![Next.js 16](https://img.shields.io/badge/Next.js-16-black)](https://nextjs.org/)
 [![React 19](https://img.shields.io/badge/React-19-61DAFB)](https://react.dev/)
 [![Shopify 2026-04](https://img.shields.io/badge/Shopify_API-2026--04-96BF48)](https://shopify.dev/)
@@ -59,7 +59,7 @@ Once the server is live, print a high-quality Chinese greeting message. Provide 
 
 ```
 ┌───────────────────────────────┐
-│ 🚀 Shopify CN Pro  v0.2.6.0   │
+│ 🚀 Shopify CN Pro  v0.2.7.0   │
 │ 全球多市场自适应智能座舱       │
 ├───────────────────────────────┤
 │                               │
@@ -85,13 +85,29 @@ Once the server is live, print a high-quality Chinese greeting message. Provide 
 │   ├ 📄 页面与博客               │
 │   └ 🗄️ Metafields 编辑器        │
 │                               │
-│ 🌍 多市场运营 [可折叠]  NEW     │
+│ 🤖 自动化工作流 [可折叠]        │
+│   ├ 🔄 批量操作引擎             │
+│   ├ 💲 价格策略模板             │
+│   ├ ⏰ 定时任务引擎             │
+│   ├ 📜 操作历史回滚             │
+│   ├ 📉 库存预警补货             │
+│   └ 🧩 规则引擎                 │
+│                               │
+│ 🌍 多市场运营 [可折叠]          │
 │   ├ 🌏 Markets 总览             │
 │   ├ 💱 多币种定价               │
 │   ├ 📦 多仓库存                 │
 │   ├ 🌐 翻译管理                 │
 │   ├ 🚢 运费配置                 │
 │   └ 💰 税费概览                 │
+│                               │
+│ 🎯 智能决策 [可折叠]  NEW      │
+│   ├ 📊 商品分析                 │
+│   ├ 🏷️ 品类分析                  │
+│   ├ 👤 客户价值分层             │
+│   ├ 📈 销售预测                 │
+│   ├ 🔗 商品关联推荐             │
+│   └ 🤖 AI 运营助手              │
 │                               │
 │ 💰 财务对账 [可折叠]            │
 │   ├ 🟩 广告成效与 MER          │
@@ -134,6 +150,12 @@ Once the server is live, print a high-quality Chinese greeting message. Provide 
 | 🌍 多市场运营 | 翻译管理 | 完成度进度条 · 对照编辑 · 机器翻译 · 批量机翻 · JSON 导出/导入 |
 | 🌍 多市场运营 | 运费配置 | 市场×运费矩阵 · 送达时效表 · 运费计算器 · 跨市场差异分析警告 |
 | 🌍 多市场运营 | 税费概览 | IOSS/VAT/Sales Tax 风险扫描 · 三色标记 · 关税知识库 · 忽略功能 |
+| 🎯 智能决策 | 商品分析 | 五维排序 · 生命周期标签 · 4Tab详情 · 双商品对比 |
+| 🎯 智能决策 | 品类分析 | 健康度评分 · 四象限气泡图 · SABC分级 · 雷达图对比 |
+| 🎯 智能决策 | 客户价值分层 | RFM三维评分 · 客户金字塔 · 迁徙矩阵 · 营销建议 |
+| 🎯 智能决策 | 销售预测 | Holt-Winters · 80%置信区间 · MAPE回测 · 趋势分解 |
+| 🎯 智能决策 | 商品关联推荐 | 共现矩阵 · Apriori规则 · 置信度/提升度 · 捆绑模拟 |
+| 🎯 智能决策 | AI运营助手 | 对话式多轮追问 · 快捷标签 · 多店对比 · 对话历史保存 |
 | 💰 财务对账 | 广告成效与 MER | Meta/Google 实时消耗 · ROAS · MER% · 双轴 ComposedChart |
 | 💰 财务对账 | 网关渠道对账 | 多币种 gateway x currency 双重 GroupBy · 一键费率预设 · Donut + 明细 Table |
 | 💰 财务对账 | 供应链对账 | 采购/物流/广告三滑块 · Donut 利润饼图 · GMV 与毛利实时计算 |
@@ -142,55 +164,47 @@ Once the server is live, print a high-quality Chinese greeting message. Provide 
 
 ---
 
-## 🚀 当前稳定版本核心特性：v0.2.6.0 (多市场与全球化运营)
+## 🚀 当前稳定版本核心特性：v0.2.7.0 (数据深钻与智能决策)
 
-在 `v0.2.5.0` 批量操作与自动化工作流的基础上，本版补齐了 Shopify Markets 全球化运营能力，
-让卖家在一个界面内管理多市场定价、多仓库库存、翻译本地化、运费配置和税务合规。
+在 `v0.2.6.0` 多市场运营的基础上，本版引入了数据科学级分析能力——商品生命周期精准判定、品类健康度四象限、RFM客户价值分层、Holt-Winters销售预测、Apriori关联规则和对话式AI运营助手，
+让卖家不再凭感觉决策，用数据驱动选品、定价、库存和营销。
 
-### 1. Markets 总览面板 (MarketsOverviewPanel)
+### 1. 商品分析面板 (ProductAnalyticsPanel)
 
-- **卡片网格展示所有市场**：国旗/币种/语言/域名/价格调整/激活状态一目了然
-- **详情弹窗 3 Tab**：概况（编辑市场配置）/ 商品定价（手动覆盖价格）/ 域名与语言
-- **批量市场操作**：激活/停用、统一价格调整、语言设置
-- 修复真实店铺数据不显示 bug（补充 useEffect props→state 同步）
+- **五维排行**：GMV / 销量 / 利润率 / 退货率 / 周增长，变体行 Accordion 展开
+- **生命周期自动判定**：🆕新品 · 🔥上升 · ✅成熟 · 📉衰退 · 💤休眠
+- **详情 4 Tab**：销量趋势 · 利润构成 · 退货原因 · 订单明细
+- **双商品对比模式**：并排指标对比，差异绿红高亮
 
-### 2. 多币种定价管理 (MultiCurrencyPricingPanel)
+### 2. 品类分析面板 (CategoryAnalyticsPanel)
 
-- **商品 × 市场矩阵价格表**，单元格点击直接编辑
-- **调整标注显示**：=基础价 / +5% / -2% / 手动，颜色语义区分
-- **变体行展开** + 批量调价（上调/下调/重置/复制基础价）
-- 汇率信息栏 + 快速批量操作栏
+- **品类健康度评分 0-100**：利润 40% + 增长 30% + 风险 20% + 规模 10%
+- **四象限气泡图**：明星 / 潜力 / 问题 / 淘汰，S/A/B/C 四级分级
+- **雷达图多品类对比** + 健康报告 Markdown 下载
 
-### 3. 多仓库库存视图 (MultiLocationInventoryPanel)
+### 3. 客户价值分层 (CustomerSegmentationPanel)
 
-- **商品 × 仓库矩阵表**（水平可滚动 + sticky 首列固定）
-- 库存不足红色/黄色高亮，库存充足绿色标记
-- **跨仓调拨弹窗**：来源仓→目标仓→数量→确认
-- 库存分布饼图 + 集中度预警 + 补货建议联动
-- 导出库存报告 CSV
+- **RFM 三维评分**：Recency / Frequency / Monetary 五档打分
+- **客户金字塔 5 层** + 各层 GMV 占比 + 迁徙矩阵（升级/降级/新增/流失）
+- **分层精准营销建议** + 预估触达人数
 
-### 4. 翻译管理面板 (TranslationManagerPanel)
+### 4. 销售预测面板 (SalesForecastPanel)
 
-- **翻译完成度进度条**（商品/集合/页面/全局）
-- 原文-译文对照编辑，支持商品/集合/页面/博客/店铺元数据
-- **机器翻译辅助**（MyMemory 免费 API）+ 批量机翻
-- **翻译文件 JSON 导出/导入**（离线翻译/专业翻译协作）
-- 导航栏待翻译数量红点 Badge
+- **Holt-Winters 指数平滑**，80% 置信区间，季节性因子自动检测
+- **MAPE 精度回测**：<10%🟢 / 10-20%🟡 / >20%🟠
+- 趋势/季节/残差三量分解图
+- **预测驱动建议**：备货量 / 广告预算 / 异常提醒
 
-### 5. 运费配置管理 (ShippingRatesPanel)
+### 5. 商品关联推荐 (ProductAffinityPanel)
 
-- **市场 × 运费规则矩阵表**（免运费门槛/标准/快递/自提）
-- **送达时效表**（各物流商 × 各市场预估天数）
-- 按仓库运费分组 + 运费计算器小工具
-- **运费差异分析提示**（跨市场运费 > 50% 偏差警告）
+- 订单共现矩阵 → **Apriori 规则**（支持度/置信度/提升度三维筛选）
+- 商品关联网络图 + **捆绑销售模拟器**（预估增量 GMV）
 
-### 6. 税费概览面板 (TaxOverviewPanel)
+### 6. AI 运营助手 2.0 (AiChatPanel)
 
-- **市场 × 税种矩阵表**（标准税率/含税定价/低税率商品/进口关税）
-- **自动税务风险扫描**：IOSS 未配/VAT 缺失/Sales Tax 遗漏
-- 风险等级三色标记（高/中/低）+ 忽略功能
-- **税务知识提示库**（欧盟 IOSS/英国 VAT/日本 JCT 等合规要点）
-- 导出税务配置报告 CSV
+- 单向报告 → **对话式多轮追问**，保持 10 轮上下文
+- **8 个快捷提问标签**一键填入，支持全店/品类/商品/市场/店铺范围切换
+- **多店对比分析**，对话历史持久化 50 轮，回复 Markdown 导出
 
 ---
 
@@ -283,7 +297,7 @@ Once the server is live, print a high-quality Chinese greeting message. Provide 
 - 2 家高保真虚拟店铺 (TechGear Pro 科技配饰 · MinimalHome 极简家居)
 - 跨越 14 天历史订单流 + 50+ 模拟客户 + 8 款多规格演示商品 · 18 个变体
 - 30 秒心跳爆单引擎，40% 概率生成 EUR/Stripe 虚拟订单
-- 无需 Shopify Token 即可 1 秒完整体验全部 30 个面板
+- 无需 Shopify Token 即可 1 秒完整体验全部 36 个面板
 
 ---
 
@@ -317,7 +331,7 @@ shopify-cn-dashboard/
 │   │   └── page.tsx                     # 店铺配置页 (含一键导入演示)
 │   ├── dashboard/
 │   │   ├── layout.tsx                   # SaaS 混合导航矩阵
-│   │   ├── page.tsx                     # 状态中心 + 30 面板条件渲染
+│   │   ├── page.tsx                     # 状态中心 + 36 面板条件渲染
 │   │   ├── config.ts                    # 全局常量
 │   │   ├── helpers.ts                   # 工具函数
 │   │   └── components/
@@ -331,6 +345,10 @@ shopify-cn-dashboard/
 │   │       ├── FunnelRetentionPanel.tsx  # 漏斗转化复购
 │   │       ├── AdPerformancePanel.tsx    # 广告成效
 │   │       ├── ProductControlPanel.tsx   # 跨店改价控制
+│   │       ├── OrderCenterPanel.tsx      # 订单管理中心 [2.3]
+│   │       ├── OrderTags.tsx             # 订单标签/备注 [2.3]
+│   │       ├── CustomerCenterPanel.tsx   # 客户管理 [2.3]
+│   │       ├── FulfillmentBoardPanel.tsx # 履约看板 [2.3]
 │   │       ├── BulkEditPanel.tsx          # 批量商品编辑引擎 [2.4]
 │   │       ├── CollectionManagerPanel.tsx # 集合管理 [2.4]
 │   │       ├── NavigationEditorPanel.tsx  # 导航菜单编辑器 [2.4]
@@ -347,10 +365,12 @@ shopify-cn-dashboard/
 │   │       ├── TranslationManagerPanel.tsx  # 翻译管理 [2.6]
 │   │       ├── ShippingRatesPanel.tsx       # 运费配置 [2.6]
 │   │       ├── TaxOverviewPanel.tsx         # 税费概览 [2.6]
-│   │       ├── OrderCenterPanel.tsx      # 订单管理中心 [2.3]
-│   │       ├── OrderTags.tsx             # 订单标签/备注 [2.3]
-│   │       ├── CustomerCenterPanel.tsx   # 客户管理 [2.3]
-│   │       └── FulfillmentBoardPanel.tsx # 履约看板 [2.3]
+│   │       ├── ProductAnalyticsPanel.tsx    # 商品分析 [2.7]
+│   │       ├── CategoryAnalyticsPanel.tsx   # 品类分析 [2.7]
+│   │       ├── CustomerSegmentationPanel.tsx # 客户价值分层 [2.7]
+│   │       ├── SalesForecastPanel.tsx       # 销售预测 [2.7]
+│   │       ├── ProductAffinityPanel.tsx     # 商品关联推荐 [2.7]
+│   │       └── AiChatPanel.tsx             # AI 运营助手 [2.7]
 │   └── api/
 │       └── shopify/
 │           └── dashboard/
@@ -360,7 +380,11 @@ shopify-cn-dashboard/
 │   ├── utils.ts
 │   ├── demo-data.ts                     # 演示数据引擎
 │   ├── export-utils.ts                  # 通用 CSV 导出工具 [2.3]
-│   └── operation-logger.ts              # 通用操作日志模块 [2.5]
+│   ├── operation-logger.ts              # 通用操作日志模块 [2.5]
+│   ├── product-analytics.ts             # 商品分析工具 [2.7]
+│   ├── rfm-analytics.ts                 # RFM客户分层 [2.7]
+│   ├── forecast-utils.ts                # 销售预测引擎 [2.7]
+│   └── affinity-utils.ts               # 商品关联分析 [2.7]
 └── README.md
 ```
 
@@ -439,8 +463,12 @@ npm run build && npm start
 
 ## 🏗 架构亮点
 
-- **双轨共存 (Dual-Track)**：Demo 沙盒与真实生产环境 100% 动态分流，30 个面板通过 `isDemo` 守卫 + Props 数据注入实现零混淆
+- **双轨共存 (Dual-Track)**：Demo 沙盒与真实生产环境 100% 动态分流，36 个面板通过 `isDemo` 守卫 + Props 数据注入实现零混淆
 - **GraphQL + REST 双协议**：读走 GraphQL (products/markets/blogs/pages/collections)，改价走 GraphQL (productVariantsBulkUpdate)，改库存/履约/导航/metaobjects 走 REST，各取所长
+- **商品/品类深钻分析**：生命周期自动判定，四象限气泡图，RadarChart 多维度对比
+- **RFM 客户价值分层**：纯前端分位数法五档评分，客户金字塔+迁徙矩阵
+- **销售预测引擎**：Holt-Winters 季节性分解，80%置信区间，MAPE历史回测
+- **对话式 AI 运营助手**：多轮追问+指定分析范围+多店对比，对话历史持久化
 - **全字段商品编辑器**：4 Tab 详情编辑弹窗，描述预览/源码双模式，图片缩略图+拖拽排序，SEO 元数据全字段
 - **批量编辑引擎**：标题/描述/SEO/标签四模板批量操作，实时预览+变更摘要+进度条
 - **Intl 原生汉化**：`Intl.DisplayNames(["zh-CN"], { type: "region" })` 零代码膨胀覆盖 249 个国家和地区

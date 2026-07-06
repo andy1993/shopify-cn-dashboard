@@ -7,7 +7,7 @@ import { Card, CardContent } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { useDashboardMenu } from "./layout";
 import OverviewPanel from "./components/OverviewPanel";
-import AiDiagnosePanel from "./components/AiDiagnosePanel";
+import AiChatPanel from "./components/AiChatPanel";
 import FinancePanel from "./components/FinancePanel";
 import RiskRadarDashboard from "./components/RiskRadarDashboard";
 import TrendAnalysisPanel from "./components/TrendAnalysisPanel";
@@ -35,6 +35,11 @@ import MultiLocationInventoryPanel from "./components/MultiLocationInventoryPane
 import TranslationManagerPanel from "./components/TranslationManagerPanel";
 import ShippingRatesPanel from "./components/ShippingRatesPanel";
 import TaxOverviewPanel from "./components/TaxOverviewPanel";
+import ProductAnalyticsPanel from "./components/ProductAnalyticsPanel";
+import CategoryAnalyticsPanel from "./components/CategoryAnalyticsPanel";
+import CustomerSegmentationPanel from "./components/CustomerSegmentationPanel";
+import SalesForecastPanel from "./components/SalesForecastPanel";
+import ProductAffinityPanel from "./components/ProductAffinityPanel";
 
 // ─── Types ────────────────────────────────────────────
 
@@ -86,6 +91,7 @@ interface DashboardData {
     markets: Array<{ marketId: string; countryCode: string; countryName: string; taxConfigured: boolean; taxRate: number | null; reducedRate: number | null; taxIncluded: boolean; vatId: string | null; risks: Array<{ level: "high" | "medium"; message: string }>; importTaxCollected: boolean; shippingTaxed: boolean }>;
     shopLevel: { taxesIncluded: boolean; taxShipping: boolean };
   };
+  dailyGMV?: Array<{ date: string; gmv: number; orderCount: number }>;
 }
 
 interface DiagnosisReport { overview: string; conversionAnalysis: string; inventoryAlerts: string[]; recommendations: string[]; riskLevel: "low" | "medium" | "high"; }
@@ -364,23 +370,12 @@ export default function DashboardPage() {
         />
       )}
       {activeMenu === "ai" && (
-        <AiDiagnosePanel
-          shopName={data.shopName}
+        <AiChatPanel
           isDemo={!!currentStore?.isDemo}
-          shopId={currentStore?.id}
-          gmv={data.gmv}
-          orderCount={data.orderCount}
-          conversionRate={data.conversionRate}
-          exchangeRate={data.exchangeRate}
-          currency={data.currency}
-          products={data.products}
-          refundRate={refundRate}
-          refundedCount={refundedOrders.length}
-          refundAmount={refundAmount}
-          cogsRate={cogsRate}
-          shippingRate={shippingRate}
-          marketingRate={marketingRate}
-          orders={data.orders}
+          shopUrl={currentStore?.shopUrl || ""}
+          accessToken={currentStore?.accessToken || ""}
+          shopName={data.shopName}
+          metrics={{}}
         />
       )}
       {activeMenu === "finance" && (
@@ -644,6 +639,53 @@ export default function DashboardPage() {
           accessToken={currentStore?.accessToken || ""}
           shopName={data.shopName}
           taxData={data.taxData as any}
+        />
+      )}
+      {activeMenu === "product-analytics" && (
+        <ProductAnalyticsPanel
+          isDemo={!!currentStore?.isDemo}
+          shopUrl={currentStore?.shopUrl || ""}
+          accessToken={currentStore?.accessToken || ""}
+          shopName={data.shopName}
+          fullProducts={data.fullProducts as any}
+        />
+      )}
+      {activeMenu === "category-analytics" && (
+        <CategoryAnalyticsPanel
+          isDemo={!!currentStore?.isDemo}
+          shopUrl={currentStore?.shopUrl || ""}
+          accessToken={currentStore?.accessToken || ""}
+          shopName={data.shopName}
+          fullProducts={data.fullProducts as any}
+        />
+      )}
+      {activeMenu === "customer-segmentation" && (
+        <CustomerSegmentationPanel
+          isDemo={!!currentStore?.isDemo}
+          shopUrl={currentStore?.shopUrl || ""}
+          accessToken={currentStore?.accessToken || ""}
+          shopName={data.shopName}
+          orders={data.orders as any}
+          customers={data.customers as any}
+        />
+      )}
+      {activeMenu === "sales-forecast" && (
+        <SalesForecastPanel
+          isDemo={!!currentStore?.isDemo}
+          shopUrl={currentStore?.shopUrl || ""}
+          accessToken={currentStore?.accessToken || ""}
+          shopName={data.shopName}
+          dailyGMV={data.dailyGMV as any}
+        />
+      )}
+      {activeMenu === "product-affinity" && (
+        <ProductAffinityPanel
+          isDemo={!!currentStore?.isDemo}
+          shopUrl={currentStore?.shopUrl || ""}
+          accessToken={currentStore?.accessToken || ""}
+          shopName={data.shopName}
+          orders={data.orders as any}
+          fullProducts={data.fullProducts as any}
         />
       )}
     </div>

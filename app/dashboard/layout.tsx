@@ -34,12 +34,16 @@ import {
   Warehouse,
   Languages,
   Receipt,
+  BarChart4,
+  PieChart,
+  Users2,
+  Link,
 } from "lucide-react";
 import { cn } from "@/lib/utils";
 
 // ─── Context ───────────────────────────────────────────
 
-type MenuKey = "overview" | "ai" | "finance" | "risk" | "trend" | "aggregator" | "gateway" | "funnel" | "ad" | "product-control" | "batch-op" | "bulk-edit" | "scheduled-tasks" | "rule-engine" | "orders" | "customers" | "fulfillment" | "collections" | "navigation" | "content-pages" | "metafields" | "operation-history" | "inventory-alert" | "markets" | "multi-currency" | "multi-location" | "translations" | "shipping-rates" | "tax-overview";
+type MenuKey = "overview" | "ai" | "finance" | "risk" | "trend" | "aggregator" | "gateway" | "funnel" | "ad" | "product-control" | "batch-op" | "bulk-edit" | "scheduled-tasks" | "rule-engine" | "orders" | "customers" | "fulfillment" | "collections" | "navigation" | "content-pages" | "metafields" | "operation-history" | "inventory-alert" | "markets" | "multi-currency" | "multi-location" | "translations" | "shipping-rates" | "tax-overview" | "product-analytics" | "category-analytics" | "customer-segmentation" | "sales-forecast" | "product-affinity";
 
 interface DashboardContextValue {
   activeMenu: MenuKey;
@@ -140,6 +144,18 @@ const NAV_CATEGORIES: NavCategory[] = [
       { id: "risk", label: "账户风控雷达", icon: AlertTriangle },
     ],
   },
+  {
+    id: "intelligence-center",
+    label: "🎯 智能决策",
+    icon: BarChart4,
+    items: [
+      { id: "product-analytics", label: "商品深度分析", icon: BarChart4 },
+      { id: "category-analytics", label: "品类分析", icon: PieChart },
+      { id: "customer-segmentation", label: "客户分层 RFM", icon: Users2 },
+      { id: "sales-forecast", label: "销售预测", icon: TrendingUp },
+      { id: "product-affinity", label: "商品关联分析", icon: Link },
+    ],
+  },
 ];
 
 // ─── Layout Component ──────────────────────────────────
@@ -152,7 +168,7 @@ export default function DashboardLayout({
   const router = useRouter();
   const [activeMenu, setActiveMenu] = useState<MenuKey>("overview");
   const [expandedCategories, setExpandedCategories] = useState<Set<string>>(
-    new Set(["data-center", "order-customer", "product-content", "finance-center", "markets-center", "risk-center"]),
+    new Set(["data-center", "order-customer", "product-content", "finance-center", "markets-center", "risk-center", "intelligence-center"]),
   );
   const [soonMsg, setSoonMsg] = useState<string | null>(null);
 
