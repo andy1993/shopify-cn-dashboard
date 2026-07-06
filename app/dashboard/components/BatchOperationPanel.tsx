@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, useMemo, useCallback, useRef, useEffect } from "react";
+import { useState, useMemo, useRef } from "react";
 import { Search, Plus, X, Save, Play, Pause, Download, History, CheckCircle2, AlertCircle, Square, Layers, DollarSign, TrendingUp, TrendingDown, Tag, Archive, Package, ChevronDown, Lock, Unlock, Settings, Bookmark } from "lucide-react";
 import { Card, CardContent } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
@@ -9,6 +9,8 @@ import { Badge } from "@/components/ui/badge";
 import { formatCny } from "../helpers";
 import { EXCHANGE_RATE } from "../config";
 import { addOperationLog, type OperationLog } from "@/lib/operation-logger";
+import { useToast } from "../hooks/useToast";
+import ToastBar from "./ToastBar";
 
 /* ─── Types ──────────────────────────────────────────── */
 
@@ -203,10 +205,9 @@ export default function BatchOperationPanel({ isDemo, shopUrl, accessToken, shop
   const [executing, setExecuting] = useState(false);
   const [progress, setProgress] = useState({ done: 0, total: 0, current: "", ok: 0, fail: 0 });
   const [errors, setErrors] = useState<Array<{ title: string; reason: string }>>([]);
-  const [toast, setToast] = useState<string | null>(null);
+  const { toast, showToast } = useToast(3000);
   const [history, setHistory] = useState<HistoryEntry[]>(() => loadHistory());
   const abortRef = useRef(false);
-  const showToast = (msg: string) => { setToast(msg); setTimeout(() => setToast(null), 3000); };
 
   const totalOps = useMemo(() => {
     if (opTab === "price" || opTab === "inventory") return selected.reduce((s, p) => s + p.variants.length, 0);
@@ -322,7 +323,7 @@ export default function BatchOperationPanel({ isDemo, shopUrl, accessToken, shop
   /* ── Render ────────────────────────────────────────── */
   return (
     <div className="space-y-4">
-      {toast && <div className="fixed bottom-6 left-1/2 -translate-x-1/2 z-50 rounded-lg bg-emerald-600/90 px-4 py-2 text-sm font-medium text-white shadow-2xl">{toast}</div>}
+      <ToastBar message={toast} />
 
       <div>
         <h2 className="flex items-center gap-2 text-xl font-bold text-foreground"><Play className="h-6 w-6 text-amber-400" />批量操作引擎</h2>

@@ -174,7 +174,15 @@ export default function DashboardPage() {
   const fetchData = useCallback(async (store: StoreEntry) => {
     setLoading(true); setError(null);
     try {
-      const res = await fetch(`/api/shopify/dashboard?${new URLSearchParams({ shopUrl: store.shopUrl, accessToken: store.accessToken })}`);
+      const res = await fetch("/api/shopify/dashboard", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          action: "getDashboard",
+          shopUrl: store.shopUrl,
+          accessToken: store.accessToken,
+        }),
+      });
       const json = await res.json();
       if (!json.success) throw new Error(json.error || "请求失败");
       setData(json as DashboardData);

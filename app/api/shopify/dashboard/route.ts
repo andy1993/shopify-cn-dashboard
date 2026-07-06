@@ -316,7 +316,8 @@ async function fetchHolidays(countryCode: string): Promise<NagerHoliday[]> {
     if (!res.ok) return [];
     const data = await res.json() as Array<{ date: string; localName: string; name: string; countryCode: string }>;
     return data;
-  } catch {
+  } catch (err) {
+    console.error("[shopify/dashboard] fetchHolidays failed:", (err as Error).message);
     return [];
   }
 }
@@ -714,7 +715,10 @@ async function fetchPages(shopUrl: string, accessToken: string): Promise<Dashboa
       created_at: (p.created_at as string) || "",
       updated_at: (p.updated_at as string) || "",
     }));
-  } catch { return []; }
+  } catch (err) {
+    console.error("[shopify/dashboard] fetchPages failed:", (err as Error).message);
+    return [];
+  }
 }
 
 /**
@@ -909,7 +913,8 @@ async function fetchTaxConfiguration(shopUrl: string, accessToken: string): Prom
     }
     var result: any = {}; result.shopLevel = {}; result.shopLevel.taxesIncluded = ti; result.shopLevel.taxShipping = ts2;
     return result;
-  } catch {
+  } catch (err) {
+    console.error("[shopify/dashboard] fetchTaxConfiguration failed:", (err as Error).message);
     var emptyResult: any = {}; emptyResult.shopLevel = { taxesIncluded: false, taxShipping: false };
     return emptyResult;
   }
@@ -936,7 +941,8 @@ async function fetchDailyGMV(shopUrl: string, accessToken: string): Promise<Dash
     for (var k in byDate) { if (byDate.hasOwnProperty(k)) { entries.push({ date: k, gmv: byDate[k].gmv, orderCount: byDate[k].count }); } }
     entries.sort(function (a, b) { return a.date.localeCompare(b.date); });
     return entries;
-  } catch {
+  } catch (err) {
+    console.error("[shopify/dashboard] fetchDailyGMV failed:", (err as Error).message);
     return [];
   }
 }
@@ -1104,8 +1110,8 @@ async function enrichProducts(
               0,
             ) ?? 0,
         });
-      } catch {
-        // Product may be deleted — skip silently
+      } catch (err) {
+        console.error("[shopify/dashboard] enrichProducts failed for product:", (err as Error).message);
       }
     }),
   );
@@ -1181,274 +1187,107 @@ function buildProducts(orders: ShopifyOrder[]): Array<{
 
 // ─── PUT / GET Handler ────────────────────────────────
 
-export async function GET(request: NextRequest) {
+async function handleGetDashboard(shopUrl: string, accessToken: string) {
+  const exchangeRate = getExchangeRate();
+
   try {
-    // ─ Step 1: Extract credentials ─
-    const searchParams = request.nextUrl.searchParams;
-    const shopUrl =
-      searchParams.get("shopUrl")?.trim() ??
-      request.headers.get("x-shop-url")?.trim() ??
-      "";
-    const accessToken =
-      searchParams.get("accessToken")?.trim() ??
-      request.headers.get("x-shop-token")?.trim() ??
-      "";
-
-    // Validate
-    if (!shopUrl) {
-      return NextResponse.json<DashboardError>(
-        { success: false, error: "缺少参数：shopUrl（店铺域名）", code: 400 },
-        { status: 400 },
-      );
-    }
-    if (!accessToken) {
-      return NextResponse.json<DashboardError>(
-        { success: false, error: "缺少参数：accessToken（API Token）", code: 400 },
-        { status: 400 },
-      );
-    }
-
-    // ─ Check: Demo mode ─
-    const demoIndex = DEMO_DOMAINS.indexOf(shopUrl);
-    if (demoIndex !== -1) {
-      const store = DEMO_STORES[demoIndex];
-      const orders = demoIndex === 0 ? DEMO_ORDERS_A : DEMO_ORDERS_B;
-      const charts = demoIndex === 0 ? DEMO_CHARTS_A : DEMO_CHARTS_B;
-
-      const gmvUsd = orders.reduce(
-        (sum, o) => sum + parseFloat(o.total_price),
-        0,
-      );
-      const gmv = Math.round(gmvUsd * 7.25 * 100) / 100;
-
-      const compactOrders = orders.map((o) => ({
-        id: o.id,
-        created_at: o.created_at,
-        total_price: o.total_price,
-        financial_status: o.financial_status,
-        gateway: o.gateway ?? "",
-        customer_orders_count: o.customer?.orders_count ?? 1,
-        shipping_country: o.shipping_address?.country_code ?? "",
-      }));
-
-      const products = store.products.map((p) => {
-        const revenue = orders
-          .flatMap((o) => o.line_items)
-          .filter((li) => li.product_id === p.id)
-          .reduce((sum, li) => sum + parseFloat(li.price) * li.quantity, 0);
-
-        return {
-          id: p.id,
-          title: p.title,
-          image: p.image,
-          totalSold: p.totalSold,
-          totalRevenue: Math.round(revenue * 100) / 100,
-          inventory: p.inventory,
-        };
-      });
-
-      // Demo: Store A → US/GB, Store B → JP/SE
-      const demoTopCountries = demoIndex === 0 ? ["US", "GB"] : ["JP", "SE"];
-      const holidaysData = await fetchMultiCountryHolidays(demoTopCountries);
-
-      return NextResponse.json({
-        success: true,
-        shopName: store.shopName,
-        domain: store.domain,
-        currency: store.currency,
-        exchangeRate: 7.25,
-        gmv,
-        orderCount: orders.length,
-        conversionRate: 0,
-        charts,
-        products,
-        orders: compactOrders,
-        holidaysData,
-        topCountries: demoTopCountries,
-        lastUpdated: new Date().toISOString(),
-      });
-    }
-
-    // ─ Step 2: Fetch shop info (validates credentials + domain) ─
-    let shop: { name: string; currency: string; domain: string; country: string };
-    try {
-      shop = await fetchShopInfo(shopUrl, accessToken);
-    } catch (err) {
-      const message =
-        err instanceof Error ? err.message : "未知错误";
-      console.error("[shopify/dashboard] shop fetch failed:", message);
-
-      const isAuthErr =
-        message.includes("401") || message.includes("403") || message.includes("Token");
-      const isNotFound = message.includes("404") || message.includes("不存在");
-
-      const status = isAuthErr ? 401 : isNotFound ? 404 : 502;
-      const friendlyMsg = isAuthErr
-        ? "API Token 无效或权限不足，请在 Shopify 后台重新生成并确认权限范围包含 read_orders、read_products"
-        : isNotFound
-        ? "店铺域名不存在，请检查域名是否正确（格式: your-store.myshopify.com）"
-        : message;
-
-      return NextResponse.json<DashboardError>(
-        { success: false, error: friendlyMsg, code: status },
-        { status },
-      );
-    }
-
-    // ─ Step 3: Exchange rate (configurable via .env, fallback 7.25) ─
-    const exchangeRate = getExchangeRate();
-
-    // ─ Step 4: Fetch today's orders ─
-    let orders: ShopifyOrder[];
-    try {
-      orders = await fetchAllTodayOrders(shopUrl, accessToken);
-    } catch (err) {
-      const message =
-        err instanceof Error ? err.message : "订单获取失败";
-      console.error("[shopify/dashboard] orders fetch failed:", message);
-      return NextResponse.json<DashboardError>(
-        { success: false, error: message, code: 502 },
-        { status: 502 },
-      );
-    }
-
-    // ─ Step 5: Calculate GMV in CNY ─
-    const gmvUsd = orders.reduce(
-      (sum, o) => sum + (parseFloat(o.total_price) || 0),
-      0,
-    );
+    const shop = await fetchShopInfo(shopUrl, accessToken);
+    const orders = await fetchAllTodayOrders(shopUrl, accessToken);
+    const gmvUsd = orders.reduce(function (sum, o) { return sum + Number(o.total_price); }, 0);
     const gmv = Math.round(gmvUsd * exchangeRate * 100) / 100;
     const orderCount = orders.length;
-
-    // ─ Step 6: Build charts (hourly sales in CNY) ─
     const charts = buildCharts(orders, exchangeRate);
-
-    // ─ Step 7: Build products (top 5 by sales volume) ─
     const productStats = buildProducts(orders);
 
-    // Enrich with image + inventory from Products API
-    const productIds = productStats.map((p) => p.id);
+    var productIds = productStats.map(function (p) { return p.id; });
     if (productIds.length > 0) {
-      const enrichments = await enrichProducts(shopUrl, accessToken, productIds);
-      for (const p of productStats) {
-        const extra = enrichments.get(p.id);
+      var enrichments = await enrichProducts(shopUrl, accessToken, productIds);
+      for (var i = 0; i < productStats.length; i++) {
+        var extra = enrichments.get(productStats[i].id);
         if (extra) {
-          p.image = extra.image;
-          p.inventory = extra.inventory;
+          productStats[i].image = extra.image;
+          productStats[i].inventory = extra.inventory;
         }
       }
     }
 
-    // ─ Step 7b: Fetch full product catalog via GraphQL (for ProductControlPanel) ─
-    const fullProducts = await fetchFullProducts(shopUrl, accessToken, shop.name);
+    var fullProducts = await fetchFullProducts(shopUrl, accessToken, shop.name);
+    var customers = await fetchCustomers(shopUrl, accessToken);
+    var collections = await fetchCollections(shopUrl, accessToken);
+    var menus = await fetchMenus(shopUrl, accessToken);
+    var pages = await fetchPages(shopUrl, accessToken);
+    var blogs = await fetchBlogs(shopUrl, accessToken);
+    var variantSales = await fetchVariantSales(shopUrl, accessToken);
+    var markets = await fetchMarkets(shopUrl, accessToken);
+    var shippingData = await fetchShippingRates(shopUrl, accessToken);
+    var taxData = await fetchTaxConfiguration(shopUrl, accessToken);
+    var dailyGMV = await fetchDailyGMV(shopUrl, accessToken);
+    var inv = await fetchLocationsAndInventory(shopUrl, accessToken);
 
-    // ─ Step 7c: Fetch customers ─
-    const customers = await fetchCustomers(shopUrl, accessToken);
-
-    // ─ Step 7d: Fetch collections ─
-    const collections = await fetchCollections(shopUrl, accessToken);
-
-    // ─ Step 7e: Fetch navigation menus ─
-    const menus = await fetchMenus(shopUrl, accessToken);
-
-    // ─ Step 7f: Fetch pages ─
-    const pages = await fetchPages(shopUrl, accessToken);
-
-    // ─ Step 7g: Fetch blogs with articles ─
-    const blogs = await fetchBlogs(shopUrl, accessToken);
-
-    // ─ Step 7h: Fetch variant-level sales ─
-    const variantSales = await fetchVariantSales(shopUrl, accessToken);
-
-    // ─ Step 7i: Fetch markets ─
-    const markets = await fetchMarkets(shopUrl, accessToken);
-
-    // ─ Step 7k: Shipping / Tax / Daily GMV ─
-    const shippingData = await fetchShippingRates(shopUrl, accessToken);
-    const taxData = await fetchTaxConfiguration(shopUrl, accessToken);
-    const dailyGMV = await fetchDailyGMV(shopUrl, accessToken);
-
-    // ─ Step 7j: Fetch locations & inventory ─
-    const { locations, inventoryByLocation } = await fetchLocationsAndInventory(shopUrl, accessToken);
-
-    // ─ Step 8: Conversion rate ─
-    // NOTE: Shopify REST API does not expose visitor data.
-    // Accurate conversion rate requires the Analytics API or custom tracking.
-    // Returning 0 as a placeholder.
-    const conversionRate = 0;
-
-    // ─ Step 9: Fetch active Markets via GraphQL + multi-market holidays ─
-    let safeCountries: string[];
+    var safeCountries: string[] = [];
     try {
-      const markets = await fetchActiveMarketCountries(shopUrl, accessToken);
-      safeCountries = markets.length > 0 ? markets : [shop.country || "US"];
-    } catch (err) {
-      console.warn("[shopify/dashboard] GraphQL Markets fell back to shop country:", (err as Error).message);
+      var activeMarkets = await fetchActiveMarketCountries(shopUrl, accessToken);
+      safeCountries = activeMarkets.length > 0 ? activeMarkets : [shop.country || "US"];
+    } catch (err2) {
+      console.warn("[shopify/dashboard] GraphQL Markets fell back to shop country:", (err2 as Error).message);
       safeCountries = [shop.country || "US"];
     }
-    const holidaysData = await fetchMultiCountryHolidays(safeCountries);
+    var holidaysData = await fetchMultiCountryHolidays(safeCountries);
 
-    // ─ Step 10: Build success response ─
-    const compactOrders = orders.map((o) => ({
-      id: o.id,
-      created_at: o.created_at,
-      total_price: o.total_price,
-      financial_status: o.financial_status ?? "",
-      gateway: o.gateway ?? "",
-      customer_orders_count: o.customer?.orders_count ?? 1,
-      shipping_country: o.shipping_address?.country_code ?? "",
-    }));
+    var compactOrders = orders.map(function (o) {
+      return {
+        id: o.id,
+        created_at: o.created_at,
+        total_price: o.total_price,
+        financial_status: o.financial_status ?? "",
+        gateway: o.gateway ?? "",
+        customer_orders_count: o.customer?.orders_count ?? 1,
+        shipping_country: o.shipping_address?.country_code ?? "",
+      };
+    });
 
-    // ─ Aggregate warnings from partial failures ─
-    const warnings: string[] = [];
+    var warnings: string[] = [];
     if (!dailyGMV || dailyGMV.length === 0) warnings.push("近60天GMV数据获取为空");
-    if (!shippingData || (shippingData.carriers.length === 0 && shippingData.warehouseZones.length === 0)) warnings.push("运费规则获取失败");
     if (!markets || markets.length === 0) warnings.push("市场数据获取失败");
 
-    const response: DashboardSuccess = {
+    var response: any = {
       success: true,
       shopName: shop.name,
       domain: shop.domain,
       currency: shop.currency,
-      exchangeRate,
-      gmv,
-      orderCount,
-      conversionRate,
-      charts,
+      exchangeRate: exchangeRate,
+      gmv: gmv,
+      orderCount: orderCount,
+      conversionRate: 0,
+      charts: charts,
       products: productStats,
       orders: compactOrders,
-      holidaysData,
+      holidaysData: holidaysData,
       topCountries: safeCountries,
-      fullProducts,
-      customers,
-      collections,
-      menus,
-      pages,
-      blogs,
-      variantSales,
-      markets,
-      locations,
-      inventoryByLocation,
-      shippingData,
-      taxData,
-      dailyGMV,
+      fullProducts: fullProducts,
+      customers: customers,
+      collections: collections,
+      menus: menus,
+      pages: pages,
+      blogs: blogs,
+      variantSales: variantSales,
+      markets: markets,
+      locations: inv.locations,
+      inventoryByLocation: inv.inventoryByLocation,
+      shippingData: shippingData,
+      taxData: taxData,
+      dailyGMV: dailyGMV,
       warnings: warnings.length > 0 ? warnings : undefined,
       lastUpdated: new Date().toISOString(),
     };
 
     return NextResponse.json(response);
   } catch (err) {
-    const message =
-      err instanceof Error ? err.message : "服务器内部未知错误";
-    console.error("[shopify/dashboard] unhandled error:", message);
-
-    return NextResponse.json<DashboardError>(
-      { success: false, error: `服务器内部错误: ${message}`, code: 500 },
-      { status: 500 },
-    );
+    var message = err instanceof Error ? err.message : "服务器内部未知错误";
+    console.error("[shopify/dashboard] handleGetDashboard error:", message);
+    return NextResponse.json({ success: false, error: message, code: 500 as const }, { status: 500 });
   }
 }
-
 // ═══════════════════════════════════════════════════════
 // Product Variant Update — Shopify GraphQL mutation
 // ═══════════════════════════════════════════════════════
@@ -1900,7 +1739,8 @@ async function handleAiChat(
       reply,
       dataSource: "数据来源：" + new Date().toISOString().slice(0, 10) + " 全店数据快照",
     });
-  } catch {
+  } catch (err) {
+    console.error("[shopify/dashboard] handleAiChat failed:", (err as Error).message);
     return NextResponse.json({ success: false, error: "AI 分析超时" }, { status: 500 });
   }
 }
@@ -2115,6 +1955,13 @@ export async function POST(request: NextRequest) {
         newCustomerPct: number;
       };
     };
+
+    // ═════════════════════════════════════════════════════
+    // GET-compatible dashboard data fetch (migrated from GET to POST)
+    // ═════════════════════════════════════════════════════
+    if (body.action === "getDashboard" && body.shopUrl && body.accessToken) {
+      return await handleGetDashboard(body.shopUrl as string, body.accessToken as string);
+    }
 
     // ═════════════════════════════════════════════════════
     // 写操作路由: Shopify GraphQL productVariantUpdate

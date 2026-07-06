@@ -28,6 +28,7 @@ import { Badge } from "@/components/ui/badge";
 import { formatCny, formatTimeAgo } from "../helpers";
 import { exportCustomers } from "@/lib/export-utils";
 import OrderTags from "./OrderTags";
+import { useToast } from "../hooks/useToast";
 
 // ─── Types ────────────────────────────────────────────
 
@@ -141,6 +142,8 @@ export default function CustomerCenterPanel({
   const [filterRecency, setFilterRecency] = useState("all");
   const [filterCountry, setFilterCountry] = useState("all");
   const [filterTag, setFilterTag] = useState("");
+
+  const { toast, showToast } = useToast();
 
   // Sort
   const [sortKey, setSortKey] = useState<SortKey>("total_spent");

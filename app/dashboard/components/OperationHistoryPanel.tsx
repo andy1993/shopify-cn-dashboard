@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, useMemo, useCallback } from "react";
+import { useState, useMemo } from "react";
 import {
   History, RotateCcw, ChevronDown, ChevronRight, X, TrendingUp,
   Package, Tag, FileText, Edit3, AlertCircle, CheckCircle2, Play, Pause,
@@ -9,6 +9,8 @@ import { Card, CardContent } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { addOperationLog, getOperationHistory, markRolledBack, type OperationLog, type OperationDetail } from "@/lib/operation-logger";
+import { useToast } from "../hooks/useToast";
+import ToastBar from "./ToastBar";
 
 interface OperationHistoryPanelProps {
   isDemo: boolean;
@@ -103,8 +105,7 @@ export default function OperationHistoryPanel({ isDemo, shopUrl, accessToken, sh
   const [rollbackId, setRollbackId] = useState<string | null>(null);
   const [rollingBack, setRollingBack] = useState(false);
   const [progress, setProgress] = useState({ done: 0, total: 0 });
-  const [toast, setToast] = useState<string | null>(null);
-  const showToast = (msg: string) => { setToast(msg); setTimeout(() => setToast(null), 3000); };
+  const { toast, showToast } = useToast(3000);
 
   const refresh = () => setLogs(isDemo ? DEMO_LOGS : getOperationHistory());
 
@@ -150,7 +151,7 @@ export default function OperationHistoryPanel({ isDemo, shopUrl, accessToken, sh
 
   return (
     <div className="space-y-4">
-      {toast && <div className="fixed bottom-6 left-1/2 -translate-x-1/2 z-50 rounded-lg bg-emerald-600/90 px-4 py-2 text-sm font-medium text-white shadow-2xl">{toast}</div>}
+      <ToastBar message={toast} />
 
       <div className="flex items-center justify-between">
         <div>

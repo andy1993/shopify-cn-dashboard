@@ -1,5 +1,7 @@
 "use client";
 
+import { useToast } from "../hooks/useToast";
+import ToastBar from "./ToastBar";
 import { useEffect, useState, useMemo, useRef } from "react";
 import {
   TrendingUp,
@@ -121,6 +123,8 @@ export default function AdPerformancePanel({
   // ── Ad spend state ──
   const [metaSpend, setMetaSpend] = useState(isDemo ? 350 : 0);
   const [googleSpend, setGoogleSpend] = useState(isDemo ? 150 : 0);
+
+  const { toast, showToast } = useToast();
 
   const totalAdSpendUsd = metaSpend + googleSpend;
   const totalAdSpendCny = totalAdSpendUsd * exchangeRate;
@@ -312,6 +316,7 @@ export default function AdPerformancePanel({
           )}
         </CardContent>
       </Card>
+      <ToastBar message={toast} />
     </div>
   );
 }

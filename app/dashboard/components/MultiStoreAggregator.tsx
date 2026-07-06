@@ -36,6 +36,7 @@ import {
   DEMO_LOOKBACK_DAYS,
   DEMO_GROWTH_FACTOR,
 } from "../config";
+import { useToast } from "../hooks/useToast";
 
 // ─── Types ────────────────────────────────────────────
 
@@ -316,6 +317,8 @@ export default function MultiStoreAggregator({
   const [aggregated, setAggregated] = useState<{
     data: StoreAggData[]; totalGmv: number; totalOrders: number; chartData: Array<Record<string, number | string>>;
   }>({ data: [], totalGmv: 0, totalOrders: 0, chartData: [] });
+
+  const { toast, showToast } = useToast();
 
   const isFetching = useRef(false);
   const storesSnapshotRef = useRef(0); // track stores.length to prevent re-fetch

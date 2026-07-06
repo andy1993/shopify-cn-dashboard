@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, useMemo, useCallback, useEffect } from "react";
+import { useState, useMemo, useEffect } from "react";
 import {
   AlertTriangle, Gauge, Search, Download, ChevronDown, ChevronRight,
   TrendingUp, TrendingDown, Minus, RotateCcw, CheckCircle2, Package,
