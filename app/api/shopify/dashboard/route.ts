@@ -1247,18 +1247,20 @@ async function handleGetDashboard(shopUrl: string, accessToken: string) {
       }
     }
 
-    var fullProducts = await fetchFullProducts(shopUrl, accessToken, shop.name);
-    var customers = await fetchCustomers(shopUrl, accessToken);
-    var collections = await fetchCollections(shopUrl, accessToken);
-    var menus = await fetchMenus(shopUrl, accessToken);
-    var pages = await fetchPages(shopUrl, accessToken);
-    var blogs = await fetchBlogs(shopUrl, accessToken);
-    var variantSales = await fetchVariantSales(shopUrl, accessToken);
-    var markets = await fetchMarkets(shopUrl, accessToken);
-    var shippingData = await fetchShippingRates(shopUrl, accessToken);
-    var taxData = await fetchTaxConfiguration(shopUrl, accessToken);
-    var dailyGMV = await fetchDailyGMV(shopUrl, accessToken);
-    var inv = await fetchLocationsAndInventory(shopUrl, accessToken);
+    // Heavyweight data fetched on-demand via getProductCatalog/getCustomerData/getContentData/getMarketData
+    var fullProducts: any = undefined;
+    var customers: any = undefined;
+    var collections: any = undefined;
+    var menus: any = undefined;
+    var pages: any = undefined;
+    var blogs: any = undefined;
+    var variantSales: any = undefined;
+    var markets: any = undefined;
+    var shippingData: any = undefined;
+    var taxData: any = undefined;
+    var dailyGMV: any = undefined;
+    var locations: any = undefined;
+    var inventoryByLocation: any = undefined;
 
     var safeCountries: string[] = [];
     try {
@@ -1308,12 +1310,12 @@ async function handleGetDashboard(shopUrl: string, accessToken: string) {
       blogs: blogs,
       variantSales: variantSales,
       markets: markets,
-      locations: inv.locations,
-      inventoryByLocation: inv.inventoryByLocation,
+      locations: locations,
+      inventoryByLocation: inventoryByLocation,
       shippingData: shippingData,
       taxData: taxData,
       dailyGMV: dailyGMV,
-      warnings: warnings.length > 0 ? warnings : undefined,
+      warnings: undefined,
       lastUpdated: new Date().toISOString(),
     };
 
@@ -1997,6 +1999,43 @@ export async function POST(request: NextRequest) {
     // ═════════════════════════════════════════════════════
     if (body.action === "getDashboard" && body.shopUrl && body.accessToken) {
       return await handleGetDashboard(body.shopUrl as string, body.accessToken as string);
+    }
+
+    // 按需数据接口 — 重型数据仅在用户首次打开对应面板时调用
+    if (body.action === "getProductCatalog" && body.shopUrl && body.accessToken) {
+      var s1 = body.shopUrl as string; var t1 = body.accessToken as string;
+      var fp = await fetchFullProducts(s1, t1, "");
+      var vs = await fetchVariantSales(s1, t1);
+      return NextResponse.json({ success: true, fullProducts: fp, variantSales: vs });
+    }
+
+    if (body.action === "getCustomerData" && body.shopUrl && body.accessToken) {
+      var s2 = body.shopUrl as string; var t2 = body.accessToken as string;
+      var cs = await fetchCustomers(s2, t2);
+      return NextResponse.json({ success: true, customers: cs });
+    }
+
+    if (body.action === "getContentData" && body.shopUrl && body.accessToken) {
+      var s3 = body.shopUrl as string; var t3 = body.accessToken as string;
+      var cl = await fetchCollections(s3, t3);
+      var mn = await fetchMenus(s3, t3);
+      var pg = await fetchPages(s3, t3);
+      var bl = await fetchBlogs(s3, t3);
+      return NextResponse.json({ success: true, collections: cl, menus: mn, pages: pg, blogs: bl });
+    }
+
+    if (body.action === "getMarketData" && body.shopUrl && body.accessToken) {
+      var s4 = body.shopUrl as string; var t4 = body.accessToken as string;
+      var mk = await fetchMarkets(s4, t4);
+      var li = await fetchLocationsAndInventory(s4, t4);
+      var sh = await fetchShippingRates(s4, t4);
+      var tx = await fetchTaxConfiguration(s4, t4);
+      var dg = await fetchDailyGMV(s4, t4);
+      return NextResponse.json({
+        success: true, markets: mk,
+        locations: li.locations, inventoryByLocation: li.inventoryByLocation,
+        shippingData: sh, taxData: tx, dailyGMV: dg,
+      });
     }
 
     // ═════════════════════════════════════════════════════

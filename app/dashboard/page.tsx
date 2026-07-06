@@ -1,45 +1,558 @@
 "use client";
 
 import { useEffect, useState, useCallback, useMemo } from "react";
+import dynamic from "next/dynamic";
 import { useRouter } from "next/navigation";
 import { Loader2, Globe, AlertCircle, RefreshCw, LogOut } from "lucide-react";
 import { Card, CardContent } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { useDashboardMenu } from "./layout";
-import OverviewPanel from "./components/OverviewPanel";
-import AiChatPanel from "./components/AiChatPanel";
-import FinancePanel from "./components/FinancePanel";
-import RiskRadarDashboard from "./components/RiskRadarDashboard";
-import TrendAnalysisPanel from "./components/TrendAnalysisPanel";
-import MultiStoreAggregator from "./components/MultiStoreAggregator";
-import GatewayFinancePanel from "./components/GatewayFinancePanel";
-import FunnelRetentionPanel from "./components/FunnelRetentionPanel";
-import AdPerformancePanel from "./components/AdPerformancePanel";
-import ProductControlPanel from "./components/ProductControlPanel";
-import OrderCenterPanel from "./components/OrderCenterPanel";
-import CustomerCenterPanel from "./components/CustomerCenterPanel";
-import FulfillmentBoardPanel from "./components/FulfillmentBoardPanel";
-import BulkEditPanel from "./components/BulkEditPanel";
-import CollectionManagerPanel from "./components/CollectionManagerPanel";
-import NavigationEditorPanel from "./components/NavigationEditorPanel";
-import ContentPagesPanel from "./components/ContentPagesPanel";
-import MetafieldsEditorPanel from "./components/MetafieldsEditorPanel";
-import BatchOperationPanel from "./components/BatchOperationPanel";
-import ScheduledTasksPanel from "./components/ScheduledTasksPanel";
-import OperationHistoryPanel from "./components/OperationHistoryPanel";
-import InventoryAlertPanel from "./components/InventoryAlertPanel";
-import RuleEnginePanel from "./components/RuleEnginePanel";
-import MarketsOverviewPanel from "./components/MarketsOverviewPanel";
-import MultiCurrencyPricingPanel from "./components/MultiCurrencyPricingPanel";
-import MultiLocationInventoryPanel from "./components/MultiLocationInventoryPanel";
-import TranslationManagerPanel from "./components/TranslationManagerPanel";
-import ShippingRatesPanel from "./components/ShippingRatesPanel";
-import TaxOverviewPanel from "./components/TaxOverviewPanel";
-import ProductAnalyticsPanel from "./components/ProductAnalyticsPanel";
-import CategoryAnalyticsPanel from "./components/CategoryAnalyticsPanel";
-import CustomerSegmentationPanel from "./components/CustomerSegmentationPanel";
-import SalesForecastPanel from "./components/SalesForecastPanel";
-import ProductAffinityPanel from "./components/ProductAffinityPanel";
+
+const OverviewPanel = dynamic(function () { return import("./components/OverviewPanel"); }, {
+  loading: function () {
+    return (
+      <div className="space-y-4 animate-pulse">
+        <div className="h-8 w-48 rounded-lg bg-zinc-800" />
+        <div className="grid grid-cols-4 gap-4">
+          <div className="h-24 rounded-xl bg-zinc-800" />
+          <div className="h-24 rounded-xl bg-zinc-800" />
+          <div className="h-24 rounded-xl bg-zinc-800" />
+          <div className="h-24 rounded-xl bg-zinc-800" />
+        </div>
+        <div className="h-64 rounded-xl bg-zinc-800" />
+      </div>
+    );
+  },
+});
+const AiChatPanel = dynamic(function () { return import("./components/AiChatPanel"); }, {
+  loading: function () {
+    return (
+      <div className="space-y-4 animate-pulse">
+        <div className="h-8 w-48 rounded-lg bg-zinc-800" />
+        <div className="grid grid-cols-4 gap-4">
+          <div className="h-24 rounded-xl bg-zinc-800" />
+          <div className="h-24 rounded-xl bg-zinc-800" />
+          <div className="h-24 rounded-xl bg-zinc-800" />
+          <div className="h-24 rounded-xl bg-zinc-800" />
+        </div>
+        <div className="h-64 rounded-xl bg-zinc-800" />
+      </div>
+    );
+  },
+});
+const FinancePanel = dynamic(function () { return import("./components/FinancePanel"); }, {
+  loading: function () {
+    return (
+      <div className="space-y-4 animate-pulse">
+        <div className="h-8 w-48 rounded-lg bg-zinc-800" />
+        <div className="grid grid-cols-4 gap-4">
+          <div className="h-24 rounded-xl bg-zinc-800" />
+          <div className="h-24 rounded-xl bg-zinc-800" />
+          <div className="h-24 rounded-xl bg-zinc-800" />
+          <div className="h-24 rounded-xl bg-zinc-800" />
+        </div>
+        <div className="h-64 rounded-xl bg-zinc-800" />
+      </div>
+    );
+  },
+});
+const RiskRadarDashboard = dynamic(function () { return import("./components/RiskRadarDashboard"); }, {
+  loading: function () {
+    return (
+      <div className="space-y-4 animate-pulse">
+        <div className="h-8 w-48 rounded-lg bg-zinc-800" />
+        <div className="grid grid-cols-4 gap-4">
+          <div className="h-24 rounded-xl bg-zinc-800" />
+          <div className="h-24 rounded-xl bg-zinc-800" />
+          <div className="h-24 rounded-xl bg-zinc-800" />
+          <div className="h-24 rounded-xl bg-zinc-800" />
+        </div>
+        <div className="h-64 rounded-xl bg-zinc-800" />
+      </div>
+    );
+  },
+});
+const TrendAnalysisPanel = dynamic(function () { return import("./components/TrendAnalysisPanel"); }, {
+  loading: function () {
+    return (
+      <div className="space-y-4 animate-pulse">
+        <div className="h-8 w-48 rounded-lg bg-zinc-800" />
+        <div className="grid grid-cols-4 gap-4">
+          <div className="h-24 rounded-xl bg-zinc-800" />
+          <div className="h-24 rounded-xl bg-zinc-800" />
+          <div className="h-24 rounded-xl bg-zinc-800" />
+          <div className="h-24 rounded-xl bg-zinc-800" />
+        </div>
+        <div className="h-64 rounded-xl bg-zinc-800" />
+      </div>
+    );
+  },
+});
+const MultiStoreAggregator = dynamic(function () { return import("./components/MultiStoreAggregator"); }, {
+  loading: function () {
+    return (
+      <div className="space-y-4 animate-pulse">
+        <div className="h-8 w-48 rounded-lg bg-zinc-800" />
+        <div className="grid grid-cols-4 gap-4">
+          <div className="h-24 rounded-xl bg-zinc-800" />
+          <div className="h-24 rounded-xl bg-zinc-800" />
+          <div className="h-24 rounded-xl bg-zinc-800" />
+          <div className="h-24 rounded-xl bg-zinc-800" />
+        </div>
+        <div className="h-64 rounded-xl bg-zinc-800" />
+      </div>
+    );
+  },
+});
+const GatewayFinancePanel = dynamic(function () { return import("./components/GatewayFinancePanel"); }, {
+  loading: function () {
+    return (
+      <div className="space-y-4 animate-pulse">
+        <div className="h-8 w-48 rounded-lg bg-zinc-800" />
+        <div className="grid grid-cols-4 gap-4">
+          <div className="h-24 rounded-xl bg-zinc-800" />
+          <div className="h-24 rounded-xl bg-zinc-800" />
+          <div className="h-24 rounded-xl bg-zinc-800" />
+          <div className="h-24 rounded-xl bg-zinc-800" />
+        </div>
+        <div className="h-64 rounded-xl bg-zinc-800" />
+      </div>
+    );
+  },
+});
+const FunnelRetentionPanel = dynamic(function () { return import("./components/FunnelRetentionPanel"); }, {
+  loading: function () {
+    return (
+      <div className="space-y-4 animate-pulse">
+        <div className="h-8 w-48 rounded-lg bg-zinc-800" />
+        <div className="grid grid-cols-4 gap-4">
+          <div className="h-24 rounded-xl bg-zinc-800" />
+          <div className="h-24 rounded-xl bg-zinc-800" />
+          <div className="h-24 rounded-xl bg-zinc-800" />
+          <div className="h-24 rounded-xl bg-zinc-800" />
+        </div>
+        <div className="h-64 rounded-xl bg-zinc-800" />
+      </div>
+    );
+  },
+});
+const AdPerformancePanel = dynamic(function () { return import("./components/AdPerformancePanel"); }, {
+  loading: function () {
+    return (
+      <div className="space-y-4 animate-pulse">
+        <div className="h-8 w-48 rounded-lg bg-zinc-800" />
+        <div className="grid grid-cols-4 gap-4">
+          <div className="h-24 rounded-xl bg-zinc-800" />
+          <div className="h-24 rounded-xl bg-zinc-800" />
+          <div className="h-24 rounded-xl bg-zinc-800" />
+          <div className="h-24 rounded-xl bg-zinc-800" />
+        </div>
+        <div className="h-64 rounded-xl bg-zinc-800" />
+      </div>
+    );
+  },
+});
+const ProductControlPanel = dynamic(function () { return import("./components/ProductControlPanel"); }, {
+  loading: function () {
+    return (
+      <div className="space-y-4 animate-pulse">
+        <div className="h-8 w-48 rounded-lg bg-zinc-800" />
+        <div className="grid grid-cols-4 gap-4">
+          <div className="h-24 rounded-xl bg-zinc-800" />
+          <div className="h-24 rounded-xl bg-zinc-800" />
+          <div className="h-24 rounded-xl bg-zinc-800" />
+          <div className="h-24 rounded-xl bg-zinc-800" />
+        </div>
+        <div className="h-64 rounded-xl bg-zinc-800" />
+      </div>
+    );
+  },
+});
+const OrderCenterPanel = dynamic(function () { return import("./components/OrderCenterPanel"); }, {
+  loading: function () {
+    return (
+      <div className="space-y-4 animate-pulse">
+        <div className="h-8 w-48 rounded-lg bg-zinc-800" />
+        <div className="grid grid-cols-4 gap-4">
+          <div className="h-24 rounded-xl bg-zinc-800" />
+          <div className="h-24 rounded-xl bg-zinc-800" />
+          <div className="h-24 rounded-xl bg-zinc-800" />
+          <div className="h-24 rounded-xl bg-zinc-800" />
+        </div>
+        <div className="h-64 rounded-xl bg-zinc-800" />
+      </div>
+    );
+  },
+});
+const CustomerCenterPanel = dynamic(function () { return import("./components/CustomerCenterPanel"); }, {
+  loading: function () {
+    return (
+      <div className="space-y-4 animate-pulse">
+        <div className="h-8 w-48 rounded-lg bg-zinc-800" />
+        <div className="grid grid-cols-4 gap-4">
+          <div className="h-24 rounded-xl bg-zinc-800" />
+          <div className="h-24 rounded-xl bg-zinc-800" />
+          <div className="h-24 rounded-xl bg-zinc-800" />
+          <div className="h-24 rounded-xl bg-zinc-800" />
+        </div>
+        <div className="h-64 rounded-xl bg-zinc-800" />
+      </div>
+    );
+  },
+});
+const FulfillmentBoardPanel = dynamic(function () { return import("./components/FulfillmentBoardPanel"); }, {
+  loading: function () {
+    return (
+      <div className="space-y-4 animate-pulse">
+        <div className="h-8 w-48 rounded-lg bg-zinc-800" />
+        <div className="grid grid-cols-4 gap-4">
+          <div className="h-24 rounded-xl bg-zinc-800" />
+          <div className="h-24 rounded-xl bg-zinc-800" />
+          <div className="h-24 rounded-xl bg-zinc-800" />
+          <div className="h-24 rounded-xl bg-zinc-800" />
+        </div>
+        <div className="h-64 rounded-xl bg-zinc-800" />
+      </div>
+    );
+  },
+});
+const BulkEditPanel = dynamic(function () { return import("./components/BulkEditPanel"); }, {
+  loading: function () {
+    return (
+      <div className="space-y-4 animate-pulse">
+        <div className="h-8 w-48 rounded-lg bg-zinc-800" />
+        <div className="grid grid-cols-4 gap-4">
+          <div className="h-24 rounded-xl bg-zinc-800" />
+          <div className="h-24 rounded-xl bg-zinc-800" />
+          <div className="h-24 rounded-xl bg-zinc-800" />
+          <div className="h-24 rounded-xl bg-zinc-800" />
+        </div>
+        <div className="h-64 rounded-xl bg-zinc-800" />
+      </div>
+    );
+  },
+});
+const CollectionManagerPanel = dynamic(function () { return import("./components/CollectionManagerPanel"); }, {
+  loading: function () {
+    return (
+      <div className="space-y-4 animate-pulse">
+        <div className="h-8 w-48 rounded-lg bg-zinc-800" />
+        <div className="grid grid-cols-4 gap-4">
+          <div className="h-24 rounded-xl bg-zinc-800" />
+          <div className="h-24 rounded-xl bg-zinc-800" />
+          <div className="h-24 rounded-xl bg-zinc-800" />
+          <div className="h-24 rounded-xl bg-zinc-800" />
+        </div>
+        <div className="h-64 rounded-xl bg-zinc-800" />
+      </div>
+    );
+  },
+});
+const NavigationEditorPanel = dynamic(function () { return import("./components/NavigationEditorPanel"); }, {
+  loading: function () {
+    return (
+      <div className="space-y-4 animate-pulse">
+        <div className="h-8 w-48 rounded-lg bg-zinc-800" />
+        <div className="grid grid-cols-4 gap-4">
+          <div className="h-24 rounded-xl bg-zinc-800" />
+          <div className="h-24 rounded-xl bg-zinc-800" />
+          <div className="h-24 rounded-xl bg-zinc-800" />
+          <div className="h-24 rounded-xl bg-zinc-800" />
+        </div>
+        <div className="h-64 rounded-xl bg-zinc-800" />
+      </div>
+    );
+  },
+});
+const ContentPagesPanel = dynamic(function () { return import("./components/ContentPagesPanel"); }, {
+  loading: function () {
+    return (
+      <div className="space-y-4 animate-pulse">
+        <div className="h-8 w-48 rounded-lg bg-zinc-800" />
+        <div className="grid grid-cols-4 gap-4">
+          <div className="h-24 rounded-xl bg-zinc-800" />
+          <div className="h-24 rounded-xl bg-zinc-800" />
+          <div className="h-24 rounded-xl bg-zinc-800" />
+          <div className="h-24 rounded-xl bg-zinc-800" />
+        </div>
+        <div className="h-64 rounded-xl bg-zinc-800" />
+      </div>
+    );
+  },
+});
+const MetafieldsEditorPanel = dynamic(function () { return import("./components/MetafieldsEditorPanel"); }, {
+  loading: function () {
+    return (
+      <div className="space-y-4 animate-pulse">
+        <div className="h-8 w-48 rounded-lg bg-zinc-800" />
+        <div className="grid grid-cols-4 gap-4">
+          <div className="h-24 rounded-xl bg-zinc-800" />
+          <div className="h-24 rounded-xl bg-zinc-800" />
+          <div className="h-24 rounded-xl bg-zinc-800" />
+          <div className="h-24 rounded-xl bg-zinc-800" />
+        </div>
+        <div className="h-64 rounded-xl bg-zinc-800" />
+      </div>
+    );
+  },
+});
+const BatchOperationPanel = dynamic(function () { return import("./components/BatchOperationPanel"); }, {
+  loading: function () {
+    return (
+      <div className="space-y-4 animate-pulse">
+        <div className="h-8 w-48 rounded-lg bg-zinc-800" />
+        <div className="grid grid-cols-4 gap-4">
+          <div className="h-24 rounded-xl bg-zinc-800" />
+          <div className="h-24 rounded-xl bg-zinc-800" />
+          <div className="h-24 rounded-xl bg-zinc-800" />
+          <div className="h-24 rounded-xl bg-zinc-800" />
+        </div>
+        <div className="h-64 rounded-xl bg-zinc-800" />
+      </div>
+    );
+  },
+});
+const ScheduledTasksPanel = dynamic(function () { return import("./components/ScheduledTasksPanel"); }, {
+  loading: function () {
+    return (
+      <div className="space-y-4 animate-pulse">
+        <div className="h-8 w-48 rounded-lg bg-zinc-800" />
+        <div className="grid grid-cols-4 gap-4">
+          <div className="h-24 rounded-xl bg-zinc-800" />
+          <div className="h-24 rounded-xl bg-zinc-800" />
+          <div className="h-24 rounded-xl bg-zinc-800" />
+          <div className="h-24 rounded-xl bg-zinc-800" />
+        </div>
+        <div className="h-64 rounded-xl bg-zinc-800" />
+      </div>
+    );
+  },
+});
+const OperationHistoryPanel = dynamic(function () { return import("./components/OperationHistoryPanel"); }, {
+  loading: function () {
+    return (
+      <div className="space-y-4 animate-pulse">
+        <div className="h-8 w-48 rounded-lg bg-zinc-800" />
+        <div className="grid grid-cols-4 gap-4">
+          <div className="h-24 rounded-xl bg-zinc-800" />
+          <div className="h-24 rounded-xl bg-zinc-800" />
+          <div className="h-24 rounded-xl bg-zinc-800" />
+          <div className="h-24 rounded-xl bg-zinc-800" />
+        </div>
+        <div className="h-64 rounded-xl bg-zinc-800" />
+      </div>
+    );
+  },
+});
+const InventoryAlertPanel = dynamic(function () { return import("./components/InventoryAlertPanel"); }, {
+  loading: function () {
+    return (
+      <div className="space-y-4 animate-pulse">
+        <div className="h-8 w-48 rounded-lg bg-zinc-800" />
+        <div className="grid grid-cols-4 gap-4">
+          <div className="h-24 rounded-xl bg-zinc-800" />
+          <div className="h-24 rounded-xl bg-zinc-800" />
+          <div className="h-24 rounded-xl bg-zinc-800" />
+          <div className="h-24 rounded-xl bg-zinc-800" />
+        </div>
+        <div className="h-64 rounded-xl bg-zinc-800" />
+      </div>
+    );
+  },
+});
+const RuleEnginePanel = dynamic(function () { return import("./components/RuleEnginePanel"); }, {
+  loading: function () {
+    return (
+      <div className="space-y-4 animate-pulse">
+        <div className="h-8 w-48 rounded-lg bg-zinc-800" />
+        <div className="grid grid-cols-4 gap-4">
+          <div className="h-24 rounded-xl bg-zinc-800" />
+          <div className="h-24 rounded-xl bg-zinc-800" />
+          <div className="h-24 rounded-xl bg-zinc-800" />
+          <div className="h-24 rounded-xl bg-zinc-800" />
+        </div>
+        <div className="h-64 rounded-xl bg-zinc-800" />
+      </div>
+    );
+  },
+});
+const MarketsOverviewPanel = dynamic(function () { return import("./components/MarketsOverviewPanel"); }, {
+  loading: function () {
+    return (
+      <div className="space-y-4 animate-pulse">
+        <div className="h-8 w-48 rounded-lg bg-zinc-800" />
+        <div className="grid grid-cols-4 gap-4">
+          <div className="h-24 rounded-xl bg-zinc-800" />
+          <div className="h-24 rounded-xl bg-zinc-800" />
+          <div className="h-24 rounded-xl bg-zinc-800" />
+          <div className="h-24 rounded-xl bg-zinc-800" />
+        </div>
+        <div className="h-64 rounded-xl bg-zinc-800" />
+      </div>
+    );
+  },
+});
+const MultiCurrencyPricingPanel = dynamic(function () { return import("./components/MultiCurrencyPricingPanel"); }, {
+  loading: function () {
+    return (
+      <div className="space-y-4 animate-pulse">
+        <div className="h-8 w-48 rounded-lg bg-zinc-800" />
+        <div className="grid grid-cols-4 gap-4">
+          <div className="h-24 rounded-xl bg-zinc-800" />
+          <div className="h-24 rounded-xl bg-zinc-800" />
+          <div className="h-24 rounded-xl bg-zinc-800" />
+          <div className="h-24 rounded-xl bg-zinc-800" />
+        </div>
+        <div className="h-64 rounded-xl bg-zinc-800" />
+      </div>
+    );
+  },
+});
+const MultiLocationInventoryPanel = dynamic(function () { return import("./components/MultiLocationInventoryPanel"); }, {
+  loading: function () {
+    return (
+      <div className="space-y-4 animate-pulse">
+        <div className="h-8 w-48 rounded-lg bg-zinc-800" />
+        <div className="grid grid-cols-4 gap-4">
+          <div className="h-24 rounded-xl bg-zinc-800" />
+          <div className="h-24 rounded-xl bg-zinc-800" />
+          <div className="h-24 rounded-xl bg-zinc-800" />
+          <div className="h-24 rounded-xl bg-zinc-800" />
+        </div>
+        <div className="h-64 rounded-xl bg-zinc-800" />
+      </div>
+    );
+  },
+});
+const TranslationManagerPanel = dynamic(function () { return import("./components/TranslationManagerPanel"); }, {
+  loading: function () {
+    return (
+      <div className="space-y-4 animate-pulse">
+        <div className="h-8 w-48 rounded-lg bg-zinc-800" />
+        <div className="grid grid-cols-4 gap-4">
+          <div className="h-24 rounded-xl bg-zinc-800" />
+          <div className="h-24 rounded-xl bg-zinc-800" />
+          <div className="h-24 rounded-xl bg-zinc-800" />
+          <div className="h-24 rounded-xl bg-zinc-800" />
+        </div>
+        <div className="h-64 rounded-xl bg-zinc-800" />
+      </div>
+    );
+  },
+});
+const ShippingRatesPanel = dynamic(function () { return import("./components/ShippingRatesPanel"); }, {
+  loading: function () {
+    return (
+      <div className="space-y-4 animate-pulse">
+        <div className="h-8 w-48 rounded-lg bg-zinc-800" />
+        <div className="grid grid-cols-4 gap-4">
+          <div className="h-24 rounded-xl bg-zinc-800" />
+          <div className="h-24 rounded-xl bg-zinc-800" />
+          <div className="h-24 rounded-xl bg-zinc-800" />
+          <div className="h-24 rounded-xl bg-zinc-800" />
+        </div>
+        <div className="h-64 rounded-xl bg-zinc-800" />
+      </div>
+    );
+  },
+});
+const TaxOverviewPanel = dynamic(function () { return import("./components/TaxOverviewPanel"); }, {
+  loading: function () {
+    return (
+      <div className="space-y-4 animate-pulse">
+        <div className="h-8 w-48 rounded-lg bg-zinc-800" />
+        <div className="grid grid-cols-4 gap-4">
+          <div className="h-24 rounded-xl bg-zinc-800" />
+          <div className="h-24 rounded-xl bg-zinc-800" />
+          <div className="h-24 rounded-xl bg-zinc-800" />
+          <div className="h-24 rounded-xl bg-zinc-800" />
+        </div>
+        <div className="h-64 rounded-xl bg-zinc-800" />
+      </div>
+    );
+  },
+});
+const ProductAnalyticsPanel = dynamic(function () { return import("./components/ProductAnalyticsPanel"); }, {
+  loading: function () {
+    return (
+      <div className="space-y-4 animate-pulse">
+        <div className="h-8 w-48 rounded-lg bg-zinc-800" />
+        <div className="grid grid-cols-4 gap-4">
+          <div className="h-24 rounded-xl bg-zinc-800" />
+          <div className="h-24 rounded-xl bg-zinc-800" />
+          <div className="h-24 rounded-xl bg-zinc-800" />
+          <div className="h-24 rounded-xl bg-zinc-800" />
+        </div>
+        <div className="h-64 rounded-xl bg-zinc-800" />
+      </div>
+    );
+  },
+});
+const CategoryAnalyticsPanel = dynamic(function () { return import("./components/CategoryAnalyticsPanel"); }, {
+  loading: function () {
+    return (
+      <div className="space-y-4 animate-pulse">
+        <div className="h-8 w-48 rounded-lg bg-zinc-800" />
+        <div className="grid grid-cols-4 gap-4">
+          <div className="h-24 rounded-xl bg-zinc-800" />
+          <div className="h-24 rounded-xl bg-zinc-800" />
+          <div className="h-24 rounded-xl bg-zinc-800" />
+          <div className="h-24 rounded-xl bg-zinc-800" />
+        </div>
+        <div className="h-64 rounded-xl bg-zinc-800" />
+      </div>
+    );
+  },
+});
+const CustomerSegmentationPanel = dynamic(function () { return import("./components/CustomerSegmentationPanel"); }, {
+  loading: function () {
+    return (
+      <div className="space-y-4 animate-pulse">
+        <div className="h-8 w-48 rounded-lg bg-zinc-800" />
+        <div className="grid grid-cols-4 gap-4">
+          <div className="h-24 rounded-xl bg-zinc-800" />
+          <div className="h-24 rounded-xl bg-zinc-800" />
+          <div className="h-24 rounded-xl bg-zinc-800" />
+          <div className="h-24 rounded-xl bg-zinc-800" />
+        </div>
+        <div className="h-64 rounded-xl bg-zinc-800" />
+      </div>
+    );
+  },
+});
+const SalesForecastPanel = dynamic(function () { return import("./components/SalesForecastPanel"); }, {
+  loading: function () {
+    return (
+      <div className="space-y-4 animate-pulse">
+        <div className="h-8 w-48 rounded-lg bg-zinc-800" />
+        <div className="grid grid-cols-4 gap-4">
+          <div className="h-24 rounded-xl bg-zinc-800" />
+          <div className="h-24 rounded-xl bg-zinc-800" />
+          <div className="h-24 rounded-xl bg-zinc-800" />
+          <div className="h-24 rounded-xl bg-zinc-800" />
+        </div>
+        <div className="h-64 rounded-xl bg-zinc-800" />
+      </div>
+    );
+  },
+});
+const ProductAffinityPanel = dynamic(function () { return import("./components/ProductAffinityPanel"); }, {
+  loading: function () {
+    return (
+      <div className="space-y-4 animate-pulse">
+        <div className="h-8 w-48 rounded-lg bg-zinc-800" />
+        <div className="grid grid-cols-4 gap-4">
+          <div className="h-24 rounded-xl bg-zinc-800" />
+          <div className="h-24 rounded-xl bg-zinc-800" />
+          <div className="h-24 rounded-xl bg-zinc-800" />
+          <div className="h-24 rounded-xl bg-zinc-800" />
+        </div>
+        <div className="h-64 rounded-xl bg-zinc-800" />
+      </div>
+    );
+  },
+});
+
 
 // ─── Types ────────────────────────────────────────────
 
@@ -154,6 +667,12 @@ export default function DashboardPage() {
   const [sheetOpen, setSheetOpen] = useState(false);
   const [diagnosing, setDiagnosing] = useState(false);
   const [diagnosis, setDiagnosis] = useState<DiagnosisReport | null>(null);
+
+  // On-demand loading flags for heavyweight data
+  const [productCatalogLoaded, setProductCatalogLoaded] = useState(false);
+  const [customerDataLoaded, setCustomerDataLoaded] = useState(false);
+  const [contentDataLoaded, setContentDataLoaded] = useState(false);
+  const [marketDataLoaded, setMarketDataLoaded] = useState(false);
   const [diagnosisError, setDiagnosisError] = useState<string | null>(null);
   const [typewriterText, setTypewriterText] = useState("");
 
@@ -195,7 +714,67 @@ export default function DashboardPage() {
     finally { setLoading(false); }
   }, []);
 
+  // ── On-demand data loaders ──────────────────────────
+  const loadProductCatalog = useCallback(async (store: StoreEntry) => {
+    if (productCatalogLoaded || store.isDemo) return;
+    try {
+      var r = await fetch("/api/shopify/dashboard", {
+        method: "POST", headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ action: "getProductCatalog", shopUrl: store.shopUrl, accessToken: store.accessToken }),
+      });
+      var j = await r.json();
+      if (j.success) { setData(function (prev) { return prev ? Object.assign({}, prev, { fullProducts: j.fullProducts, variantSales: j.variantSales }) : prev; }); setProductCatalogLoaded(true); }
+    } catch (err) { console.error("[dashboard] loadProductCatalog failed:", err); }
+  }, [productCatalogLoaded]);
+
+  const loadCustomerData = useCallback(async (store: StoreEntry) => {
+    if (customerDataLoaded || store.isDemo) return;
+    try {
+      var r = await fetch("/api/shopify/dashboard", {
+        method: "POST", headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ action: "getCustomerData", shopUrl: store.shopUrl, accessToken: store.accessToken }),
+      });
+      var j = await r.json();
+      if (j.success) { setData(function (prev) { return prev ? Object.assign({}, prev, { customers: j.customers }) : prev; }); setCustomerDataLoaded(true); }
+    } catch (err) { console.error("[dashboard] loadCustomerData failed:", err); }
+  }, [customerDataLoaded]);
+
+  const loadContentData = useCallback(async (store: StoreEntry) => {
+    if (contentDataLoaded || store.isDemo) return;
+    try {
+      var r = await fetch("/api/shopify/dashboard", {
+        method: "POST", headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ action: "getContentData", shopUrl: store.shopUrl, accessToken: store.accessToken }),
+      });
+      var j = await r.json();
+      if (j.success) { setData(function (prev) { return prev ? Object.assign({}, prev, { collections: j.collections, menus: j.menus, pages: j.pages, blogs: j.blogs }) : prev; }); setContentDataLoaded(true); }
+    } catch (err) { console.error("[dashboard] loadContentData failed:", err); }
+  }, [contentDataLoaded]);
+
+  const loadMarketData = useCallback(async (store: StoreEntry) => {
+    if (marketDataLoaded || store.isDemo) return;
+    try {
+      var r = await fetch("/api/shopify/dashboard", {
+        method: "POST", headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ action: "getMarketData", shopUrl: store.shopUrl, accessToken: store.accessToken }),
+      });
+      var j = await r.json();
+      if (j.success) { setData(function (prev) { return prev ? Object.assign({}, prev, { markets: j.markets, locations: j.locations, inventoryByLocation: j.inventoryByLocation, shippingData: j.shippingData, taxData: j.taxData, dailyGMV: j.dailyGMV }) : prev; }); setMarketDataLoaded(true); }
+    } catch (err) { console.error("[dashboard] loadMarketData failed:", err); }
+  }, [marketDataLoaded]);
+
   useEffect(() => { if (currentStore) fetchData(currentStore); }, [currentStore, fetchData]);
+
+  // Preload on-demand data when user navigates to relevant panels
+  useEffect(function () {
+    var store = currentStore;
+    if (!store || store.isDemo) return;
+    var menu = activeMenu;
+    if (["product-control", "bulk-edit", "batch-op", "inventory-alert"].indexOf(menu) !== -1) { loadProductCatalog(store); }
+    if (["customers", "customer-segmentation"].indexOf(menu) !== -1) { loadCustomerData(store); }
+    if (["collections", "navigation", "content-pages", "metafields"].indexOf(menu) !== -1) { loadContentData(store); }
+    if (["markets", "multi-currency", "multi-location", "translations", "shipping-rates", "tax-overview"].indexOf(menu) !== -1) { loadMarketData(store); }
+  }, [activeMenu, currentStore, loadProductCatalog, loadCustomerData, loadContentData, loadMarketData]);
 
   // Reset diagnosis on store switch
   useEffect(() => { setDiagnosis(null); setDiagnosing(false); setTypewriterText(""); }, [currentStoreId]);
@@ -234,15 +813,30 @@ export default function DashboardPage() {
       .slice(0, currentHour + 1);
   }, [data]);
 
-  const totalCostRate = cogsRate + shippingRate + marketingRate;
-  const profit = data ? data.gmv * (1 - totalCostRate / 100) : 0;
-  const profitMargin = data && data.gmv > 0 ? (profit / data.gmv) * 100 : 0;
-  const pieData = [
-    { name: "采购成本", value: data ? (data.gmv * cogsRate) / 100 : 0, color: "#ef4444" },
-    { name: "物流运费", value: data ? (data.gmv * shippingRate) / 100 : 0, color: "#f59e0b" },
-    { name: "广告投放", value: data ? (data.gmv * marketingRate) / 100 : 0, color: "#3b82f6" },
-    { name: "纯利润", value: profit, color: "#10b981" },
-  ];
+  const totalCostRate = useMemo(
+    function () { return cogsRate + shippingRate + marketingRate; },
+    [cogsRate, shippingRate, marketingRate]
+  );
+
+  const profit = useMemo(
+    function () { return data ? data.gmv * (1 - totalCostRate / 100) : 0; },
+    [data, totalCostRate]
+  );
+
+  const profitMargin = useMemo(
+    function () { return data && data.gmv > 0 ? (profit / data.gmv) * 100 : 0; },
+    [data, profit]
+  );
+
+  const pieData = useMemo(
+    function () { return [
+      { name: "采购成本", value: data ? (data.gmv * cogsRate) / 100 : 0, color: "#ef4444" },
+      { name: "物流运费", value: data ? (data.gmv * shippingRate) / 100 : 0, color: "#f59e0b" },
+      { name: "广告投放", value: data ? (data.gmv * marketingRate) / 100 : 0, color: "#3b82f6" },
+      { name: "纯利润", value: profit, color: "#10b981" },
+    ]; },
+    [data, cogsRate, shippingRate, marketingRate, profit]
+  );
 
   const refundedOrders = useMemo(() => data?.orders.filter((o) => o.financial_status === "refunded") ?? [], [data]);
   const refundRate = data && data.orderCount > 0 ? (refundedOrders.length / data.orderCount) * 100 : 0;
