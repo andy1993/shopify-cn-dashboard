@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, useMemo, useRef, useEffect, useCallback } from "react";
+import { useState, useMemo, useEffect, useCallback } from "react";
 import {
   Zap, Save, RefreshCw, RotateCcw, AlertCircle, CheckCircle2,
   Package, DollarSign, ChevronDown, ChevronRight, Layers, ShoppingCart,
@@ -108,7 +108,6 @@ export default function ProductControlPanel({
 }: ProductControlPanelProps) {
   /* ── State ────────────────────────────────────────── */
   const [catalog, setCatalog] = useState<EditableProduct[]>([]);
-  const initialized = useRef(false);
   const [toast, setToast] = useState<string | null>(null);
   const showToast = (msg: string) => { setToast(msg); setTimeout(() => setToast(null), 2500); };
 
@@ -130,10 +129,8 @@ export default function ProductControlPanel({
 
   /* ── Init ──────────────────────────────────────────── */
   useEffect(() => {
-    if (initialized.current) return;
     const data = isDemo ? DEMO_PRODUCTS_A.concat(DEMO_PRODUCTS_B) : (fullProducts ?? products ?? []);
     if (!data || data.length === 0) return;
-    initialized.current = true;
     setCatalog(data.map((p) => ({
       ...p,
       expanded: false,

@@ -308,7 +308,8 @@ export default function DashboardPage() {
           products: data.products, isDemo: false,
         }));
       }
-    } catch {
+    } catch (err) {
+      console.error("AI 诊断失败:", err);
       setDiagnosisError("⚠️ 核心数据已同步，但检测到系统未配置 DeepSeek 密钥，AI 智能诊断暂时无法激活，其余统计功能正常使用。");
       setDiagnosis(generateDiagnosis({
         shopName: data.shopName, gmv: data.gmv, orderCount: data.orderCount,

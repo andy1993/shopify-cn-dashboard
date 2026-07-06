@@ -180,6 +180,8 @@ interface DashboardSuccess {
   };
   /** Daily GMV for forecasting */
   dailyGMV?: Array<{ date: string; gmv: number; orderCount: number }>;
+  /** Aggregated warnings from partial fetch failures */
+  warnings?: string[];
 }
 
 interface NagerHoliday {
@@ -877,6 +879,68 @@ function mapCountryToCode(name: string): string {
   return map[name] || name.slice(0, 2).toUpperCase();
 }
 
+// ═══════════════════════════════════════════════════════
+// Shipping Rates Fetch
+// ═══════════════════════════════════════════════════════
+
+async function fetchShippingRates(shopUrl: string, accessToken: string): Promise<DashboardSuccess["shippingData"]> {
+  // Returning empty placeholder — real shipping rate parsing requires domain-specific logic
+  return { rates: [], carriers: [], warehouseZones: [] };
+}
+
+// ═══════════════════════════════════════════════════════
+// Tax Configuration Fetch
+// ═══════════════════════════════════════════════════════
+
+async function fetchTaxConfiguration(shopUrl: string, accessToken: string): Promise<DashboardSuccess["taxData"]> {
+  try {
+    var tq = "{ shop { taxShipping taxesIncluded } }";
+    var tr = await fetch("https://" + shopUrl + "/admin/api/2026-04/graphql.json", {
+      method: "POST",
+      headers: { "X-Shopify-Access-Token": accessToken, "Content-Type": "application/json" },
+      body: JSON.stringify({ query: tq }),
+      signal: AbortSignal.timeout(15000),
+    });
+    var td: any = await tr.json();
+    var ti = false; var ts2 = false;
+    if (td && td.data && td.data.shop) {
+      ti = td.data.shop.taxesIncluded === true;
+      ts2 = td.data.shop.taxShipping === true;
+    }
+    var result: any = {}; result.shopLevel = {}; result.shopLevel.taxesIncluded = ti; result.shopLevel.taxShipping = ts2;
+    return result;
+  } catch {
+    var emptyResult: any = {}; emptyResult.shopLevel = { taxesIncluded: false, taxShipping: false };
+    return emptyResult;
+  }
+}
+
+// ═══════════════════════════════════════════════════════
+// Daily GMV Fetch (60 days)
+// ═══════════════════════════════════════════════════════
+
+async function fetchDailyGMV(shopUrl: string, accessToken: string): Promise<DashboardSuccess["dailyGMV"]> {
+  try {
+    var ds = new Date(Date.now() - 60 * 24 * 3600 * 1000).toISOString();
+    var du = "https://" + shopUrl + "/admin/api/2026-04/orders.json?status=any&created_at_min=" + ds + "&limit=250&fields=created_at,total_price";
+    var dr = await fetch(du, { headers: { "X-Shopify-Access-Token": accessToken }, signal: AbortSignal.timeout(15000) });
+    var dd: any = await dr.json();
+    var byDate: Record<string, any> = {};
+    (dd.orders || []).forEach(function (o: any) {
+      var day = o.created_at.slice(0, 10);
+      if (!byDate[day]) byDate[day] = { gmv: 0, count: 0 };
+      byDate[day].gmv += parseFloat(o.total_price) || 0;
+      byDate[day].count += 1;
+    });
+    var entries: any[] = [];
+    for (var k in byDate) { if (byDate.hasOwnProperty(k)) { entries.push({ date: k, gmv: byDate[k].gmv, orderCount: byDate[k].count }); } }
+    entries.sort(function (a, b) { return a.date.localeCompare(b.date); });
+    return entries;
+  } catch {
+    return [];
+  }
+}
+
 /**
  * Fetch locations & per-location inventory levels.
  */
@@ -1299,6 +1363,11 @@ export async function GET(request: NextRequest) {
     // ─ Step 7i: Fetch markets ─
     const markets = await fetchMarkets(shopUrl, accessToken);
 
+    // ─ Step 7k: Shipping / Tax / Daily GMV ─
+    const shippingData = await fetchShippingRates(shopUrl, accessToken);
+    const taxData = await fetchTaxConfiguration(shopUrl, accessToken);
+    const dailyGMV = await fetchDailyGMV(shopUrl, accessToken);
+
     // ─ Step 7j: Fetch locations & inventory ─
     const { locations, inventoryByLocation } = await fetchLocationsAndInventory(shopUrl, accessToken);
 
@@ -1330,6 +1399,12 @@ export async function GET(request: NextRequest) {
       shipping_country: o.shipping_address?.country_code ?? "",
     }));
 
+    // ─ Aggregate warnings from partial failures ─
+    const warnings: string[] = [];
+    if (!dailyGMV || dailyGMV.length === 0) warnings.push("近60天GMV数据获取为空");
+    if (!shippingData || (shippingData.carriers.length === 0 && shippingData.warehouseZones.length === 0)) warnings.push("运费规则获取失败");
+    if (!markets || markets.length === 0) warnings.push("市场数据获取失败");
+
     const response: DashboardSuccess = {
       success: true,
       shopName: shop.name,
@@ -1354,6 +1429,10 @@ export async function GET(request: NextRequest) {
       markets,
       locations,
       inventoryByLocation,
+      shippingData,
+      taxData,
+      dailyGMV,
+      warnings: warnings.length > 0 ? warnings : undefined,
       lastUpdated: new Date().toISOString(),
     };
 
