@@ -2003,38 +2003,69 @@ export async function POST(request: NextRequest) {
 
     // 按需数据接口 — 重型数据仅在用户首次打开对应面板时调用
     if (body.action === "getProductCatalog" && body.shopUrl && body.accessToken) {
-      var s1 = body.shopUrl as string; var t1 = body.accessToken as string;
-      var fp = await fetchFullProducts(s1, t1, "");
-      var vs = await fetchVariantSales(s1, t1);
-      return NextResponse.json({ success: true, fullProducts: fp, variantSales: vs });
+      var productCatalog: any = undefined;
+      var variantSalesData: any = {};
+      try {
+        productCatalog = await fetchFullProducts(body.shopUrl as string, body.accessToken as string, "");
+        variantSalesData = await fetchVariantSales(body.shopUrl as string, body.accessToken as string);
+      } catch (err) {
+        console.error("[shopify/dashboard] getProductCatalog failed:", err);
+      }
+      return NextResponse.json({ success: true, fullProducts: productCatalog, variantSales: variantSalesData });
     }
 
     if (body.action === "getCustomerData" && body.shopUrl && body.accessToken) {
-      var s2 = body.shopUrl as string; var t2 = body.accessToken as string;
-      var cs = await fetchCustomers(s2, t2);
-      return NextResponse.json({ success: true, customers: cs });
+      var customerData: any = undefined;
+      try {
+        customerData = await fetchCustomers(body.shopUrl as string, body.accessToken as string);
+      } catch (err) {
+        console.error("[shopify/dashboard] getCustomerData failed:", err);
+      }
+      return NextResponse.json({ success: true, customers: customerData });
     }
 
     if (body.action === "getContentData" && body.shopUrl && body.accessToken) {
-      var s3 = body.shopUrl as string; var t3 = body.accessToken as string;
-      var cl = await fetchCollections(s3, t3);
-      var mn = await fetchMenus(s3, t3);
-      var pg = await fetchPages(s3, t3);
-      var bl = await fetchBlogs(s3, t3);
-      return NextResponse.json({ success: true, collections: cl, menus: mn, pages: pg, blogs: bl });
+      var contentCollections: any = null;
+      var contentMenus: any = [];
+      var contentPages: any = [];
+      var contentBlogs: any = [];
+      try {
+        contentCollections = await fetchCollections(body.shopUrl as string, body.accessToken as string);
+        contentMenus = await fetchMenus(body.shopUrl as string, body.accessToken as string);
+        contentPages = await fetchPages(body.shopUrl as string, body.accessToken as string);
+        contentBlogs = await fetchBlogs(body.shopUrl as string, body.accessToken as string);
+      } catch (err) {
+        console.error("[shopify/dashboard] getContentData failed:", err);
+      }
+      return NextResponse.json({ success: true, collections: contentCollections, menus: contentMenus, pages: contentPages, blogs: contentBlogs });
     }
 
     if (body.action === "getMarketData" && body.shopUrl && body.accessToken) {
-      var s4 = body.shopUrl as string; var t4 = body.accessToken as string;
-      var mk = await fetchMarkets(s4, t4);
-      var li = await fetchLocationsAndInventory(s4, t4);
-      var sh = await fetchShippingRates(s4, t4);
-      var tx = await fetchTaxConfiguration(s4, t4);
-      var dg = await fetchDailyGMV(s4, t4);
+      var marketData: any = undefined;
+      var locationData: any = undefined;
+      var inventoryData: any = undefined;
+      var shipData: any = undefined;
+      var taxConf: any = undefined;
+      var dailyData: any = undefined;
+      try {
+        marketData = await fetchMarkets(body.shopUrl as string, body.accessToken as string);
+        var locResult = await fetchLocationsAndInventory(body.shopUrl as string, body.accessToken as string);
+        locationData = locResult.locations;
+        inventoryData = locResult.inventoryByLocation;
+        shipData = await fetchShippingRates(body.shopUrl as string, body.accessToken as string);
+        taxConf = await fetchTaxConfiguration(body.shopUrl as string, body.accessToken as string);
+        dailyData = await fetchDailyGMV(body.shopUrl as string, body.accessToken as string);
+      } catch (err) {
+        console.error("[shopify/dashboard] getMarketData failed:", err);
+      }
       return NextResponse.json({
-        success: true, markets: mk,
-        locations: li.locations, inventoryByLocation: li.inventoryByLocation,
-        shippingData: sh, taxData: tx, dailyGMV: dg,
+        success: true,
+        markets: marketData,
+        locations: locationData,
+        inventoryByLocation: inventoryData,
+        shippingData: shipData,
+        taxData: taxConf,
+        dailyGMV: dailyData,
       });
     }
 
