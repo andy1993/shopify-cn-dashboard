@@ -149,15 +149,15 @@ export default function MultiLocationInventoryPanel({ isDemo, shopUrl, accessTok
 
   return (
     <div className="space-y-4">
-      {toast && <div className="fixed bottom-6 left-1/2 -translate-x-1/2 z-50 rounded-lg bg-emerald-600/90 px-4 py-2 text-sm font-medium text-white shadow-2xl">{toast}</div>}
+      {toast && <div className="fixed bottom-6 left-1/2 -translate-x-1/2 z-50 rounded-lg bg-emerald-600/90 px-4 py-2 text-base font-medium text-white shadow-2xl">{toast}</div>}
 
       <div>
         <h2 className="flex items-center gap-2 text-xl font-bold text-foreground"><Warehouse className="h-6 w-6 text-orange-400" />多仓库存管理</h2>
-        <p className="mt-1 text-sm text-muted-foreground">{shopName} · {locations.length} 个仓库{isDemo && <span className="ml-2 text-xs text-amber-400">(演示)</span>}</p>
+        <p className="mt-1 text-base text-muted-foreground">{shopName} · {locations.length} 个仓库{isDemo && <span className="ml-2 text-sm text-amber-400">(演示)</span>}</p>
       </div>
 
       {/* Distribution Analysis */}
-      <button onClick={() => setShowAnalysis(!showAnalysis)} className="flex items-center gap-1 text-[10px] text-muted-foreground hover:text-foreground">
+      <button onClick={() => setShowAnalysis(!showAnalysis)} className="flex items-center gap-1 text-xs text-muted-foreground hover:text-foreground">
         <BarChart3 className="h-3 w-3"/>{showAnalysis ? <ChevronDown className="h-3 w-3"/> : <ChevronRight className="h-3 w-3"/>}库存分布分析
       </button>
       {showAnalysis && (
@@ -170,32 +170,32 @@ export default function MultiLocationInventoryPanel({ isDemo, shopUrl, accessTok
               return pct > 0 ? <div key={l.id} className="h-full transition-all flex items-center justify-center text-[8px] text-white font-medium" style={{width:`${pct}%`,backgroundColor:colors[ci]}} title={`${l.name}: ${pct.toFixed(1)}%`}>{pct > 8 ? pct.toFixed(0) + "%" : ""}</div> : null;
             })}
           </div>
-          <div className="flex flex-wrap gap-3 text-[10px] text-muted-foreground">
+          <div className="flex flex-wrap gap-3 text-xs text-muted-foreground">
             {locations.map((l) => { const pct = totalAll > 0 ? ((totalPerLoc[l.id] || 0) / totalAll) * 100 : 0; return <span key={l.id}>{l.name}: <span className="text-foreground tabular-nums">{totalPerLoc[l.id] || 0}</span> ({pct.toFixed(1)}%)</span>; })}
           </div>
-          {locations.some((l) => !totalPerLoc[l.id]) && <p className="text-[10px] text-red-400">⚠ 以下仓库库存为 0：{locations.filter((l) => !totalPerLoc[l.id]).map((l) => l.name).join(", ")}</p>}
-          {Object.values(totalPerLoc).some((v) => totalAll > 0 && v / totalAll > 0.8) && <p className="text-[10px] text-amber-400">⚠ 库存集中度过高，建议分散以降低风险</p>}
+          {locations.some((l) => !totalPerLoc[l.id]) && <p className="text-xs text-red-400">⚠ 以下仓库库存为 0：{locations.filter((l) => !totalPerLoc[l.id]).map((l) => l.name).join(", ")}</p>}
+          {Object.values(totalPerLoc).some((v) => totalAll > 0 && v / totalAll > 0.8) && <p className="text-xs text-amber-400">⚠ 库存集中度过高，建议分散以降低风险</p>}
         </CardContent></Card>
       )}
 
       {/* Location Selector + Search */}
       <Card className="border-border/40 bg-card/60"><CardContent className="flex flex-wrap items-center gap-2 px-3 py-2">
         <div className="flex items-center gap-1 flex-wrap">
-          <span className="text-[10px] text-muted-foreground">仓库:</span>
-          {locations.map((l) => <label key={l.id} className="flex items-center gap-0.5 text-[10px] cursor-pointer"><input type="checkbox" checked={visibleLocIds.has(l.id)} onChange={() => toggleLoc(l.id)} className="accent-orange-500"/>{l.name}</label>)}
+          <span className="text-xs text-muted-foreground">仓库:</span>
+          {locations.map((l) => <label key={l.id} className="flex items-center gap-0.5 text-xs cursor-pointer"><input type="checkbox" checked={visibleLocIds.has(l.id)} onChange={() => toggleLoc(l.id)} className="accent-orange-500"/>{l.name}</label>)}
         </div>
         <Button size="sm" variant="ghost" onClick={() => setVisibleLocIds(new Set(locations.map((l) => l.id)))} className="h-6 text-[9px]">全选</Button>
         <Button size="sm" variant="ghost" onClick={() => setVisibleLocIds(new Set(locations.filter((l) => l.type === "overseas").map((l) => l.id)))} className="h-6 text-[9px]">仅海外仓</Button>
         <Button size="sm" variant="ghost" onClick={() => setVisibleLocIds(new Set(locations.filter((l) => l.type === "domestic").map((l) => l.id)))} className="h-6 text-[9px]">仅本地仓</Button>
-        <div className="relative flex-1 min-w-[120px] ml-2"><Search className="absolute left-2 top-1/2 h-3 w-3 -translate-y-1/2 text-muted-foreground"/><Input value={search} onChange={(e) => setSearch(e.target.value)} placeholder="搜索..." className="h-7 pl-7 text-[10px]"/></div>
-        <Button size="sm" variant="outline" onClick={exportCSV} className="h-7 gap-1 text-[10px]"><Download className="h-3 w-3"/>导出</Button>
+        <div className="relative flex-1 min-w-[120px] ml-2"><Search className="absolute left-2 top-1/2 h-3 w-3 -translate-y-1/2 text-muted-foreground"/><Input value={search} onChange={(e) => setSearch(e.target.value)} placeholder="搜索..." className="h-7 pl-7 text-sm"/></div>
+        <Button size="sm" variant="outline" onClick={exportCSV} className="h-7 gap-1 text-xs"><Download className="h-3 w-3"/>导出</Button>
       </CardContent></Card>
 
       {/* Matrix Table */}
       <Card className="border-border/40 bg-card/60 shadow-lg backdrop-blur-lg overflow-x-auto">
         <CardContent className="p-0">
-          <table className="w-full text-xs min-w-[600px]">
-            <thead><tr className="border-b border-border/20 text-[10px] font-semibold uppercase tracking-wider text-muted-foreground">
+          <table className="w-full text-sm min-w-[600px]">
+            <thead><tr className="border-b border-border/20 text-xs font-semibold uppercase tracking-wider text-muted-foreground">
               <th className="py-2 pl-3 text-left sticky left-0 bg-card/90 backdrop-blur z-10">商品/SKU</th>
               {visibleLocs.map((l) => <th key={l.id} className="py-2 px-2 text-right min-w-[80px]">{l.name}</th>)}
               <th className="py-2 px-2 text-right min-w-[60px]">总库存</th>
@@ -221,7 +221,7 @@ export default function MultiLocationInventoryPanel({ isDemo, shopUrl, accessTok
                       return <td key={l.id} className={`py-2 px-2 text-right tabular-nums font-mono ${cls}`}>{qty}</td>;
                     })}
                     <td className="py-2 px-2 text-right tabular-nums font-semibold">{totalInv}</td>
-                    <td className="py-2 px-2 text-center"><Button size="sm" variant="ghost" onClick={() => openTransfer(firstVar)} className="h-6 text-[10px] text-orange-400"><ArrowRightLeft className="h-3 w-3"/></Button></td>
+                    <td className="py-2 px-2 text-center"><Button size="sm" variant="ghost" onClick={() => openTransfer(firstVar)} className="h-6 text-xs text-orange-400"><ArrowRightLeft className="h-3 w-3"/></Button></td>
                   </tr>
                 );
               })}
@@ -236,32 +236,32 @@ export default function MultiLocationInventoryPanel({ isDemo, shopUrl, accessTok
           <div className="fixed inset-0 z-40 bg-black/50" onClick={() => setTransferModal(null)}/>
           <div className="fixed inset-0 z-50 flex items-center justify-center p-4">
             <div className="w-full max-w-sm bg-card border border-border/40 rounded-xl shadow-2xl p-5 space-y-3">
-              <h3 className="text-sm font-semibold flex items-center gap-2"><ArrowRightLeft className="h-4 w-4 text-orange-400"/>跨仓调拨</h3>
-              <p className="text-xs text-muted-foreground">{transferModal.variant.productTitle} · {transferModal.variant.sku}</p>
+              <h3 className="text-base font-semibold flex items-center gap-2"><ArrowRightLeft className="h-4 w-4 text-orange-400"/>跨仓调拨</h3>
+              <p className="text-sm text-muted-foreground">{transferModal.variant.productTitle} · {transferModal.variant.sku}</p>
               <div className="grid grid-cols-2 gap-3">
-                <div><label className="text-[10px] text-muted-foreground block mb-0.5">来源仓库</label>
-                  <select value={transferFrom} onChange={(e) => setTransferFrom(Number(e.target.value))} className="h-9 w-full rounded border border-border/40 bg-background px-2 text-sm text-foreground">
+                <div><label className="text-xs text-muted-foreground block mb-0.5">来源仓库</label>
+                  <select value={transferFrom} onChange={(e) => setTransferFrom(Number(e.target.value))} className="h-9 w-full rounded border border-border/40 bg-background px-2 text-base text-foreground">
                     {locations.filter((l) => visibleLocIds.has(l.id)).map((l) => <option key={l.id} value={l.id}>{l.name} (库存: {transferModal.variant.locationStocks[l.id] || 0})</option>)}
                   </select>
                 </div>
-                <div><label className="text-[10px] text-muted-foreground block mb-0.5">目标仓库</label>
-                  <select value={transferTo} onChange={(e) => setTransferTo(Number(e.target.value))} className="h-9 w-full rounded border border-border/40 bg-background px-2 text-sm text-foreground">
+                <div><label className="text-xs text-muted-foreground block mb-0.5">目标仓库</label>
+                  <select value={transferTo} onChange={(e) => setTransferTo(Number(e.target.value))} className="h-9 w-full rounded border border-border/40 bg-background px-2 text-base text-foreground">
                     <option value={0}>选择目标...</option>
                     {locations.filter((l) => l.id !== transferFrom).map((l) => <option key={l.id} value={l.id}>{l.name}</option>)}
                   </select>
                 </div>
               </div>
-              <div><label className="text-[10px] text-muted-foreground block mb-0.5">调拨数量 (最大: {transferModal.variant.locationStocks[transferFrom] || 0})</label>
+              <div><label className="text-xs text-muted-foreground block mb-0.5">调拨数量 (最大: {transferModal.variant.locationStocks[transferFrom] || 0})</label>
                 <Input type="number" value={transferQty || ""} onChange={(e) => setTransferQty(Number(e.target.value) || 0)} max={transferModal.variant.locationStocks[transferFrom] || 0} className="h-9 text-sm"/>
               </div>
               {transferQty > 0 && transferTo > 0 && (
-                <div className="text-[10px] text-muted-foreground bg-muted/10 rounded p-2">
+                <div className="text-xs text-muted-foreground bg-muted/10 rounded p-2">
                   预览：从「{locations.find((l) => l.id === transferFrom)?.name}」调拨 {transferQty} 件到「{locations.find((l) => l.id === transferTo)?.name}」，当前 {(transferModal.variant.locationStocks[transferFrom] || 0)}→{Math.max(0, (transferModal.variant.locationStocks[transferFrom] || 0) - transferQty)}
                 </div>
               )}
               <div className="flex gap-2">
-                <Button onClick={executeTransfer} disabled={transferQty <= 0 || transferTo === 0} className="flex-1 h-9 text-xs bg-orange-600 hover:bg-orange-500 text-white"><Save className="h-3 w-3 mr-1"/>确认调拨</Button>
-                <Button variant="outline" onClick={() => setTransferModal(null)} className="h-9 text-xs">取消</Button>
+                <Button onClick={executeTransfer} disabled={transferQty <= 0 || transferTo === 0} className="flex-1 h-9 text-sm bg-orange-600 hover:bg-orange-500 text-white"><Save className="h-3 w-3 mr-1"/>确认调拨</Button>
+                <Button variant="outline" onClick={() => setTransferModal(null)} className="h-9 text-sm">取消</Button>
               </div>
             </div>
           </div>

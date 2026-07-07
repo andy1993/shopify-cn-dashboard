@@ -74,9 +74,9 @@ function KpiCard({
       <CardContent className="relative p-6">
         <div className="flex items-start justify-between">
           <div className="space-y-1">
-            <p className="text-sm font-medium text-muted-foreground">{title}</p>
+            <p className="text-base font-medium text-muted-foreground">{title}</p>
             <p className="text-3xl font-bold tracking-tight text-foreground">{value}</p>
-            <p className="text-xs text-muted-foreground">{subtitle}</p>
+            <p className="text-sm text-muted-foreground">{subtitle}</p>
           </div>
           <div className={`flex h-11 w-11 items-center justify-center rounded-xl ring-1 ${colors[accent]}`}>
             <Icon className="h-5 w-5" />
@@ -101,9 +101,9 @@ function ComboTooltip({
   if (!active || !payload?.length) return null;
   return (
     <div className="rounded-lg border border-border/50 bg-card px-3 py-2 shadow-lg backdrop-blur-sm">
-      <p className="mb-1 text-xs font-medium text-muted-foreground">{label}</p>
+      <p className="mb-1 text-sm font-medium text-muted-foreground">{label}</p>
       {payload.map((entry, i) => (
-        <p key={i} className="text-sm font-semibold" style={{ color: entry.color }}>
+        <p key={i} className="text-base font-semibold" style={{ color: entry.color }}>
           {entry.name}: {entry.name === "广告费累计 (RMB)" ? formatCny(entry.value) : formatCny(entry.value)}
         </p>
       ))}
@@ -194,9 +194,9 @@ export default function AdPerformancePanel({
           <BarChart3 className="h-6 w-6 text-amber-400" />
           广告成效分析
         </h2>
-        <p className="mt-1 text-sm text-muted-foreground">
+        <p className="mt-1 text-base text-muted-foreground">
           {shopName} · Meta / Google 多渠道投放成效与 MER 营销效率追踪
-          {isDemo && <span className="ml-2 text-xs text-amber-400">(Demo: 广告费每 30s 随机上涨 $3-$5)</span>}
+          {isDemo && <span className="ml-2 text-sm text-amber-400">(Demo: 广告费每 30s 随机上涨 $3-$5)</span>}
         </p>
       </div>
 
@@ -204,7 +204,7 @@ export default function AdPerformancePanel({
       <div className="grid grid-cols-1 gap-4 sm:grid-cols-2">
         <Card className="border-sky-500/20 bg-sky-500/5 shadow-lg backdrop-blur-lg ring-1 ring-sky-500/10">
           <CardHeader className="pb-2">
-            <CardTitle className="flex items-center gap-2 text-sm">
+            <CardTitle className="flex items-center gap-2 text-base">
               <Activity className="h-4 w-4 text-sky-400" />
               Meta Ads 广告消耗
             </CardTitle>
@@ -223,7 +223,7 @@ export default function AdPerformancePanel({
                   className="h-12 w-32 text-center text-2xl font-bold tabular-nums"
                 />
               </div>
-              <p className="text-xs text-muted-foreground">
+              <p className="text-sm text-muted-foreground">
                 {isDemo ? "Demo 自动递增" : "手动输入今日消耗"}
               </p>
             </div>
@@ -232,7 +232,7 @@ export default function AdPerformancePanel({
 
         <Card className="border-emerald-500/20 bg-emerald-500/5 shadow-lg backdrop-blur-lg ring-1 ring-emerald-500/10">
           <CardHeader className="pb-2">
-            <CardTitle className="flex items-center gap-2 text-sm">
+            <CardTitle className="flex items-center gap-2 text-base">
               <Activity className="h-4 w-4 text-emerald-400" />
               Google Ads 广告消耗
             </CardTitle>
@@ -251,7 +251,7 @@ export default function AdPerformancePanel({
                   className="h-12 w-32 text-center text-2xl font-bold tabular-nums"
                 />
               </div>
-              <p className="text-xs text-muted-foreground">
+              <p className="text-sm text-muted-foreground">
                 {isDemo ? "Demo 自动递增" : "手动输入今日消耗"}
               </p>
             </div>
@@ -310,7 +310,7 @@ export default function AdPerformancePanel({
               </ResponsiveContainer>
             </div>
           ) : (
-            <div className="flex flex-col items-center gap-3 py-12 text-sm text-muted-foreground">
+            <div className="flex flex-col items-center gap-3 py-12 text-base text-muted-foreground">
               暂无销售数据，请等待订单产生后图表将自动渲染
             </div>
           )}

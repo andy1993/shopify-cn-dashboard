@@ -150,27 +150,27 @@ function FulfillmentModal({
       <div className="fixed inset-0 z-50 flex items-center justify-center p-4">
         <div className="w-full max-w-md rounded-xl border border-border/40 bg-card shadow-2xl backdrop-blur-xl">
           <div className="flex items-center justify-between border-b border-border/20 px-5 py-3">
-            <h3 className="text-sm font-semibold text-foreground">确认履约 — {order.order_number}</h3>
-            <Button size="sm" variant="ghost" onClick={onCancel} className="h-8 w-8 p-0"><X className="h-4 w-4" /></Button>
+            <h3 className="text-base font-semibold text-foreground">确认履约 — {order.order_number}</h3>
+            <Button size="sm" variant="ghost" onClick={onCancel} className="h-9 w-8 p-0"><X className="h-4 w-4" /></Button>
           </div>
           <div className="p-5 space-y-4">
             <div>
-              <label className="text-[10px] font-semibold uppercase tracking-wider text-muted-foreground">物流单号 *</label>
+              <label className="text-xs font-semibold uppercase tracking-wider text-muted-foreground">物流单号 *</label>
               <Input value={trackingNumber} onChange={(e) => setTrackingNumber(e.target.value)} placeholder="输入追踪单号..." className="h-9 mt-1 text-sm" autoFocus />
             </div>
             <div>
-              <label className="text-[10px] font-semibold uppercase tracking-wider text-muted-foreground">物流公司</label>
-              <select value={trackingCompany} onChange={(e) => setTrackingCompany(e.target.value)} className="mt-1 h-9 w-full rounded-md border border-border/40 bg-background px-3 text-sm text-foreground">
+              <label className="text-xs font-semibold uppercase tracking-wider text-muted-foreground">物流公司</label>
+              <select value={trackingCompany} onChange={(e) => setTrackingCompany(e.target.value)} className="mt-1 h-9 w-full rounded-md border border-border/40 bg-background px-3 text-base text-foreground">
                 <option value="">选择物流公司...</option>
                 {TRACKING_COMPANIES.map((c) => <option key={c} value={c}>{c}</option>)}
               </select>
             </div>
-            <label className="flex items-center gap-2 text-sm text-muted-foreground cursor-pointer">
+            <label className="flex items-center gap-2 text-base text-muted-foreground cursor-pointer">
               <input type="checkbox" checked={notify} onChange={() => setNotify(!notify)} className="accent-emerald-500" />
               通知客户发货信息
             </label>
             {order.line_items.length > 1 && (
-              <label className="flex items-center gap-2 text-sm text-muted-foreground cursor-pointer">
+              <label className="flex items-center gap-2 text-base text-muted-foreground cursor-pointer">
                 <input type="checkbox" checked={showLineItems} onChange={() => setShowLineItems(!showLineItems)} className="accent-sky-500" />
                 部分履约（仅发货选中的商品）
               </label>
@@ -178,7 +178,7 @@ function FulfillmentModal({
             {showLineItems && (
               <div className="space-y-1 rounded-lg border border-border/20 bg-muted/10 p-2 max-h-36 overflow-y-auto">
                 {order.line_items.map((item) => (
-                  <label key={item.id} className="flex items-center gap-2 text-xs cursor-pointer hover:bg-muted/20 rounded px-1 py-0.5">
+                  <label key={item.id} className="flex items-center gap-2 text-sm cursor-pointer hover:bg-muted/20 rounded px-1 py-0.5">
                     <input type="checkbox" checked={selectedItems.has(item.id)} onChange={() => toggleItem(item.id)} className="accent-sky-500" />
                     <span className="text-foreground">{item.name}</span>
                     <span className="text-muted-foreground ml-auto">×{item.quantity}</span>
@@ -187,11 +187,11 @@ function FulfillmentModal({
               </div>
             )}
             <div>
-              <label className="text-[10px] font-semibold uppercase tracking-wider text-muted-foreground">备注</label>
-              <textarea value={note} onChange={(e) => setNote(e.target.value)} placeholder="发货备注（可选）..." rows={2} className="mt-1 w-full rounded-md border border-border/40 bg-background px-3 py-2 text-xs text-foreground placeholder:text-muted-foreground/50 resize-none" />
+              <label className="text-xs font-semibold uppercase tracking-wider text-muted-foreground">备注</label>
+              <textarea value={note} onChange={(e) => setNote(e.target.value)} placeholder="发货备注（可选）..." rows={2} className="mt-1 w-full rounded-md border border-border/40 bg-background px-3 py-2 text-sm text-foreground placeholder:text-muted-foreground/50 resize-none" />
             </div>
             {isDemo && (
-              <p className="text-[10px] text-amber-400">演示模式：履约操作将模拟本地状态更新</p>
+              <p className="text-xs text-amber-400">演示模式：履约操作将模拟本地状态更新</p>
             )}
           </div>
           <div className="flex items-center gap-2 border-t border-border/20 px-5 py-3">
@@ -231,7 +231,7 @@ function OrderCard({
       {/* Header */}
       <div className="flex items-start justify-between">
         <div className="flex-1 min-w-0">
-          <p className="text-xs font-mono font-medium text-emerald-400 truncate">{order.order_number}</p>
+          <p className="text-sm font-mono font-medium text-emerald-400 truncate">{order.order_number}</p>
           <p className="text-[11px] text-muted-foreground mt-0.5 truncate">{order.customer_name}</p>
         </div>
         {/* Three-dot menu */}
@@ -244,7 +244,7 @@ function OrderCard({
               <div className="fixed inset-0 z-10" onClick={() => setMenuOpen(false)} />
               <div className="absolute right-0 top-full z-20 mt-1 rounded-lg border border-border/30 bg-card px-1 py-1 shadow-xl backdrop-blur-lg w-32">
                 {["detail", "fulfill", "cancel"].map((a) => (
-                  <button key={a} onClick={() => { setMenuOpen(false); onContextAction(a, order); }} className="block w-full text-left px-2 py-1.5 text-xs text-muted-foreground hover:text-foreground hover:bg-muted/20 rounded">
+                  <button key={a} onClick={() => { setMenuOpen(false); onContextAction(a, order); }} className="block w-full text-left px-2 py-1.5 text-sm text-muted-foreground hover:text-foreground hover:bg-muted/20 rounded">
                     {a === "detail" ? "查看详情" : a === "fulfill" ? "标记发货" : "取消订单"}
                   </button>
                 ))}
@@ -256,8 +256,8 @@ function OrderCard({
 
       {/* Amount */}
       <div className="flex items-center gap-2 mt-2">
-        <span className="text-sm font-semibold text-foreground">{formatCny(order.total_price * EXCHANGE_RATE)}</span>
-        <span className="text-[10px] text-muted-foreground">{order.currency}</span>
+        <span className="text-base font-semibold text-foreground">{formatCny(order.total_price * EXCHANGE_RATE)}</span>
+        <span className="text-xs text-muted-foreground">{order.currency}</span>
       </div>
 
       {/* Bottom row */}
@@ -276,9 +276,9 @@ function OrderCard({
       </div>
 
       <div className="flex items-center gap-1.5 mt-1.5 pt-1.5 border-t border-border/10">
-        <span className="text-xs">{countryFlag(order.country_code)}</span>
-        <span className="text-[10px] text-muted-foreground">{order.country_code}</span>
-        <span className="ml-auto text-[10px] text-muted-foreground/60">{formatTimeAgo(order.created_at)}</span>
+        <span className="text-sm">{countryFlag(order.country_code)}</span>
+        <span className="text-xs text-muted-foreground">{order.country_code}</span>
+        <span className="ml-auto text-xs text-muted-foreground/60">{formatTimeAgo(order.created_at)}</span>
       </div>
     </div>
   );
@@ -336,13 +336,13 @@ function Column({
       {/* Column header */}
       <div className="flex items-center gap-2 px-3 py-2.5 border-b border-border/10 shrink-0">
         <meta.icon className={`h-4 w-4 ${meta.color}`} />
-        <span className={`text-xs font-semibold ${meta.color}`}>{meta.title}</span>
-        <Badge className={`text-[10px] px-1.5 py-0 ${meta.bg} ${meta.color}`}>{orders.length}</Badge>
+        <span className={`text-sm font-semibold ${meta.color}`}>{meta.title}</span>
+        <Badge className={`text-xs px-1.5 py-0 ${meta.bg} ${meta.color}`}>{orders.length}</Badge>
         <button className="ml-auto lg:hidden" onClick={() => setCollapsed(!collapsed)}>
           {collapsed ? <ChevronDown className="h-4 w-4 text-muted-foreground" /> : <ChevronUp className="h-4 w-4 text-muted-foreground" />}
         </button>
         <div className="hidden lg:flex items-center gap-1 ml-auto">
-          <select value={sort} onChange={(e) => setSort(e.target.value)} className="h-6 rounded border border-border/30 bg-background text-[10px] text-muted-foreground px-1">
+          <select value={sort} onChange={(e) => setSort(e.target.value)} className="h-6 rounded border border-border/30 bg-background text-xs text-muted-foreground px-1">
             <option value="time-desc">最新</option>
             <option value="time-asc">最早</option>
             <option value="amount-desc">金额↓</option>
@@ -356,7 +356,7 @@ function Column({
           <div className="px-3 py-1.5 shrink-0">
             <div className="relative">
               <Search className="absolute left-2 top-1/2 h-3 w-3 -translate-y-1/2 text-muted-foreground/50" />
-              <Input value={search} onChange={(e) => setSearch(e.target.value)} placeholder="搜索..." className="h-7 pl-7 text-[10px]" />
+              <Input value={search} onChange={(e) => setSearch(e.target.value)} placeholder="搜索..." className="h-7 pl-7 text-sm" />
             </div>
           </div>
 
@@ -367,12 +367,12 @@ function Column({
             {filtered.length === 0 && (
               <div className="flex flex-col items-center gap-1 py-8">
                 <Package className="h-6 w-6 text-muted-foreground/20" />
-                <p className="text-[10px] text-muted-foreground/50">暂无订单</p>
+                <p className="text-xs text-muted-foreground/50">暂无订单</p>
               </div>
             )}
           </div>
 
-          <div className="px-3 py-1.5 text-[10px] text-muted-foreground/60 border-t border-border/10 shrink-0">
+          <div className="px-3 py-1.5 text-xs text-muted-foreground/60 border-t border-border/10 shrink-0">
             显示 {filtered.length} / 共 {orders.length} 单
           </div>
         </>
@@ -556,7 +556,7 @@ export default function FulfillmentBoardPanel({
     <div className="space-y-3 animate-in fade-in duration-300">
       {/* Toast */}
       {toast && (
-        <div className="fixed bottom-6 left-1/2 -translate-x-1/2 z-50 rounded-lg bg-emerald-600/90 px-4 py-2 text-sm font-medium text-white shadow-2xl backdrop-blur-md animate-in slide-in-from-bottom-2 duration-200">
+        <div className="fixed bottom-6 left-1/2 -translate-x-1/2 z-50 rounded-lg bg-emerald-600/90 px-4 py-2 text-base font-medium text-white shadow-2xl backdrop-blur-md animate-in slide-in-from-bottom-2 duration-200">
           {toast}
         </div>
       )}
@@ -568,7 +568,7 @@ export default function FulfillmentBoardPanel({
             <ClipboardList className="h-6 w-6 text-sky-400" />
             履约看板
           </h2>
-          <p className="mt-1 text-sm text-muted-foreground">{shopName} · Trello 式拖拽管理履约进度{isDemo && <span className="ml-2 text-xs text-amber-400">(演示)</span>}</p>
+          <p className="mt-1 text-base text-muted-foreground">{shopName} · Trello 式拖拽管理履约进度{isDemo && <span className="ml-2 text-sm text-amber-400">(演示)</span>}</p>
         </div>
       </div>
 
@@ -582,7 +582,7 @@ export default function FulfillmentBoardPanel({
           <Card key={k.label} className="border-border/40 bg-card/60 backdrop-blur-lg">
             <CardContent className="p-3 flex items-center gap-3">
               <div className={"flex h-9 w-9 items-center justify-center rounded-lg " + k.color}><k.icon className="h-4 w-4" /></div>
-              <div><p className="text-lg font-bold text-foreground tabular-nums">{k.value}</p><p className="text-[10px] text-muted-foreground">{k.label}</p></div>
+              <div><p className="text-lg font-bold text-foreground tabular-nums">{k.value}</p><p className="text-xs text-muted-foreground">{k.label}</p></div>
             </CardContent>
           </Card>
         ))}
@@ -590,11 +590,11 @@ export default function FulfillmentBoardPanel({
 
       {/* Quick filters */}
       <div className="flex flex-wrap items-center gap-2">
-        <span className="text-xs text-muted-foreground"><Filter className="h-3 w-3 inline mr-1" />筛选:</span>
-        <select value={timeFilter} onChange={(e) => setTimeFilter(e.target.value)} className="h-7 rounded border border-border/40 bg-background px-2 text-[10px] text-foreground">
+        <span className="text-sm text-muted-foreground"><Filter className="h-3 w-3 inline mr-1" />筛选:</span>
+        <select value={timeFilter} onChange={(e) => setTimeFilter(e.target.value)} className="h-7 rounded border border-border/40 bg-background px-2 text-xs text-foreground">
           {Object.entries(timeLabels).map(([k, v]) => <option key={k} value={k}>{v}</option>)}
         </select>
-        <label className="flex items-center gap-1 text-[10px] text-muted-foreground cursor-pointer">
+        <label className="flex items-center gap-1 text-xs text-muted-foreground cursor-pointer">
           <input type="checkbox" checked={paidOnly} onChange={() => setPaidOnly(!paidOnly)} className="accent-emerald-500" />仅已付款
         </label>
       </div>

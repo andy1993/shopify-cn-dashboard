@@ -119,9 +119,9 @@ function KpiCard({ title, value, subtitle, icon: Icon, accent, highlight }: {
       <CardContent className="relative p-6">
         <div className="flex items-start justify-between">
           <div className="space-y-1">
-            <p className="text-sm font-medium text-muted-foreground">{title}</p>
+            <p className="text-base font-medium text-muted-foreground">{title}</p>
             <p className={`text-3xl font-bold tracking-tight ${highlight ? "text-red-400" : "text-foreground"}`}>{value}</p>
-            <p className="text-xs text-muted-foreground">{subtitle}</p>
+            <p className="text-sm text-muted-foreground">{subtitle}</p>
           </div>
           <div className={`flex h-11 w-11 items-center justify-center rounded-xl ring-1 ${colors[accent]}`}><Icon className="h-5 w-5" /></div>
         </div>
@@ -287,52 +287,52 @@ export default function GatewayFinancePanel({
           <Landmark className="h-6 w-6 text-amber-400" />
           多币种网关智能对账
         </h2>
-        <p className="mt-1 text-sm text-muted-foreground">
+        <p className="mt-1 text-base text-muted-foreground">
           {shopName} · Stripe / PayPal 多币种手续费对比与净结汇分析
-          {isDemo && <span className="ml-2 text-xs text-amber-400">(Demo: 30s 心跳 · 40% 概率 EUR/Stripe 爆单)</span>}
+          {isDemo && <span className="ml-2 text-sm text-amber-400">(Demo: 30s 心跳 · 40% 概率 EUR/Stripe 爆单)</span>}
         </p>
       </div>
 
       {/* Rate Config Bar */}
       <Card className="border-border/40 bg-card/50 shadow-sm backdrop-blur-sm">
         <CardContent className="flex flex-wrap items-end gap-4 px-5 py-4">
-          <p className="flex items-center gap-1.5 text-xs font-medium text-muted-foreground">
+          <p className="flex items-center gap-1.5 text-sm font-medium text-muted-foreground">
             <Settings className="h-3.5 w-3.5" />费率配置
           </p>
 
           {/* Stripe */}
           <div className="flex items-end gap-3 rounded-lg border border-indigo-500/20 bg-indigo-500/5 px-3 py-2">
-            <span className="text-xs font-semibold text-indigo-400">Stripe</span>
+            <span className="text-sm font-semibold text-indigo-400">Stripe</span>
             <div className="flex items-center gap-1.5">
-              <label className="text-xs text-muted-foreground">费率%</label>
-              <Input type="number" step={0.1} min={0} max={10} value={stripeRate} onChange={(e) => setStripeRate(Number(e.target.value) || 0)} className="h-8 w-16 text-center text-sm" />
+              <label className="text-sm text-muted-foreground">费率%</label>
+              <Input type="number" step={0.1} min={0} max={10} value={stripeRate} onChange={(e) => setStripeRate(Number(e.target.value) || 0)} className="h-9 w-16 text-center text-sm" />
             </div>
             <div className="flex items-center gap-1.5">
-              <label className="text-xs text-muted-foreground">固定 $</label>
-              <Input type="number" step={0.01} min={0} max={2} value={stripeFixed} onChange={(e) => setStripeFixed(Number(e.target.value) || 0)} className="h-8 w-16 text-center text-sm" />
+              <label className="text-sm text-muted-foreground">固定 $</label>
+              <Input type="number" step={0.01} min={0} max={2} value={stripeFixed} onChange={(e) => setStripeFixed(Number(e.target.value) || 0)} className="h-9 w-16 text-center text-sm" />
             </div>
-            <Button size="sm" variant="outline" onClick={presetStripe} className="h-7 gap-1 border-indigo-500/30 bg-indigo-500/10 px-2 text-[10px] text-indigo-300 hover:bg-indigo-500/20">
+            <Button size="sm" variant="outline" onClick={presetStripe} className="h-7 gap-1 border-indigo-500/30 bg-indigo-500/10 px-2 text-xs text-indigo-300 hover:bg-indigo-500/20">
               <Sparkles className="h-3 w-3" />官方标准
             </Button>
           </div>
 
           {/* PayPal */}
           <div className="flex items-end gap-3 rounded-lg border border-sky-500/20 bg-sky-500/5 px-3 py-2">
-            <span className="text-xs font-semibold text-sky-400">PayPal</span>
+            <span className="text-sm font-semibold text-sky-400">PayPal</span>
             <div className="flex items-center gap-1.5">
-              <label className="text-xs text-muted-foreground">费率%</label>
-              <Input type="number" step={0.1} min={0} max={10} value={paypalRate} onChange={(e) => setPaypalRate(Number(e.target.value) || 0)} className="h-8 w-16 text-center text-sm" />
+              <label className="text-sm text-muted-foreground">费率%</label>
+              <Input type="number" step={0.1} min={0} max={10} value={paypalRate} onChange={(e) => setPaypalRate(Number(e.target.value) || 0)} className="h-9 w-16 text-center text-sm" />
             </div>
             <div className="flex items-center gap-1.5">
-              <label className="text-xs text-muted-foreground">固定 $</label>
-              <Input type="number" step={0.01} min={0} max={2} value={paypalFixed} onChange={(e) => setPaypalFixed(Number(e.target.value) || 0)} className="h-8 w-16 text-center text-sm" />
+              <label className="text-sm text-muted-foreground">固定 $</label>
+              <Input type="number" step={0.01} min={0} max={2} value={paypalFixed} onChange={(e) => setPaypalFixed(Number(e.target.value) || 0)} className="h-9 w-16 text-center text-sm" />
             </div>
-            <Button size="sm" variant="outline" onClick={presetPaypal} className="h-7 gap-1 border-sky-500/30 bg-sky-500/10 px-2 text-[10px] text-sky-300 hover:bg-sky-500/20">
+            <Button size="sm" variant="outline" onClick={presetPaypal} className="h-7 gap-1 border-sky-500/30 bg-sky-500/10 px-2 text-xs text-sky-300 hover:bg-sky-500/20">
               <Sparkles className="h-3 w-3" />官方标准
             </Button>
           </div>
 
-          <div className="ml-auto text-xs text-muted-foreground">
+          <div className="ml-auto text-sm text-muted-foreground">
             多币种汇率: 🇺🇸7.25 · 🇪🇺7.85 · 🇨🇦5.30 · 🇬🇧9.15
           </div>
         </CardContent>
@@ -415,8 +415,8 @@ export default function GatewayFinancePanel({
                         <div className="flex items-center gap-2">
                           <div className="h-3 w-3 rounded-full" style={{ backgroundColor: g.color }} />
                           <span className="font-medium text-foreground">{g.label}</span>
-                          <span className="text-xs text-muted-foreground">{getCurrencyFlag(g.currency)}</span>
-                          <Badge variant="outline" className="text-[10px] px-1 py-0 border-current/30 text-muted-foreground">
+                          <span className="text-sm text-muted-foreground">{getCurrencyFlag(g.currency)}</span>
+                          <Badge variant="outline" className="text-xs px-1 py-0 border-current/30 text-muted-foreground">
                             {g.currency}
                           </Badge>
                         </div>
@@ -427,7 +427,7 @@ export default function GatewayFinancePanel({
                         {g.totalRevenue.toFixed(2)}
                       </TableCell>
                       <TableCell className="text-right">
-                        <span className="text-xs text-muted-foreground">
+                        <span className="text-sm text-muted-foreground">
                           {g.totalRevenue.toFixed(2)} × {g.feeRate.toFixed(1)}% + {g.feeFixed} × {g.orderCount}
                         </span>
                       </TableCell>
@@ -448,7 +448,7 @@ export default function GatewayFinancePanel({
                 )}
                 {gatewayStats.length === 0 && (
                   <TableRow>
-                    <TableCell colSpan={6} className="py-8 text-center text-sm text-muted-foreground">暂无收款数据</TableCell>
+                    <TableCell colSpan={6} className="py-8 text-center text-base text-muted-foreground">暂无收款数据</TableCell>
                   </TableRow>
                 )}
               </TableBody>

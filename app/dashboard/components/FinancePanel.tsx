@@ -36,11 +36,11 @@ function KpiCard({ title, value, subtitle, icon: Icon, trend, trendValue, accent
       <CardContent className="relative p-6">
         <div className="flex items-start justify-between">
           <div className="space-y-1">
-            <p className="text-sm font-medium text-muted-foreground">{title}</p>
+            <p className="text-base font-medium text-muted-foreground">{title}</p>
             <p className="text-3xl font-bold tracking-tight text-foreground">{value}</p>
             <div className="flex items-center gap-1.5">
-              <span className={`text-xs font-medium ${trend === "up" ? "text-emerald-500" : trend === "down" ? "text-red-500" : "text-muted-foreground"}`}>{trendValue}</span>
-              <span className="text-xs text-muted-foreground">{subtitle}</span>
+              <span className={`text-sm font-medium ${trend === "up" ? "text-emerald-500" : trend === "down" ? "text-red-500" : "text-muted-foreground"}`}>{trendValue}</span>
+              <span className="text-sm text-muted-foreground">{subtitle}</span>
             </div>
           </div>
           <div className={`flex h-11 w-11 items-center justify-center rounded-xl ring-1 ${a[accent ?? "emerald"]}`}><Icon className="h-5 w-5" /></div>
@@ -62,7 +62,7 @@ export default function FinancePanel(props: FinancePanelProps) {
           <Coins className="h-6 w-6 text-amber-400" />
           供应链对账
         </h2>
-        <p className="mt-1 text-sm text-muted-foreground">精细化成本核算与利润分析 · {shopName}</p>
+        <p className="mt-1 text-base text-muted-foreground">精细化成本核算与利润分析 · {shopName}</p>
       </div>
 
       {/* Cost Settings */}
@@ -77,13 +77,13 @@ export default function FinancePanel(props: FinancePanelProps) {
               { label: "物流运费", value: shippingRate, set: setShippingRate, max: 40, accent: "accent-amber-500" },
               { label: "广告成本", value: marketingRate, set: setMarketingRate, max: 50, accent: "accent-blue-500" }].map((item) => (
               <div key={item.label} className="space-y-2">
-                <label className="text-sm font-medium text-foreground">{item.label} ({item.value}%)</label>
+                <label className="text-base font-medium text-foreground">{item.label} ({item.value}%)</label>
                 <input type="range" min={0} max={item.max} value={item.value} onChange={(e) => item.set(Number(e.target.value))} className={`w-full ${item.accent}`} />
                 <Input type="number" min={0} max={100} value={item.value} onChange={(e) => item.set(Math.min(100, Math.max(0, Number(e.target.value) || 0)))} className="h-9 font-mono text-sm" />
               </div>
             ))}
           </div>
-          <div className="flex items-center justify-between rounded-lg bg-muted/30 px-4 py-2 text-sm">
+          <div className="flex items-center justify-between rounded-lg bg-muted/30 px-4 py-2 text-base">
             <span className="text-muted-foreground">合计成本占比</span>
             <span className="font-semibold text-foreground">{totalCostRate}%</span>
             <span className="text-muted-foreground/50">|</span>

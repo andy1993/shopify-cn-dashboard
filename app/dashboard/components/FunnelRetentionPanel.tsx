@@ -70,8 +70,8 @@ function FunnelTooltip({ active, payload, label }: {
   if (!active || !payload?.length) return null;
   return (
     <div className="rounded-lg border border-border/50 bg-card px-3 py-2 shadow-lg backdrop-blur-sm">
-      <p className="text-xs font-medium text-muted-foreground">{label}</p>
-      <p className="text-sm font-semibold text-foreground">{payload[0].value.toLocaleString()} 人次</p>
+      <p className="text-sm font-medium text-muted-foreground">{label}</p>
+      <p className="text-base font-semibold text-foreground">{payload[0].value.toLocaleString()} 人次</p>
     </div>
   );
 }
@@ -95,9 +95,9 @@ function KpiCard({ title, value, subtitle, icon: Icon, accent }: {
       <CardContent className="relative p-5">
         <div className="flex items-start justify-between">
           <div className="space-y-1">
-            <p className="text-sm font-medium text-muted-foreground">{title}</p>
+            <p className="text-base font-medium text-muted-foreground">{title}</p>
             <p className="text-2xl font-bold tracking-tight text-foreground">{value}</p>
-            <p className="text-xs text-muted-foreground">{subtitle}</p>
+            <p className="text-sm text-muted-foreground">{subtitle}</p>
           </div>
           <div className={`flex h-10 w-10 items-center justify-center rounded-xl ring-1 ${colors[accent]}`}><Icon className="h-5 w-5" /></div>
         </div>
@@ -201,9 +201,9 @@ export default function FunnelRetentionPanel({
           <Brain className="h-6 w-6 text-violet-400" />
           漏斗转化率 & 复购率深度统计
         </h2>
-        <p className="mt-1 text-sm text-muted-foreground">
+        <p className="mt-1 text-base text-muted-foreground">
           {shopName} · 营销漏斗 + 客户留存双向洞察
-          {isDemo && <span className="ml-2 text-xs text-amber-400">(Demo: 基于订单数倒推模拟)</span>}
+          {isDemo && <span className="ml-2 text-sm text-amber-400">(Demo: 基于订单数倒推模拟)</span>}
         </p>
       </div>
 
@@ -247,7 +247,7 @@ export default function FunnelRetentionPanel({
               </ResponsiveContainer>
             </div>
           ) : (
-            <div className="flex flex-col items-center gap-3 py-12 text-sm text-muted-foreground">暂无成交订单数据，无法构建漏斗</div>
+            <div className="flex flex-col items-center gap-3 py-12 text-base text-muted-foreground">暂无成交订单数据，无法构建漏斗</div>
           )}
         </CardContent>
       </Card>
@@ -257,8 +257,8 @@ export default function FunnelRetentionPanel({
         <div className="flex items-start gap-3 rounded-xl border border-red-500/30 bg-red-500/10 px-5 py-4 backdrop-blur-sm">
           <AlertTriangle className="mt-0.5 h-5 w-5 shrink-0 text-red-400" />
           <div>
-            <p className="text-sm font-semibold text-red-300">🤖 AI 深度建议</p>
-            <p className="mt-1 text-sm leading-relaxed text-red-200/80">
+            <p className="text-base font-semibold text-red-300">🤖 AI 深度建议</p>
+            <p className="mt-1 text-base leading-relaxed text-red-200/80">
               检测到购物车到结账的转化率仅为 {(icAtcRatio * 100).toFixed(1)}%（低于 40% 红线），
               购物车流失率异常。强烈建议立即检查页面加载速度、简化 Checkout 表单步骤，
               并增加首单挽留优惠券弹窗以降低弃单率。
@@ -296,9 +296,9 @@ export default function FunnelRetentionPanel({
             <CardContent className="p-5">
               <div className="flex items-center justify-between">
                 <div>
-                  <p className="text-sm font-medium text-muted-foreground">新客 ({retentionStats.newCount} 单)</p>
+                  <p className="text-base font-medium text-muted-foreground">新客 ({retentionStats.newCount} 单)</p>
                   <p className="mt-1 text-2xl font-bold text-sky-400">{(retentionStats.totalRevenue > 0 ? (retentionStats.newRevenue / retentionStats.totalRevenue * 100) : 0).toFixed(1)}%</p>
-                  <p className="text-xs text-muted-foreground">贡献 ¥{(retentionStats.newRevenue * exchangeRate).toFixed(2)}</p>
+                  <p className="text-sm text-muted-foreground">贡献 ¥{(retentionStats.newRevenue * exchangeRate).toFixed(2)}</p>
                 </div>
                 <div className="flex h-10 w-10 items-center justify-center rounded-xl bg-sky-500/10 ring-1 ring-sky-500/20"><UserPlus className="h-5 w-5 text-sky-400" /></div>
               </div>
@@ -311,9 +311,9 @@ export default function FunnelRetentionPanel({
             <CardContent className="p-5">
               <div className="flex items-center justify-between">
                 <div>
-                  <p className="text-sm font-medium text-muted-foreground">老客 ({retentionStats.repeatOrders} 单)</p>
+                  <p className="text-base font-medium text-muted-foreground">老客 ({retentionStats.repeatOrders} 单)</p>
                   <p className="mt-1 text-2xl font-bold text-emerald-400">{retentionStats.repeatRevenuePct.toFixed(1)}%</p>
-                  <p className="text-xs text-muted-foreground">贡献 ¥{(retentionStats.repeatRevenue * exchangeRate).toFixed(2)}</p>
+                  <p className="text-sm text-muted-foreground">贡献 ¥{(retentionStats.repeatRevenue * exchangeRate).toFixed(2)}</p>
                 </div>
                 <div className="flex h-10 w-10 items-center justify-center rounded-xl bg-emerald-500/10 ring-1 ring-emerald-500/20"><Repeat className="h-5 w-5 text-emerald-400" /></div>
               </div>
@@ -327,7 +327,7 @@ export default function FunnelRetentionPanel({
           {funnel.length >= 4 && (
             <Card className="border-border/40 bg-card/60 shadow-lg backdrop-blur-lg">
               <CardContent className="p-5">
-                <p className="flex items-center gap-2 text-sm font-medium text-muted-foreground">
+                <p className="flex items-center gap-2 text-base font-medium text-muted-foreground">
                   <Lightbulb className="h-4 w-4 text-amber-400" />
                   漏斗流失速览
                 </p>
@@ -338,7 +338,7 @@ export default function FunnelRetentionPanel({
                     { label: "结账→成交", pct: funnel[2].count > 0 ? ((funnel[3].count / funnel[2].count) * 100).toFixed(1) : "0", color: "text-emerald-400" },
                   ].map((item) => (
                     <div key={item.label} className="rounded-lg bg-muted/20 p-2">
-                      <p className="text-[10px] text-muted-foreground">{item.label}</p>
+                      <p className="text-xs text-muted-foreground">{item.label}</p>
                       <p className={`text-lg font-bold ${item.color}`}>{item.pct}%</p>
                     </div>
                   ))}

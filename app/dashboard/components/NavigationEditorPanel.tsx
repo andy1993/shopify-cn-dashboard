@@ -111,35 +111,35 @@ function ItemModal({
       <div className="fixed inset-0 z-50 flex items-center justify-center p-4">
         <div className="w-full max-w-md rounded-xl border border-border/40 bg-card shadow-2xl backdrop-blur-xl overflow-hidden">
           <div className="flex items-center justify-between border-b border-border/20 px-5 py-3">
-            <h3 className="text-sm font-semibold">{isEdit ? "编辑菜单项" : "添加菜单项"}</h3>
-            <Button size="sm" variant="ghost" onClick={onCancel} className="h-8 w-8 p-0"><X className="h-4 w-4" /></Button>
+            <h3 className="text-base font-semibold">{isEdit ? "编辑菜单项" : "添加菜单项"}</h3>
+            <Button size="sm" variant="ghost" onClick={onCancel} className="h-9 w-8 p-0"><X className="h-4 w-4" /></Button>
           </div>
           <div className="p-5 space-y-3">
             <div>
-              <label className="text-[10px] font-semibold uppercase tracking-wider text-muted-foreground mb-1 block">菜单名称 *</label>
+              <label className="text-xs font-semibold uppercase tracking-wider text-muted-foreground mb-1 block">菜单名称 *</label>
               <Input value={title} onChange={(e) => setTitle(e.target.value)} autoFocus className="h-9 text-sm" placeholder="如：新品上市" />
             </div>
             <div>
-              <label className="text-[10px] font-semibold uppercase tracking-wider text-muted-foreground mb-1 block">链接类型</label>
-              <select value={linkType} onChange={(e) => { setLinkType(e.target.value); const def = LINK_TYPES.find((l) => l.value === e.target.value); if (def?.value === "frontpage") setUrl("/"); else if (!url || url === "/") setUrl(def?.placeholder || ""); }} className="h-9 w-full rounded-md border border-border/40 bg-background px-3 text-sm text-foreground">
+              <label className="text-xs font-semibold uppercase tracking-wider text-muted-foreground mb-1 block">链接类型</label>
+              <select value={linkType} onChange={(e) => { setLinkType(e.target.value); const def = LINK_TYPES.find((l) => l.value === e.target.value); if (def?.value === "frontpage") setUrl("/"); else if (!url || url === "/") setUrl(def?.placeholder || ""); }} className="h-9 w-full rounded-md border border-border/40 bg-background px-3 text-base text-foreground">
                 {LINK_TYPES.map((lt) => <option key={lt.value} value={lt.value}>{lt.label}</option>)}
               </select>
             </div>
             <div>
-              <label className="text-[10px] font-semibold uppercase tracking-wider text-muted-foreground mb-1 block">目标链接</label>
+              <label className="text-xs font-semibold uppercase tracking-wider text-muted-foreground mb-1 block">目标链接</label>
               <Input value={url} onChange={(e) => setUrl(e.target.value)} className="h-9 text-sm font-mono" placeholder={LINK_TYPES.find((l) => l.value === linkType)?.placeholder || "/"} />
             </div>
             <div>
-              <label className="text-[10px] font-semibold uppercase tracking-wider text-muted-foreground mb-1 block">父级菜单项</label>
-              <select value={parentId} onChange={(e) => setParentId(e.target.value)} className="h-9 w-full rounded-md border border-border/40 bg-background px-3 text-sm text-foreground">
+              <label className="text-xs font-semibold uppercase tracking-wider text-muted-foreground mb-1 block">父级菜单项</label>
+              <select value={parentId} onChange={(e) => setParentId(e.target.value)} className="h-9 w-full rounded-md border border-border/40 bg-background px-3 text-base text-foreground">
                 <option value="none">顶级菜单</option>
                 {items.filter((i) => !item || i.id !== item.id).map((i) => <option key={i.id} value={i.id}>{i.title}</option>)}
               </select>
             </div>
           </div>
           <div className="flex items-center gap-2 border-t border-border/20 px-5 py-3">
-            <Button onClick={handleSave} disabled={!title.trim()} className="flex-1 h-9 gap-1.5 text-xs bg-emerald-600 hover:bg-emerald-500 text-white"><Save className="h-3 w-3" />{isEdit ? "保存修改" : "添加"}</Button>
-            <Button variant="outline" onClick={onCancel} className="h-9 text-xs">取消</Button>
+            <Button onClick={handleSave} disabled={!title.trim()} className="flex-1 h-9 gap-1.5 text-sm bg-emerald-600 hover:bg-emerald-500 text-white"><Save className="h-3 w-3" />{isEdit ? "保存修改" : "添加"}</Button>
+            <Button variant="outline" onClick={onCancel} className="h-9 text-sm">取消</Button>
           </div>
         </div>
       </div>
@@ -362,8 +362,8 @@ export default function NavigationEditorPanel({ isDemo, shopUrl, accessToken, sh
           <div className="w-3.5 shrink-0" />
         )}
         <div className="flex-1 min-w-0 flex items-center gap-2">
-          <span className="text-sm text-foreground truncate">{item.title}</span>
-          <span className="text-[10px] text-emerald-400/70 font-mono truncate">→ {item.url}</span>
+          <span className="text-base text-foreground truncate">{item.title}</span>
+          <span className="text-xs text-emerald-400/70 font-mono truncate">→ {item.url}</span>
         </div>
         <div className="flex items-center gap-0.5 opacity-0 group-hover:opacity-100 transition-opacity shrink-0">
           <button onClick={() => handleEditItem(item)} className="h-6 w-6 flex items-center justify-center rounded hover:bg-muted/30"><Edit3 className="h-3 w-3 text-muted-foreground" /></button>
@@ -376,19 +376,19 @@ export default function NavigationEditorPanel({ isDemo, shopUrl, accessToken, sh
 
   return (
     <div className="space-y-4 animate-in fade-in duration-300">
-      {toast && <div className="fixed bottom-6 left-1/2 -translate-x-1/2 z-50 rounded-lg bg-emerald-600/90 px-4 py-2 text-sm font-medium text-white shadow-2xl">{toast}</div>}
+      {toast && <div className="fixed bottom-6 left-1/2 -translate-x-1/2 z-50 rounded-lg bg-emerald-600/90 px-4 py-2 text-base font-medium text-white shadow-2xl">{toast}</div>}
 
       {/* Header */}
       <div>
         <h2 className="flex items-center gap-2 text-xl font-bold text-foreground"><Menu className="h-6 w-6 text-sky-400" />导航菜单编辑</h2>
-        <p className="mt-1 text-sm text-muted-foreground">{shopName} · {menu.items.length} 个顶级项{isDemo && <span className="ml-2 text-xs text-amber-400">(演示)</span>}</p>
+        <p className="mt-1 text-base text-muted-foreground">{shopName} · {menu.items.length} 个顶级项{isDemo && <span className="ml-2 text-sm text-amber-400">(演示)</span>}</p>
       </div>
 
       {/* Change summary */}
       {changes.length > 0 && (
         <div className="flex items-center gap-2 rounded-lg border border-amber-500/20 bg-amber-500/10 px-4 py-2">
           <AlertCircle className="h-4 w-4 text-amber-400 shrink-0" />
-          <span className="text-xs text-amber-300">未保存的变更：新增 {changes.filter((c) => c.type === "add").length} 项，修改 {changes.filter((c) => c.type === "update").length} 项，删除 {changes.filter((c) => c.type === "delete").length} 项</span>
+          <span className="text-sm text-amber-300">未保存的变更：新增 {changes.filter((c) => c.type === "add").length} 项，修改 {changes.filter((c) => c.type === "update").length} 项，删除 {changes.filter((c) => c.type === "delete").length} 项</span>
         </div>
       )}
 
@@ -397,11 +397,11 @@ export default function NavigationEditorPanel({ isDemo, shopUrl, accessToken, sh
         <CardHeader className="pb-2 flex-row items-center justify-between space-y-0">
           <div>
             <CardTitle className="text-base">{menu.title}</CardTitle>
-            <CardDescription className="text-[10px]">{menu.handle}</CardDescription>
+            <CardDescription className="text-xs">{menu.handle}</CardDescription>
           </div>
           <div className="flex items-center gap-2">
-            <Button size="sm" variant="outline" onClick={handleCancel} disabled={changes.length === 0 || saving} className="h-8 gap-1 text-xs"><RotateCcw className="h-3 w-3" />取消</Button>
-            <Button size="sm" onClick={handleSave} disabled={changes.length === 0 || saving} className="h-8 gap-1 text-xs bg-emerald-600 hover:bg-emerald-500 text-white">
+            <Button size="sm" variant="outline" onClick={handleCancel} disabled={changes.length === 0 || saving} className="h-9 gap-1 text-sm"><RotateCcw className="h-3 w-3" />取消</Button>
+            <Button size="sm" onClick={handleSave} disabled={changes.length === 0 || saving} className="h-9 gap-1 text-sm bg-emerald-600 hover:bg-emerald-500 text-white">
               {saving ? <Loader2 className="h-3 w-3 animate-spin" /> : <Save className="h-3 w-3" />}保存{changes.length > 0 ? ` (${changes.length} 项)` : ""}
             </Button>
           </div>
@@ -417,17 +417,17 @@ export default function NavigationEditorPanel({ isDemo, shopUrl, accessToken, sh
             {menu.items.length === 0 && (
               <div className="flex flex-col items-center gap-2 py-16">
                 <Menu className="h-10 w-10 text-muted-foreground/25" />
-                <p className="text-xs text-muted-foreground">菜单为空</p>
+                <p className="text-sm text-muted-foreground">菜单为空</p>
               </div>
             )}
           </div>
 
           {/* Add menu item bar */}
           <div className="flex items-center gap-2 border-t border-border/20 px-4 py-2">
-            <Button size="sm" variant="ghost" onClick={() => handleAddItem()} className="h-8 gap-1 text-xs text-muted-foreground hover:text-foreground">
+            <Button size="sm" variant="ghost" onClick={() => handleAddItem()} className="h-9 gap-1 text-sm text-muted-foreground hover:text-foreground">
               <Plus className="h-3 w-3" />添加顶级菜单项
             </Button>
-            <span className="text-[10px] text-muted-foreground/50">拖拽到其他项目上可设为子菜单</span>
+            <span className="text-xs text-muted-foreground/50">拖拽到其他项目上可设为子菜单</span>
           </div>
         </CardContent>
       </Card>

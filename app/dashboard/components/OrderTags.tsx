@@ -210,7 +210,7 @@ export default function OrderTags({
     <div className="space-y-5">
       {/* Tags */}
       <div>
-        <p className="text-[10px] font-semibold uppercase tracking-wider text-muted-foreground mb-2 flex items-center gap-2">
+        <p className="text-xs font-semibold uppercase tracking-wider text-muted-foreground mb-2 flex items-center gap-2">
           <Tag className="h-3 w-3" />订单标签
           {tagSaving && <Loader2 className="h-3 w-3 animate-spin text-amber-400" />}
         </p>
@@ -219,7 +219,7 @@ export default function OrderTags({
         <div className="flex flex-wrap gap-1.5 mb-3">
           {localTags.length > 0 ? (
             localTags.map((tag) => (
-              <Badge key={tag} className={"text-[10px] px-2 py-0.5 gap-1 border " + getTagColor(tag)}>
+              <Badge key={tag} className={"text-xs px-2 py-0.5 gap-1 border " + getTagColor(tag)}>
                 {tag}
                 <button
                   onClick={() => removeTag(tag)}
@@ -231,13 +231,13 @@ export default function OrderTags({
               </Badge>
             ))
           ) : (
-            <span className="text-xs text-muted-foreground/50">暂无标签</span>
+            <span className="text-sm text-muted-foreground/50">暂无标签</span>
           )}
         </div>
 
         {/* Tag message */}
         {tagMsg && (
-          <div className="flex items-center gap-1 text-xs mb-2">
+          <div className="flex items-center gap-1 text-sm mb-2">
             {tagMsg.type === "success"
               ? <CheckCircle2 className="h-3 w-3 text-emerald-400" />
               : <AlertCircle className="h-3 w-3 text-red-400" />}
@@ -252,7 +252,7 @@ export default function OrderTags({
             onChange={(e) => setNewTag(e.target.value)}
             onKeyDown={(e) => { if (e.key === "Enter") addTag(newTag); }}
             placeholder="输入新标签..."
-            className="h-8 text-xs"
+            className="h-9 text-sm"
             disabled={tagSaving}
           />
           <Button
@@ -260,7 +260,7 @@ export default function OrderTags({
             variant="outline"
             onClick={() => addTag(newTag)}
             disabled={tagSaving || !newTag.trim()}
-            className="h-8 gap-1 text-xs"
+            className="h-9 gap-1 text-sm"
           >
             <Plus className="h-3 w-3" />添加
           </Button>
@@ -273,7 +273,7 @@ export default function OrderTags({
               key={qt.label}
               onClick={() => addTag(qt.label)}
               disabled={tagSaving || localTags.includes(qt.label)}
-              className={`text-[10px] px-2 py-1 rounded border cursor-pointer transition-opacity hover:opacity-80 ${
+              className={`text-xs px-2 py-1 rounded border cursor-pointer transition-opacity hover:opacity-80 ${
                 localTags.includes(qt.label) ? "opacity-30 cursor-not-allowed" : ""
               } ${qt.color}`}
             >
@@ -285,7 +285,7 @@ export default function OrderTags({
 
       {/* Note */}
       <div>
-        <p className="text-[10px] font-semibold uppercase tracking-wider text-muted-foreground mb-2 flex items-center gap-2">
+        <p className="text-xs font-semibold uppercase tracking-wider text-muted-foreground mb-2 flex items-center gap-2">
           <FileText className="h-3 w-3" />订单备注
           {noteSaving && <Loader2 className="h-3 w-3 animate-spin text-amber-400" />}
         </p>
@@ -295,11 +295,11 @@ export default function OrderTags({
           onChange={(e) => handleNoteChange(e.target.value)}
           placeholder="添加订单备注..."
           rows={3}
-          className="w-full rounded-md border border-border/40 bg-background px-3 py-2 text-xs text-foreground placeholder:text-muted-foreground/50 resize-none focus:outline-none focus:ring-1 focus:ring-emerald-500/50"
+          className="w-full rounded-md border border-border/40 bg-background px-3 py-2 text-sm text-foreground placeholder:text-muted-foreground/50 resize-none focus:outline-none focus:ring-1 focus:ring-emerald-500/50"
         />
 
         {noteMsg && (
-          <div className="flex items-center gap-1 text-xs mt-1.5">
+          <div className="flex items-center gap-1 text-sm mt-1.5">
             {noteMsg.type === "success"
               ? <CheckCircle2 className="h-3 w-3 text-emerald-400" />
               : <AlertCircle className="h-3 w-3 text-red-400" />}

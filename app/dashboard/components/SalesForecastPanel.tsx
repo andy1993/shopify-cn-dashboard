@@ -146,7 +146,7 @@ export default function SalesForecastPanel({ isDemo, shopUrl, accessToken, shopN
     <div className="space-y-4">
       <div>
         <h2 className="flex items-center gap-2 text-xl font-bold text-foreground"><TrendingUp className="h-6 w-6 text-amber-400" />销售预测</h2>
-        <p className="mt-1 text-sm text-muted-foreground">{shopName} · {demoData.length} 天历史数据{isDemo && <span className="ml-2 text-xs text-amber-400">(演示)</span>}</p>
+        <p className="mt-1 text-base text-muted-foreground">{shopName} · {demoData.length} 天历史数据{isDemo && <span className="ml-2 text-sm text-amber-400">(演示)</span>}</p>
       </div>
 
       {/* KPI Cards */}
@@ -164,7 +164,7 @@ export default function SalesForecastPanel({ isDemo, shopUrl, accessToken, shopN
 
       {/* Model & Metric Selector */}
       <div className="flex flex-wrap items-center gap-2">
-        <span className="text-[10px] text-muted-foreground">模型:</span>
+        <span className="text-xs text-muted-foreground">模型:</span>
         {([{ k: "holtWinters", l: "指数平滑" }, { k: "sma", l: "移动平均" }, { k: "linear", l: "线性回归" }] as const).map(function (m) {
           return <Button key={m.k} size="sm" variant={model === m.k ? "default" : "outline"} onClick={function () { setModel(m.k); }} className={"h-6 text-[9px] " + (model === m.k ? "bg-amber-600" : "")}>{m.l}</Button>;
         })}
@@ -173,7 +173,7 @@ export default function SalesForecastPanel({ isDemo, shopUrl, accessToken, shopN
             {[7, 14, 30].map(function (w) { return <option key={w} value={w}>{w}天窗口</option>; })}
           </select>
         )}
-        <span className="text-[10px] text-muted-foreground ml-2">维度:</span>
+        <span className="text-xs text-muted-foreground ml-2">维度:</span>
         <select value={metric} onChange={function (e) { setMetric(e.target.value as MetricType); }} className="h-6 rounded border border-border/40 bg-background text-[9px] px-1">
           <option value="gmv">GMV</option>
           <option value="orders">订单数</option>
@@ -183,7 +183,7 @@ export default function SalesForecastPanel({ isDemo, shopUrl, accessToken, shopN
 
       {/* Forecast Chart */}
       <Card className="border-border/40 bg-card/60 shadow-lg"><CardContent className="p-3">
-        <p className="text-[10px] font-semibold text-muted-foreground mb-1">GMV 预测 · 过去 {histCount} 天 · 未来 7 天</p>
+        <p className="text-xs font-semibold text-muted-foreground mb-1">GMV 预测 · 过去 {histCount} 天 · 未来 7 天</p>
         <ResponsiveContainer width="100%" height={280}>
           <ComposedChart data={chartData}>
             <CartesianGrid strokeDasharray="3 3" stroke="#3f3f46" />
@@ -201,14 +201,14 @@ export default function SalesForecastPanel({ isDemo, shopUrl, accessToken, shopN
       </CardContent></Card>
 
       {/* Seasonal Factors */}
-      <button onClick={function () { setShowConfig(!showConfig); }} className="flex items-center gap-1 text-[10px] text-muted-foreground hover:text-foreground">
+      <button onClick={function () { setShowConfig(!showConfig); }} className="flex items-center gap-1 text-xs text-muted-foreground hover:text-foreground">
         {showConfig ? <ChevronDown className="h-3 w-3" /> : <ChevronRight className="h-3 w-3" />}季节性因子
       </button>
       {showConfig && (
         <Card className="border-border/40 bg-card/60"><CardContent className="p-3">
           <div className="flex gap-2 flex-wrap">
             {weekdayFactors.map(function (w) {
-              return <div key={w.day} className="flex items-center gap-1 text-[10px] bg-muted/10 rounded px-2 py-1">
+              return <div key={w.day} className="flex items-center gap-1 text-xs bg-muted/10 rounded px-2 py-1">
                 <span className="text-muted-foreground">{w.day}</span>
                 <span className={w.factor > 1 ? "text-emerald-400" : w.factor < 1 ? "text-red-400" : "text-muted-foreground"}>{w.factor.toFixed(2)}x</span>
               </div>;
@@ -218,13 +218,13 @@ export default function SalesForecastPanel({ isDemo, shopUrl, accessToken, shopN
       )}
 
       {/* Backtest */}
-      <button onClick={function () { setShowBacktest(!showBacktest); }} className="flex items-center gap-1 text-[10px] text-muted-foreground hover:text-foreground">
+      <button onClick={function () { setShowBacktest(!showBacktest); }} className="flex items-center gap-1 text-xs text-muted-foreground hover:text-foreground">
         <Target className="h-3 w-3" />{showBacktest ? <ChevronDown className="h-3 w-3" /> : <ChevronRight className="h-3 w-3" />}回测精度
         <Badge className={"text-[8px] px-1 py-0 ml-1 " + mapeConfig.color}>{mapeLevel === "high" ? "🟢 高" : mapeLevel === "medium" ? "🟡 中" : "🟠 低"}</Badge>
       </button>
       {showBacktest && backtest.comparisons.length !== 0 && (
         <Card className="border-border/40 bg-card/60"><CardContent className="p-3 space-y-1">
-          <div className="flex gap-4 text-[10px]">
+          <div className="flex gap-4 text-xs">
             <span className="text-muted-foreground">MAE: <span className="text-foreground">{formatCny(Math.round(backtest.mae * EXCHANGE_RATE))}</span></span>
             <span className="text-muted-foreground">MAPE: <span className={mapeConfig.color}>{backtest.mape.toFixed(1)}%</span></span>
             <span className={mapeConfig.color}>{mapeConfig.label}</span>
@@ -240,7 +240,7 @@ export default function SalesForecastPanel({ isDemo, shopUrl, accessToken, shopN
       {/* Scenario Cards */}
       <div className="grid grid-cols-1 md:grid-cols-3 gap-2">
         {scenarios.map(function (s, i) {
-          return <Card key={i} className="border-border/40 bg-card/60"><CardContent className="p-3"><div className="flex items-center gap-2 mb-1"><s.icon className={"h-3.5 w-3.5 " + s.color} /><p className="text-[10px] font-semibold text-foreground">{s.title}</p></div><p className="text-[9px] text-muted-foreground leading-relaxed">{s.body}</p></CardContent></Card>;
+          return <Card key={i} className="border-border/40 bg-card/60"><CardContent className="p-3"><div className="flex items-center gap-2 mb-1"><s.icon className={"h-3.5 w-3.5 " + s.color} /><p className="text-xs font-semibold text-foreground">{s.title}</p></div><p className="text-[9px] text-muted-foreground leading-relaxed">{s.body}</p></CardContent></Card>;
         })}
       </div>
     </div>

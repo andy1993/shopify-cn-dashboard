@@ -162,26 +162,26 @@ export default function MultiCurrencyPricingPanel({ isDemo, shopUrl, accessToken
 
   return (
     <div className="space-y-4">
-      {toast && <div className="fixed bottom-6 left-1/2 -translate-x-1/2 z-50 rounded-lg bg-emerald-600/90 px-4 py-2 text-sm font-medium text-white shadow-2xl">{toast}</div>}
+      {toast && <div className="fixed bottom-6 left-1/2 -translate-x-1/2 z-50 rounded-lg bg-emerald-600/90 px-4 py-2 text-base font-medium text-white shadow-2xl">{toast}</div>}
 
       <div>
         <h2 className="flex items-center gap-2 text-xl font-bold text-foreground"><DollarSign className="h-6 w-6 text-amber-400" />多币种定价矩阵</h2>
-        <p className="mt-1 text-sm text-muted-foreground">{shopName}{isDemo && <span className="ml-2 text-xs text-amber-400">(演示)</span>}</p>
+        <p className="mt-1 text-base text-muted-foreground">{shopName}{isDemo && <span className="ml-2 text-sm text-amber-400">(演示)</span>}</p>
       </div>
 
       {/* Exchange Rates */}
-      <button onClick={() => setShowRates(!showRates)} className="flex items-center gap-1 text-[10px] text-muted-foreground hover:text-foreground">
+      <button onClick={() => setShowRates(!showRates)} className="flex items-center gap-1 text-xs text-muted-foreground hover:text-foreground">
         {showRates ? <ChevronDown className="h-3 w-3"/> : <ChevronRight className="h-3 w-3"/>}汇率信息
       </button>
       {showRates && (
-        <Card className="border-border/40 bg-muted/10"><CardContent className="p-3 flex flex-wrap gap-3 text-[10px]">
+        <Card className="border-border/40 bg-muted/10"><CardContent className="p-3 flex flex-wrap gap-3 text-xs">
           {markets.filter((m) => m.exchangeRate !== 1).map((m) => <span key={m.id} className="text-muted-foreground">1 USD = <span className="text-foreground tabular-nums">{m.exchangeRate}</span> {m.currency}</span>)}
           <span className="text-muted-foreground/50 ml-2">汇率由 Shopify Markets 自动管理</span>
         </CardContent></Card>
       )}
 
       {/* Color Legend */}
-      <div className="flex items-center gap-3 text-[10px] text-muted-foreground flex-wrap">
+      <div className="flex items-center gap-3 text-xs text-muted-foreground flex-wrap">
         <span className="flex items-center gap-1"><span className="h-2.5 w-2.5 rounded bg-zinc-500 inline-block"/> =基础价</span>
         <span className="flex items-center gap-1"><span className="h-2.5 w-2.5 rounded bg-amber-500/70 inline-block"/> 上调</span>
         <span className="flex items-center gap-1"><span className="h-2.5 w-2.5 rounded bg-emerald-500/70 inline-block"/> 下调</span>
@@ -190,12 +190,12 @@ export default function MultiCurrencyPricingPanel({ isDemo, shopUrl, accessToken
 
       {/* Toolbar */}
       <Card className="border-border/40 bg-card/60"><CardContent className="flex flex-wrap items-center gap-2 px-3 py-2">
-        <div className="relative flex-1 min-w-[120px]"><Search className="absolute left-2 top-1/2 h-3 w-3 -translate-y-1/2 text-muted-foreground"/><Input value={search} onChange={(e)=>setSearch(e.target.value)} placeholder="搜索商品/SKU..." className="h-7 pl-7 text-[10px]"/></div>
-        <Button size="sm" variant="outline" onClick={() => setExpandAll(!expandAll)} className="h-7 text-[10px]">{expandAll ? "折叠变体" : "展开变体"}</Button>
-        <Button size="sm" variant="outline" onClick={exportCSV} className="h-7 gap-1 text-[10px]"><Download className="h-3 w-3"/>导出</Button>
+        <div className="relative flex-1 min-w-[120px]"><Search className="absolute left-2 top-1/2 h-3 w-3 -translate-y-1/2 text-muted-foreground"/><Input value={search} onChange={(e)=>setSearch(e.target.value)} placeholder="搜索商品/SKU..." className="h-7 pl-7 text-sm"/></div>
+        <Button size="sm" variant="outline" onClick={() => setExpandAll(!expandAll)} className="h-7 text-xs">{expandAll ? "折叠变体" : "展开变体"}</Button>
+        <Button size="sm" variant="outline" onClick={exportCSV} className="h-7 gap-1 text-xs"><Download className="h-3 w-3"/>导出</Button>
         <div className="flex items-center gap-1 ml-2">
           {markets.map((m) => (
-            <label key={m.id} className="flex items-center gap-0.5 cursor-pointer text-[10px]">
+            <label key={m.id} className="flex items-center gap-0.5 cursor-pointer text-xs">
               <input type="checkbox" checked={visibleMarketIds.has(m.id)} onChange={()=>toggleMarket(m.id)} className="accent-sky-500"/>{countryCodeToFlag(m.countryCode)} {m.currency}
             </label>
           ))}
@@ -205,20 +205,20 @@ export default function MultiCurrencyPricingPanel({ isDemo, shopUrl, accessToken
       {/* Batch Ops Bar */}
       {selCount > 0 && (
         <Card className="border-amber-500/30 bg-amber-500/5"><CardContent className="flex items-center gap-2 py-2 px-4">
-          <span className="text-[10px] text-amber-400">已选 {selCount} 行</span>
-          <Button size="sm" variant="outline" onClick={()=>applyBatchAdjustment(1.5,"multiply")} className="h-7 text-[10px]">×1.5</Button>
-          <Button size="sm" variant="outline" onClick={()=>applyBatchAdjustment(0.8,"multiply")} className="h-7 text-[10px]">×0.8</Button>
-          <Button size="sm" variant="outline" onClick={()=>applyBatchAdjustment(5,"up")} className="h-7 text-[10px] text-amber-400">+5%</Button>
-          <Button size="sm" variant="outline" onClick={()=>applyBatchAdjustment(5,"down")} className="h-7 text-[10px] text-emerald-400">−5%</Button>
-          <Button size="sm" variant="outline" onClick={()=>applyBatchAdjustment(0,"reset")} className="h-7 text-[10px] text-sky-400">重置默认</Button>
+          <span className="text-xs text-amber-400">已选 {selCount} 行</span>
+          <Button size="sm" variant="outline" onClick={()=>applyBatchAdjustment(1.5,"multiply")} className="h-7 text-xs">×1.5</Button>
+          <Button size="sm" variant="outline" onClick={()=>applyBatchAdjustment(0.8,"multiply")} className="h-7 text-xs">×0.8</Button>
+          <Button size="sm" variant="outline" onClick={()=>applyBatchAdjustment(5,"up")} className="h-7 text-xs text-amber-400">+5%</Button>
+          <Button size="sm" variant="outline" onClick={()=>applyBatchAdjustment(5,"down")} className="h-7 text-xs text-emerald-400">−5%</Button>
+          <Button size="sm" variant="outline" onClick={()=>applyBatchAdjustment(0,"reset")} className="h-7 text-xs text-sky-400">重置默认</Button>
         </CardContent></Card>
       )}
 
       {/* Matrix Table */}
       <Card className="border-border/40 bg-card/60 shadow-lg backdrop-blur-lg overflow-x-auto">
         <CardContent className="p-0">
-          <table className="w-full text-xs min-w-[600px]">
-            <thead><tr className="border-b border-border/20 text-[10px] font-semibold uppercase tracking-wider text-muted-foreground">
+          <table className="w-full text-sm min-w-[600px]">
+            <thead><tr className="border-b border-border/20 text-xs font-semibold uppercase tracking-wider text-muted-foreground">
               <th className="py-2 pl-3 text-left w-6 sticky left-0 bg-card/90 backdrop-blur z-10">☐</th>
               <th className="py-2 pl-2 text-left sticky left-8 bg-card/90 backdrop-blur z-10">商品 / SKU</th>
               {visibleMarkets.map((m) => (
@@ -250,7 +250,7 @@ export default function MultiCurrencyPricingPanel({ isDemo, shopUrl, accessToken
                       return (
                         <td key={m.id} className={`py-2 px-3 text-right ${manual ? "border-l-2 border-l-sky-500 cursor-pointer" : "cursor-pointer"}`} onClick={() => startEdit(v.variantId, m.id, price)}>
                           {editing ? (
-                            <Input type="number" step="0.01" value={editValue} onChange={(e)=>setEditValue(e.target.value)} onBlur={saveEdit} onKeyDown={handleKeyDown} autoFocus className="h-6 w-20 text-xs tabular-nums inline-block" onClick={(e)=>e.stopPropagation()} />
+                            <Input type="number" step="0.01" value={editValue} onChange={(e)=>setEditValue(e.target.value)} onBlur={saveEdit} onKeyDown={handleKeyDown} autoFocus className="h-6 w-20 text-sm tabular-nums inline-block" onClick={(e)=>e.stopPropagation()} />
                           ) : (
                             <div>
                               <p className={`tabular-nums font-semibold ${colorClass}`}>{price.toFixed(2)}</p>

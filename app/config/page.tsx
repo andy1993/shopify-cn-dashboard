@@ -92,7 +92,7 @@ export default function ConfigPage() {
         <h1 className="text-2xl font-semibold tracking-tight text-foreground">
           Shopify 店铺配置
         </h1>
-        <p className="mt-2 text-sm text-muted-foreground">
+        <p className="mt-2 text-base text-muted-foreground">
           连接你的 Shopify 店铺，开始数据洞察之旅
         </p>
       </div>
@@ -111,7 +111,7 @@ export default function ConfigPage() {
           <div className="space-y-2">
             <label
               htmlFor="domain"
-              className="flex items-center gap-2 text-sm font-medium text-foreground"
+              className="flex items-center gap-2 text-base font-medium text-foreground"
             >
               <Store className="h-4 w-4 text-muted-foreground" />
               Shopify 域名
@@ -130,7 +130,7 @@ export default function ConfigPage() {
           <div className="space-y-2">
             <label
               htmlFor="token"
-              className="flex items-center gap-2 text-sm font-medium text-foreground"
+              className="flex items-center gap-2 text-base font-medium text-foreground"
             >
               <Key className="h-4 w-4 text-muted-foreground" />
               Admin API Token
@@ -143,7 +143,7 @@ export default function ConfigPage() {
               onChange={function (e) { setToken(e.target.value); }}
               className="h-10 font-mono tracking-wide"
             />
-            <p className="text-xs text-muted-foreground">
+            <p className="text-sm text-muted-foreground">
               可在 Shopify Admin &rarr; 设置 &rarr; 应用和销售渠道 中获取
             </p>
           </div>
@@ -174,7 +174,7 @@ export default function ConfigPage() {
       {/* ── Divider + Demo Button ── */}
       <div className="relative my-6 flex w-full max-w-md items-center gap-4">
         <div className="h-px flex-1 bg-border/50" />
-        <span className="shrink-0 text-xs text-muted-foreground">或</span>
+        <span className="shrink-0 text-sm text-muted-foreground">或</span>
         <div className="h-px flex-1 bg-border/50" />
       </div>
 
@@ -207,17 +207,17 @@ export default function ConfigPage() {
             </div>
             <div className="space-y-2">
               <div className="flex items-center gap-2">
-                <span className="text-sm font-semibold text-emerald-400">
+                <span className="text-base font-semibold text-emerald-400">
                   安全声明
                 </span>
                 <Badge
                   variant="default"
-                  className="bg-emerald-500/20 px-1.5 py-0 text-[10px] font-medium text-emerald-400 hover:bg-emerald-500/20"
+                  className="bg-emerald-500/20 px-1.5 py-0 text-xs font-medium text-emerald-400 hover:bg-emerald-500/20"
                 >
                   隐私优先
                 </Badge>
               </div>
-              <p className="text-xs leading-relaxed text-muted-foreground">
+              <p className="text-sm leading-relaxed text-muted-foreground">
                 本系统为纯前端 / 无服务器架构（Serverless），您的 Admin API
                 Token 仅保存在本地浏览器的 LocalStorage 中。所有的 API
                 请求均通过您本地运行的 Next.js 后端路由直接安全转发至

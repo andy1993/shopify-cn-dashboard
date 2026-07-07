@@ -117,11 +117,11 @@ function KpiCard({ title, value, subtitle, icon: Icon, trend, trendValue, accent
       <CardContent className="relative p-6">
         <div className="flex items-start justify-between">
           <div className="space-y-1">
-            <p className="text-sm font-medium text-muted-foreground">{title}</p>
+            <p className="text-base font-medium text-muted-foreground">{title}</p>
             <p className={`text-3xl font-bold tracking-tight text-foreground transition-all duration-300 ${flash ? "text-emerald-400 scale-105" : ""}`}>{value}</p>
             <div className="flex items-center gap-1.5">
-              <span className={`text-xs font-medium ${trend === "up" ? "text-emerald-500" : trend === "down" ? "text-red-500" : "text-muted-foreground"}`}>{trendValue}</span>
-              <span className="text-xs text-muted-foreground">{subtitle}</span>
+              <span className={`text-sm font-medium ${trend === "up" ? "text-emerald-500" : trend === "down" ? "text-red-500" : "text-muted-foreground"}`}>{trendValue}</span>
+              <span className="text-sm text-muted-foreground">{subtitle}</span>
             </div>
           </div>
           <div className={`flex h-11 w-11 items-center justify-center rounded-xl ring-1 ${a[accent ?? "emerald"]}`}><Icon className="h-5 w-5" /></div>
@@ -135,8 +135,8 @@ function CustomTooltip({ active, payload, label }: { active?: boolean; payload?:
   if (!active || !payload?.length) return null;
   return (
     <div className="rounded-lg border border-border/50 bg-card px-3 py-2 shadow-lg backdrop-blur-sm">
-      <p className="text-xs text-muted-foreground">{label}</p>
-      <p className="text-sm font-semibold text-foreground">{formatCny(payload[0].value)}</p>
+      <p className="text-sm text-muted-foreground">{label}</p>
+      <p className="text-base font-semibold text-foreground">{formatCny(payload[0].value)}</p>
     </div>
   );
 }
@@ -384,7 +384,7 @@ export default function OverviewPanel(props: OverviewPanelProps) {
       {currentStore?.isDemo && (
         <div className="flex items-center gap-3 rounded-xl border border-amber-500/30 bg-amber-500/10 px-4 py-3 backdrop-blur-sm">
           <AlertTriangle className="h-5 w-5 shrink-0 text-amber-400" />
-          <p className="text-sm font-medium text-amber-200"><span className="font-semibold">当前处于【演示体验模式】</span>，数据均为虚拟生成。点击右上角「添加新店铺」可以切换到您的真实店铺。</p>
+          <p className="text-base font-medium text-amber-200"><span className="font-semibold">当前处于【演示体验模式】</span>，数据均为虚拟生成。点击右上角「添加新店铺」可以切换到您的真实店铺。</p>
         </div>
       )}
 
@@ -394,7 +394,7 @@ export default function OverviewPanel(props: OverviewPanelProps) {
           <Store className="h-6 w-6 text-emerald-500" />
           <div>
             <h1 className="text-2xl font-bold tracking-tight text-foreground">数据看板</h1>
-            <p className="text-sm text-muted-foreground">{domain} &middot; {formatTimeAgo(lastUpdated)}</p>
+            <p className="text-base text-muted-foreground">{domain} &middot; {formatTimeAgo(lastUpdated)}</p>
           </div>
           {stores.length > 0 && (
             <div className="ml-4">
@@ -435,15 +435,15 @@ export default function OverviewPanel(props: OverviewPanelProps) {
       {/* Cost Settings Bar */}
       <Card className="border-border/40 bg-card/50 shadow-sm backdrop-blur-sm">
         <CardContent className="flex flex-wrap items-end gap-4 px-5 py-4">
-          <p className="flex items-center gap-1.5 text-xs font-medium text-muted-foreground"><Coins className="h-3.5 w-3.5" />成本配置 (%)</p>
+          <p className="flex items-center gap-1.5 text-sm font-medium text-muted-foreground"><Coins className="h-3.5 w-3.5" />成本配置 (%)</p>
           {[{ label: "采购成本", value: cogsRate, set: setCogsRate }, { label: "物流运费", value: shippingRate, set: setShippingRate }, { label: "广告成本", value: marketingRate, set: setMarketingRate }].map((item) => (
             <div key={item.label} className="flex items-center gap-1.5">
-              <label className="text-xs text-muted-foreground whitespace-nowrap">{item.label}</label>
-              <Input type="number" min={0} max={100} value={item.value} onChange={(e) => item.set(Math.min(100, Math.max(0, Number(e.target.value) || 0)))} className="h-8 w-16 text-center text-sm" />
-              <span className="text-xs text-muted-foreground">%</span>
+              <label className="text-sm text-muted-foreground whitespace-nowrap">{item.label}</label>
+              <Input type="number" min={0} max={100} value={item.value} onChange={(e) => item.set(Math.min(100, Math.max(0, Number(e.target.value) || 0)))} className="h-9 w-16 text-center text-sm" />
+              <span className="text-sm text-muted-foreground">%</span>
             </div>
           ))}
-          <div className="ml-auto flex items-center gap-2 text-xs text-muted-foreground">
+          <div className="ml-auto flex items-center gap-2 text-sm text-muted-foreground">
             <span>合计：{totalCostRate}%</span><span className="text-muted-foreground/50">|</span>
             <span className={profit >= 0 ? "text-emerald-400" : "text-red-400"}>利润率：{totalCostRate < 100 ? profitMargin.toFixed(1) : "—"}%</span>
           </div>
@@ -455,10 +455,10 @@ export default function OverviewPanel(props: OverviewPanelProps) {
         {refundRate >= 1.5 && <span className="absolute inset-0 animate-[ai-pulse_2s_ease-in-out_infinite] bg-gradient-to-r from-transparent via-red-400/5 to-transparent" />}
         {refundRate < 1 ? <ShieldCheck className="relative h-5 w-5 text-emerald-400" /> : refundRate < 1.5 ? <ShieldAlert className="relative h-5 w-5 text-amber-400" /> : <Flame className="relative h-5 w-5 animate-pulse text-red-400" />}
         <div className="relative flex flex-1 flex-col gap-0.5 sm:flex-row sm:items-center sm:justify-between">
-          <p className={`text-sm font-medium ${refundRate < 1 ? "text-emerald-300" : refundRate < 1.5 ? "text-amber-300" : "text-red-300"}`}>
+          <p className={`text-base font-medium ${refundRate < 1 ? "text-emerald-300" : refundRate < 1.5 ? "text-amber-300" : "text-red-300"}`}>
             {refundRate < 1 ? "✓ 今日账户健康度：优秀" : refundRate < 1.5 ? `⚠ 警告：退款率 ${refundRate.toFixed(1)}%，接近风险红线` : `🔥 极高风险：退款率 ${refundRate.toFixed(1)}%！暂停广告自查刷单！`}
           </p>
-          <div className="flex items-center gap-3 text-xs text-muted-foreground">
+          <div className="flex items-center gap-3 text-sm text-muted-foreground">
             <span>退款 {refundedOrders.length}/{localOrderCount} 单</span><span>¥{(refundAmount * exchangeRate).toFixed(2)}</span>
           </div>
         </div>
@@ -479,7 +479,7 @@ export default function OverviewPanel(props: OverviewPanelProps) {
             <div className="flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
               <div className="flex items-center gap-3">
                 <Calendar className="h-4 w-4 text-amber-400" />
-                <p className="text-sm font-medium text-foreground">全球商机倒计时</p>
+                <p className="text-base font-medium text-foreground">全球商机倒计时</p>
                 <Select value={selectedCountry} onValueChange={(v) => v && setSelectedCountry(v)}>
                   <SelectTrigger size="sm" className="w-36">
                     <SelectValue />
@@ -503,13 +503,13 @@ export default function OverviewPanel(props: OverviewPanelProps) {
               {localCountryHolidays[selectedCountry] ? (
                 <div className="flex items-center gap-4">
                   <div className="text-right">
-                    <p className="text-sm font-semibold text-amber-300">
+                    <p className="text-base font-semibold text-amber-300">
                       {localCountryHolidays[selectedCountry]!.localName}
-                      <span className="text-xs font-normal text-muted-foreground ml-1">
+                      <span className="text-sm font-normal text-muted-foreground ml-1">
                         ({localCountryHolidays[selectedCountry]!.name})
                       </span>
                     </p>
-                    <p className="text-xs text-muted-foreground">{localCountryHolidays[selectedCountry]!.date}</p>
+                    <p className="text-sm text-muted-foreground">{localCountryHolidays[selectedCountry]!.date}</p>
                   </div>
                   <Clock className="h-5 w-5 animate-pulse text-amber-400" />
                   <div className="flex items-center gap-3">
@@ -518,14 +518,14 @@ export default function OverviewPanel(props: OverviewPanelProps) {
                         {i > 0 && <span className="text-lg font-light text-muted-foreground">:</span>}
                         <div className="text-center">
                           <span className="block text-2xl font-bold tabular-nums text-amber-300">{String(u.value).padStart(2, "0")}</span>
-                          <span className="text-xs text-muted-foreground">{u.label}</span>
+                          <span className="text-sm text-muted-foreground">{u.label}</span>
                         </div>
                       </span>
                     ))}
                   </div>
                 </div>
               ) : (
-                <p className="text-sm text-muted-foreground">
+                <p className="text-base text-muted-foreground">
                   🌍 已嗅探到目标市场 {selectedCountry}，当前暂无公共节日大促，建议保持日常广告预算稳定。
                 </p>
               )}
@@ -590,11 +590,11 @@ export default function OverviewPanel(props: OverviewPanelProps) {
                     <TableCell className="text-right tabular-nums">{p.totalSold}</TableCell>
                     <TableCell className="text-right tabular-nums text-emerald-500">{formatCny(p.totalRevenue * exchangeRate)}</TableCell>
                     <TableCell className="text-right tabular-nums text-muted-foreground">{p.inventory}</TableCell>
-                    <TableCell className="text-right">{badge ? <Badge variant={badge.variant}>{badge.label}</Badge> : <span className="text-xs text-muted-foreground">库存充足</span>}</TableCell>
+                    <TableCell className="text-right">{badge ? <Badge variant={badge.variant}>{badge.label}</Badge> : <span className="text-sm text-muted-foreground">库存充足</span>}</TableCell>
                     <TableCell className="text-right">
-                      {risk?.level === "高危欺诈" ? <span className="inline-flex items-center gap-1 rounded-md px-2 py-0.5 text-xs font-medium ring-1 text-red-400 bg-red-500/10 ring-red-500/20"><ShieldX className="h-3 w-3" />高危欺诈</span>
-                        : risk?.level === "需关注" ? <span className="inline-flex items-center gap-1 rounded-md px-2 py-0.5 text-xs font-medium ring-1 text-amber-400 bg-amber-500/10 ring-amber-500/20"><ShieldAlert className="h-3 w-3" />需关注</span>
-                        : <span className="inline-flex items-center gap-1 rounded-md px-2 py-0.5 text-xs font-medium ring-1 text-emerald-400 bg-emerald-500/10 ring-emerald-500/20"><ShieldCheck className="h-3 w-3" />低风险</span>}
+                      {risk?.level === "高危欺诈" ? <span className="inline-flex items-center gap-1 rounded-md px-2 py-0.5 text-sm font-medium ring-1 text-red-400 bg-red-500/10 ring-red-500/20"><ShieldX className="h-3 w-3" />高危欺诈</span>
+                        : risk?.level === "需关注" ? <span className="inline-flex items-center gap-1 rounded-md px-2 py-0.5 text-sm font-medium ring-1 text-amber-400 bg-amber-500/10 ring-amber-500/20"><ShieldAlert className="h-3 w-3" />需关注</span>
+                        : <span className="inline-flex items-center gap-1 rounded-md px-2 py-0.5 text-sm font-medium ring-1 text-emerald-400 bg-emerald-500/10 ring-emerald-500/20"><ShieldCheck className="h-3 w-3" />低风险</span>}
                     </TableCell>
                   </TableRow>
                 );
@@ -619,7 +619,7 @@ export default function OverviewPanel(props: OverviewPanelProps) {
                 <Button size="lg" onClick={handleStartDiagnosis} className="gap-2 bg-amber-600 text-white hover:bg-amber-500"><Sparkles className="h-4 w-4" />开始诊断</Button>
                 {!currentStore?.isDemo && (
                   <div className="mt-4 w-full rounded-lg border border-border/30 bg-muted/30 p-4">
-                    <p className="mb-2 text-xs font-medium text-muted-foreground">💡 想要真正的 AI 实时诊断？</p>
+                    <p className="mb-2 text-sm font-medium text-muted-foreground">💡 想要真正的 AI 实时诊断？</p>
                     <pre className="whitespace-pre-wrap text-[11px] leading-relaxed text-muted-foreground/70">{"// .env.local\nDEEPSEEK_API_KEY=sk-xxxxxxxxxxxxxxxx"}</pre>
                   </div>
                 )}
@@ -628,27 +628,27 @@ export default function OverviewPanel(props: OverviewPanelProps) {
             {diagnosing && (
               <div className="flex flex-col items-center gap-5 py-16">
                 <div className="relative flex h-16 w-16 items-center justify-center"><div className="absolute inset-0 animate-spin rounded-full border-2 border-transparent border-t-amber-500" /><span className="relative text-2xl">🤖</span></div>
-                <p className="text-sm font-medium text-foreground">{typewriterText}</p>
+                <p className="text-base font-medium text-foreground">{typewriterText}</p>
               </div>
             )}
             {!diagnosing && diagnosis && (
               <div className="space-y-6">
-                <div className="flex items-center gap-2"><span className="text-xs text-muted-foreground">风险等级：</span><Badge variant={diagnosis.riskLevel === "high" ? "destructive" : diagnosis.riskLevel === "medium" ? "default" : "outline"} className={diagnosis.riskLevel === "high" ? "bg-red-500/20 text-red-400" : diagnosis.riskLevel === "medium" ? "bg-amber-500/20 text-amber-400" : "bg-emerald-500/20 text-emerald-400"}>{diagnosis.riskLevel === "high" ? "高风险" : diagnosis.riskLevel === "medium" ? "中等风险" : "低风险"}</Badge></div>
-                <div className="rounded-lg border border-border/30 bg-muted/20 p-4">{diagnosis.overview.split("\n").map((l, i) => l.startsWith("## ") ? <h3 key={i} className="mb-2 text-sm font-semibold text-foreground">{l.replace("## ", "")}</h3> : <p key={i} className="my-1 text-sm text-muted-foreground">{l}</p>)}</div>
-                <div className="rounded-lg border border-border/30 bg-muted/20 p-4">{diagnosis.conversionAnalysis.split("\n").map((l, i) => l.startsWith("## ") ? <h3 key={i} className="mb-2 text-sm font-semibold text-foreground">{l.replace("## ", "")}</h3> : <p key={i} className="my-1 text-sm text-muted-foreground">{l}</p>)}</div>
-                {diagnosis.inventoryAlerts.map((a, i) => <div key={i} className={`rounded-lg border p-4 ${a.startsWith("## 🔴") ? "border-red-500/20 bg-red-500/5" : a.startsWith("## 🟡") ? "border-amber-500/20 bg-amber-500/5" : "border-emerald-500/20 bg-emerald-500/5"}`}>{a.split("\n").map((l, j) => l.startsWith("## ") ? <h3 key={j} className="mb-2 text-sm font-semibold text-foreground">{l.replace(/^##\s*/, "")}</h3> : l.startsWith("> ") ? <p key={j} className="my-1 border-l-2 border-border/30 pl-3 text-sm italic text-muted-foreground">{l.replace("> ", "")}</p> : l ? <p key={j} className="my-1 text-sm text-muted-foreground">{l}</p> : null)}</div>)}
-                <div className="rounded-lg border border-amber-500/20 bg-amber-500/5 p-4">{diagnosis.recommendations.map((r, i) => <div key={i} className="mb-4 last:mb-0">{r.split("\n").map((l, j) => l.startsWith("## ") ? <h3 key={j} className="mb-3 flex items-center gap-2 text-sm font-semibold text-foreground">{l.replace(/^##\s*/, "")}</h3> : l.startsWith("### ") ? <h4 key={j} className="mb-1 mt-2 text-sm font-medium text-amber-300">{l.replace("### ", "")}</h4> : l.startsWith("> ") ? <p key={j} className="my-1 border-l-2 border-amber-500/20 pl-3 text-sm italic text-muted-foreground">{l.replace("> ", "")}</p> : <p key={j} className="my-1 text-sm text-muted-foreground">{l}</p>)}</div>)}</div>
+                <div className="flex items-center gap-2"><span className="text-sm text-muted-foreground">风险等级：</span><Badge variant={diagnosis.riskLevel === "high" ? "destructive" : diagnosis.riskLevel === "medium" ? "default" : "outline"} className={diagnosis.riskLevel === "high" ? "bg-red-500/20 text-red-400" : diagnosis.riskLevel === "medium" ? "bg-amber-500/20 text-amber-400" : "bg-emerald-500/20 text-emerald-400"}>{diagnosis.riskLevel === "high" ? "高风险" : diagnosis.riskLevel === "medium" ? "中等风险" : "低风险"}</Badge></div>
+                <div className="rounded-lg border border-border/30 bg-muted/20 p-4">{diagnosis.overview.split("\n").map((l, i) => l.startsWith("## ") ? <h3 key={i} className="mb-2 text-base font-semibold text-foreground">{l.replace("## ", "")}</h3> : <p key={i} className="my-1 text-base text-muted-foreground">{l}</p>)}</div>
+                <div className="rounded-lg border border-border/30 bg-muted/20 p-4">{diagnosis.conversionAnalysis.split("\n").map((l, i) => l.startsWith("## ") ? <h3 key={i} className="mb-2 text-base font-semibold text-foreground">{l.replace("## ", "")}</h3> : <p key={i} className="my-1 text-base text-muted-foreground">{l}</p>)}</div>
+                {diagnosis.inventoryAlerts.map((a, i) => <div key={i} className={`rounded-lg border p-4 ${a.startsWith("## 🔴") ? "border-red-500/20 bg-red-500/5" : a.startsWith("## 🟡") ? "border-amber-500/20 bg-amber-500/5" : "border-emerald-500/20 bg-emerald-500/5"}`}>{a.split("\n").map((l, j) => l.startsWith("## ") ? <h3 key={j} className="mb-2 text-base font-semibold text-foreground">{l.replace(/^##\s*/, "")}</h3> : l.startsWith("> ") ? <p key={j} className="my-1 border-l-2 border-border/30 pl-3 text-base italic text-muted-foreground">{l.replace("> ", "")}</p> : l ? <p key={j} className="my-1 text-base text-muted-foreground">{l}</p> : null)}</div>)}
+                <div className="rounded-lg border border-amber-500/20 bg-amber-500/5 p-4">{diagnosis.recommendations.map((r, i) => <div key={i} className="mb-4 last:mb-0">{r.split("\n").map((l, j) => l.startsWith("## ") ? <h3 key={j} className="mb-3 flex items-center gap-2 text-base font-semibold text-foreground">{l.replace(/^##\s*/, "")}</h3> : l.startsWith("### ") ? <h4 key={j} className="mb-1 mt-2 text-base font-medium text-amber-300">{l.replace("### ", "")}</h4> : l.startsWith("> ") ? <p key={j} className="my-1 border-l-2 border-amber-500/20 pl-3 text-base italic text-muted-foreground">{l.replace("> ", "")}</p> : <p key={j} className="my-1 text-base text-muted-foreground">{l}</p>)}</div>)}</div>
               </div>
             )}
           </div>
           {/* AI Diagnosis Error Alert */}
           {diagnosisError && (
             <div className="mx-4 mb-4 rounded-lg border border-amber-500/30 bg-amber-500/10 px-4 py-3">
-              <p className="text-xs leading-relaxed text-amber-200">{diagnosisError}</p>
+              <p className="text-sm leading-relaxed text-amber-200">{diagnosisError}</p>
             </div>
           )}
           <SheetFooter className="border-t border-border/30 pt-4">
-            <p className="text-center text-xs text-muted-foreground">{currentStore?.isDemo ? "演示数据仅供体验" : "Powered by DeepSeek · 本地运行"}</p>
+            <p className="text-center text-sm text-muted-foreground">{currentStore?.isDemo ? "演示数据仅供体验" : "Powered by DeepSeek · 本地运行"}</p>
           </SheetFooter>
         </SheetContent>
       </Sheet>

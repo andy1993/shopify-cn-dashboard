@@ -144,23 +144,23 @@ export default function AiChatPanel({ isDemo, shopUrl, accessToken, shopName, me
       <div className="flex items-center justify-between shrink-0">
         <div>
           <h2 className="flex items-center gap-2 text-xl font-bold text-foreground"><Brain className="h-6 w-6 text-green-400" />AI 运营助手</h2>
-          <p className="mt-1 text-xs text-muted-foreground">{shopName}{isDemo && <span className="ml-2 text-xs text-amber-400">(演示)</span>}</p>
+          <p className="mt-1 text-sm text-muted-foreground">{shopName}{isDemo && <span className="ml-2 text-sm text-amber-400">(演示)</span>}</p>
         </div>
         <div className="flex items-center gap-2">
           {/* Scope selector */}
-          <select value={scope} onChange={function (e) { setScope(e.target.value); }} className="h-7 rounded border border-border/40 bg-background text-[10px] px-1">
+          <select value={scope} onChange={function (e) { setScope(e.target.value); }} className="h-7 rounded border border-border/40 bg-background text-xs px-1">
             <option value="all">全店分析</option>
             <option value="category">按品类</option>
             <option value="product">按商品</option>
             <option value="market">按市场</option>
           </select>
           {storeNames && storeNames.length >= 2 && (
-            <select value={compareStore} onChange={function (e) { setCompareStore(e.target.value); }} className="h-7 rounded border border-border/40 bg-background text-[10px] px-1">
+            <select value={compareStore} onChange={function (e) { setCompareStore(e.target.value); }} className="h-7 rounded border border-border/40 bg-background text-xs px-1">
               <option value="">单店模式</option>
               {storeNames.map(function (s) { return <option key={s} value={s}>对比 {s}</option>; })}
             </select>
           )}
-          <Button size="sm" variant="ghost" onClick={clearChat} className="h-7 text-[10px] text-muted-foreground"><Trash2 className="h-3 w-3"/></Button>
+          <Button size="sm" variant="ghost" onClick={clearChat} className="h-7 text-xs text-muted-foreground"><Trash2 className="h-3 w-3"/></Button>
         </div>
       </div>
 
@@ -168,7 +168,7 @@ export default function AiChatPanel({ isDemo, shopUrl, accessToken, shopName, me
       <div className="flex flex-wrap gap-1.5 shrink-0">
         {QUICK_PROMPTS.map(function (p) {
           return (
-            <button key={p.key} onClick={function () { sendMessage(p.label); }} className="px-2.5 py-1 rounded-full text-[10px] border border-border/40 bg-muted/10 hover:bg-green-500/10 hover:border-green-500/30 transition-colors">
+            <button key={p.key} onClick={function () { sendMessage(p.label); }} className="px-2.5 py-1 rounded-full text-xs border border-border/40 bg-muted/10 hover:bg-green-500/10 hover:border-green-500/30 transition-colors">
               {p.label}
             </button>
           );
@@ -181,11 +181,11 @@ export default function AiChatPanel({ isDemo, shopUrl, accessToken, shopName, me
           var isAI = msg.role === "ai";
           return (
             <div key={i} className={"flex gap-2 " + (isAI ? "" : "flex-row-reverse")}>
-              <div className={"shrink-0 w-7 h-7 rounded-full flex items-center justify-center text-xs font-bold " + (isAI ? "bg-green-500/20 text-green-400" : "bg-zinc-500/20 text-zinc-400")}>
+              <div className={"shrink-0 w-7 h-7 rounded-full flex items-center justify-center text-sm font-bold " + (isAI ? "bg-green-500/20 text-green-400" : "bg-zinc-500/20 text-zinc-400")}>
                 {isAI ? "AI" : "👤"}
               </div>
               <div className={"max-w-[80%] space-y-1 " + (isAI ? "" : "text-right")}>
-                <div className={"rounded-xl px-3 py-2 text-xs leading-relaxed whitespace-pre-wrap " + (isAI ? "bg-green-500/10 text-foreground rounded-tl-sm" : "bg-zinc-500/10 text-foreground rounded-tr-sm")}>
+                <div className={"rounded-xl px-3 py-2 text-sm leading-relaxed whitespace-pre-wrap " + (isAI ? "bg-green-500/10 text-foreground rounded-tl-sm" : "bg-zinc-500/10 text-foreground rounded-tr-sm")}>
                   {msg.content}
                 </div>
                 {isAI && (
@@ -204,8 +204,8 @@ export default function AiChatPanel({ isDemo, shopUrl, accessToken, shopName, me
         {/* Loading indicator */}
         {loading && (
           <div className="flex gap-2">
-            <div className="shrink-0 w-7 h-7 rounded-full bg-green-500/20 flex items-center justify-center text-xs font-bold text-green-400">AI</div>
-            <div className="rounded-xl rounded-tl-sm px-3 py-2 bg-green-500/10 text-xs text-green-400">
+            <div className="shrink-0 w-7 h-7 rounded-full bg-green-500/20 flex items-center justify-center text-sm font-bold text-green-400">AI</div>
+            <div className="rounded-xl rounded-tl-sm px-3 py-2 bg-green-500/10 text-sm text-green-400">
               <Sparkles className="h-3 w-3 inline animate-pulse mr-1" />正在分析...
             </div>
           </div>
@@ -215,7 +215,7 @@ export default function AiChatPanel({ isDemo, shopUrl, accessToken, shopName, me
 
       {/* Input Area */}
       <div className="flex gap-2 shrink-0">
-        <Input value={input} onChange={function (e) { setInput(e.target.value); }} onKeyDown={handleKeyDown} ref={inputRef} placeholder="输入问题，Enter 发送... 例：分析下 Q2 利润下降原因" className="flex-1 h-9 text-xs" disabled={loading} />
+        <Input value={input} onChange={function (e) { setInput(e.target.value); }} onKeyDown={handleKeyDown} ref={inputRef} placeholder="输入问题，Enter 发送... 例：分析下 Q2 利润下降原因" className="flex-1 h-9 text-sm" disabled={loading} />
         <Button onClick={function () { sendMessage(input); }} disabled={loading || !input.trim()} size="sm" className="h-9 px-3 bg-green-600 hover:bg-green-500 text-white"><Send className="h-4 w-4" /></Button>
       </div>
     </div>

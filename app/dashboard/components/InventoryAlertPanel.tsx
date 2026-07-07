@@ -160,11 +160,11 @@ export default function InventoryAlertPanel({ isDemo, shopUrl, accessToken, shop
 
   return (
     <div className="space-y-4">
-      {toast && <div className="fixed bottom-6 left-1/2 -translate-x-1/2 z-50 rounded-lg bg-emerald-600/90 px-4 py-2 text-sm font-medium text-white shadow-2xl">{toast}</div>}
+      {toast && <div className="fixed bottom-6 left-1/2 -translate-x-1/2 z-50 rounded-lg bg-emerald-600/90 px-4 py-2 text-base font-medium text-white shadow-2xl">{toast}</div>}
 
       <div>
         <h2 className="flex items-center gap-2 text-xl font-bold text-foreground"><Gauge className="h-6 w-6 text-emerald-400" />库存健康面板</h2>
-        <p className="mt-1 text-sm text-muted-foreground">{shopName} · {variants.length} 个 SKU{isDemo && <span className="ml-2 text-xs text-amber-400">(演示)</span>}</p>
+        <p className="mt-1 text-base text-muted-foreground">{shopName} · {variants.length} 个 SKU{isDemo && <span className="ml-2 text-sm text-amber-400">(演示)</span>}</p>
       </div>
 
       {/* KPI Cards */}
@@ -175,7 +175,7 @@ export default function InventoryAlertPanel({ isDemo, shopUrl, accessToken, shop
           {k:"soldOut",n:"已售罄",e:"⚫",c:"border-zinc-500/20 bg-zinc-500/5 text-zinc-400"},
         ].map((item) => (
           <button key={item.k} onClick={() => setFilterStatus(filterStatus === item.k ? "all" : item.k)} className={`rounded-lg border px-3 py-2.5 cursor-pointer transition-all ${filterStatus === item.k ? item.c + " ring-1" : "border-border/20 bg-muted/5 hover:bg-muted/10"}`}>
-            <p className="text-[10px] font-semibold uppercase tracking-wider">{item.e} {item.n}</p>
+            <p className="text-xs font-semibold uppercase tracking-wider">{item.e} {item.n}</p>
             <p className="text-2xl font-bold tabular-nums mt-0.5">{kpi[item.k as keyof typeof kpi]}</p>
           </button>
         ))}
@@ -184,16 +184,16 @@ export default function InventoryAlertPanel({ isDemo, shopUrl, accessToken, shop
       {/* Toolbar */}
       <Card className="border-border/40 bg-card/60">
         <CardContent className="flex flex-wrap items-center gap-2 px-4 py-2.5">
-          <div className="relative flex-1 min-w-[140px]"><Search className="absolute left-2 top-1/2 h-3 w-3 -translate-y-1/2 text-muted-foreground"/><Input value={search} onChange={(e) => setSearch(e.target.value)} placeholder="搜索商品/SKU..." className="h-8 pl-7 text-xs"/></div>
-          <select value={filterStatus} onChange={(e) => setFilterStatus(e.target.value)} className="h-8 rounded border border-border/40 bg-background text-xs text-foreground px-2">
+          <div className="relative flex-1 min-w-[140px]"><Search className="absolute left-2 top-1/2 h-3 w-3 -translate-y-1/2 text-muted-foreground"/><Input value={search} onChange={(e) => setSearch(e.target.value)} placeholder="搜索商品/SKU..." className="h-9 pl-7 text-sm"/></div>
+          <select value={filterStatus} onChange={(e) => setFilterStatus(e.target.value)} className="h-9 rounded border border-border/40 bg-background text-sm text-foreground px-2">
             <option value="all">全部状态</option>
             {Object.entries(STATUS_CONFIG).map(([k, v]) => <option key={k} value={k}>{v.emoji} {v.label}</option>)}
           </select>
-          <select value={sortBy} onChange={(e) => setSortBy(e.target.value as any)} className="h-8 rounded border border-border/40 bg-background text-xs text-foreground px-2">
+          <select value={sortBy} onChange={(e) => setSortBy(e.target.value as any)} className="h-9 rounded border border-border/40 bg-background text-sm text-foreground px-2">
             <option value="daysCovered">按紧急度</option><option value="sales">按销量</option><option value="inventory">按库存</option>
           </select>
-          <div className="flex items-center gap-1"><span className="text-[10px] text-muted-foreground">安全库存(天)</span><Input type="number" value={safetyDays} onChange={(e) => setSafetyDays(Number(e.target.value) || 30)} className="h-8 w-16 text-xs"/></div>
-          <Button size="sm" variant="outline" onClick={exportCSV} className="h-8 gap-1 text-xs"><Download className="h-3 w-3"/>导出补货清单</Button>
+          <div className="flex items-center gap-1"><span className="text-sm text-muted-foreground">安全库存(天)</span><Input type="number" value={safetyDays} onChange={(e) => setSafetyDays(Number(e.target.value) || 30)} className="h-9 w-16 text-sm"/></div>
+          <Button size="sm" variant="outline" onClick={exportCSV} className="h-9 gap-1 text-sm"><Download className="h-3 w-3"/>导出补货清单</Button>
         </CardContent>
       </Card>
 
@@ -201,8 +201,8 @@ export default function InventoryAlertPanel({ isDemo, shopUrl, accessToken, shop
       <Card className="border-border/40 bg-card/60 shadow-lg backdrop-blur-lg">
         <CardContent className="p-0 overflow-x-auto">
           {filtered.length > 0 ? (
-            <table className="w-full text-xs">
-              <thead><tr className="border-b border-border/20 text-[10px] font-semibold uppercase tracking-wider text-muted-foreground">
+            <table className="w-full text-sm">
+              <thead><tr className="border-b border-border/20 text-xs font-semibold uppercase tracking-wider text-muted-foreground">
                 <th className="py-2 pl-3 text-left">商品 / SKU</th>
                 <th className="py-2 px-2 text-right w-16">库存</th>
                 <th className="py-2 px-2 text-right hidden md:table-cell">30天销量</th>
@@ -218,7 +218,7 @@ export default function InventoryAlertPanel({ isDemo, shopUrl, accessToken, shop
                       <td className="py-2 pl-3 pr-2">
                         <div className="flex items-center gap-2">
                           {expandedId === v.variantId ? <ChevronDown className="h-3 w-3 shrink-0"/> : <ChevronRight className="h-3 w-3 shrink-0"/>}
-                          <div className="min-w-0"><p className="text-foreground truncate max-w-[180px]">{v.productTitle}</p><p className="text-[10px] text-muted-foreground">{v.sku}</p></div>
+                          <div className="min-w-0"><p className="text-foreground truncate max-w-[180px]">{v.productTitle}</p><p className="text-xs text-muted-foreground">{v.sku}</p></div>
                         </div>
                       </td>
                       <td className="py-2 px-2 text-right tabular-nums font-mono">{v.inventory}</td>
@@ -232,7 +232,7 @@ export default function InventoryAlertPanel({ isDemo, shopUrl, accessToken, shop
               </tbody>
             </table>
           ) : (
-            <div className="text-center py-12 text-sm text-muted-foreground">暂无匹配数据</div>
+            <div className="text-center py-12 text-base text-muted-foreground">暂无匹配数据</div>
           )}
         </CardContent>
       </Card>
@@ -248,28 +248,28 @@ export default function InventoryAlertPanel({ isDemo, shopUrl, accessToken, shop
             <CardContent className="p-4 space-y-3">
               <div className="flex items-start justify-between">
                 <div>
-                  <p className="text-sm font-semibold text-foreground">{v.productTitle}</p>
-                  <p className="text-[10px] text-muted-foreground">SKU: {v.sku} · 供应商: {v.vendor || "—"}</p>
+                  <p className="text-base font-semibold text-foreground">{v.productTitle}</p>
+                  <p className="text-xs text-muted-foreground">SKU: {v.sku} · 供应商: {v.vendor || "—"}</p>
                 </div>
-                <Button size="sm" variant="outline" onClick={() => markHidden(v.variantId)} className="h-7 text-[10px] gap-1"><CheckCircle2 className="h-3 w-3"/>标记已补货</Button>
+                <Button size="sm" variant="outline" onClick={() => markHidden(v.variantId)} className="h-7 text-xs gap-1"><CheckCircle2 className="h-3 w-3"/>标记已补货</Button>
               </div>
               <div className="flex items-center gap-4">
                 <MiniSalesChart data={demoDaily} />
-                <div className="text-[10px] space-y-0.5">
+                <div className="text-xs space-y-0.5">
                   <p>日均销量: <span className="tabular-nums font-semibold">{v.dailyAvg.toFixed(1)}</span></p>
                   <p>近 30 天: <span className="tabular-nums font-semibold">{v.sales30d}</span></p>
                 </div>
               </div>
               <div className="grid grid-cols-3 gap-2">
-                <div className="rounded bg-muted/10 px-2 py-1.5"><p className="text-[9px] text-muted-foreground">当前库存</p><p className="text-sm font-bold tabular-nums">{v.inventory}</p></div>
-                <div className="rounded bg-muted/10 px-2 py-1.5"><p className="text-[9px] text-muted-foreground">可售天数</p><p className={`text-sm font-bold tabular-nums ${(v.daysCovered ?? Infinity) < 7 ? "text-red-400" : ""}`}>{v.daysCovered !== null ? v.daysCovered.toFixed(1) : "∞"}</p></div>
+                <div className="rounded bg-muted/10 px-2 py-1.5"><p className="text-[9px] text-muted-foreground">当前库存</p><p className="text-base font-bold tabular-nums">{v.inventory}</p></div>
+                <div className="rounded bg-muted/10 px-2 py-1.5"><p className="text-[9px] text-muted-foreground">可售天数</p><p className={`text-base font-bold tabular-nums ${(v.daysCovered ?? Infinity) < 7 ? "text-red-400" : ""}`}>{v.daysCovered !== null ? v.daysCovered.toFixed(1) : "∞"}</p></div>
                 <div className="rounded bg-muted/10 px-2 py-1.5">
                   <p className="text-[9px] text-muted-foreground">在途库存</p>
-                  <Input type="number" value={inTransit[v.variantId] || 0} onChange={(e) => setInTransit((p) => ({ ...p, [v.variantId]: Number(e.target.value) || 0 }))} className="h-7 text-xs w-full" min={0} />
+                  <Input type="number" value={inTransit[v.variantId] || 0} onChange={(e) => setInTransit((p) => ({ ...p, [v.variantId]: Number(e.target.value) || 0 }))} className="h-7 text-sm w-full" min={0} />
                 </div>
               </div>
               {v.suggestReorder > 0 && (
-                <div className="flex items-center gap-2 px-3 py-2 rounded bg-amber-500/10 border border-amber-500/20 text-[10px]">
+                <div className="flex items-center gap-2 px-3 py-2 rounded bg-amber-500/10 border border-amber-500/20 text-xs">
                   <AlertTriangle className="h-3.5 w-3.5 text-amber-400 shrink-0" />
                   <span className="text-amber-300">建议补货量：<strong className="tabular-nums text-amber-400">{v.suggestReorder}</strong> 件（安全库存 {safetyDays} 天 × 日均 {v.dailyAvg.toFixed(1)} — 库存 {v.inventory}{inTransit[v.variantId] ? ` — 在途 ${inTransit[v.variantId]}` : ""}）</span>
                 </div>

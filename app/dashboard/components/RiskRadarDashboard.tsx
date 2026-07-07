@@ -138,7 +138,7 @@ function HealthGauge({ score, size = 160 }: { score: number; size?: number }) {
       </svg>
       <div className="absolute flex flex-col items-center">
         <span className="text-3xl font-bold tabular-nums" style={{ color }}>{normalized}</span>
-        <span className="text-[10px] font-medium text-muted-foreground">/ 100</span>
+        <span className="text-xs font-medium text-muted-foreground">/ 100</span>
       </div>
     </div>
   );
@@ -157,7 +157,7 @@ function StoreHealthCard({ profile }: { profile: StoreRiskProfile }) {
             <div className="h-2.5 w-2.5 rounded-full" style={{ backgroundColor: style.color }} />
             {profile.storeName}
           </CardTitle>
-          <Badge className={`text-[10px] px-2 py-0 ${style.bg} ${style.text} ${style.ring}`}>
+          <Badge className={`text-xs px-2 py-0 ${style.bg} ${style.text} ${style.ring}`}>
             {style.label}
           </Badge>
         </div>
@@ -182,7 +182,7 @@ function StoreHealthCard({ profile }: { profile: StoreRiskProfile }) {
 function MetricRow({ label, value, accent }: { label: string; value: string; accent: "emerald" | "amber" | "red" }) {
   const colors = { emerald: "text-emerald-400", amber: "text-amber-400", red: "text-red-400" };
   return (
-    <div className="flex items-center justify-between text-sm">
+    <div className="flex items-center justify-between text-base">
       <span className="text-muted-foreground">{label}</span>
       <span className={`font-semibold tabular-nums ${colors[accent]}`}>{value}</span>
     </div>
@@ -224,23 +224,23 @@ function DisputesTable({ disputes }: { disputes: DisputeEntry[] }) {
             <TableBody>
               {disputes.map((d) => (
                 <TableRow key={d.id} className="group transition-colors hover:bg-muted/20">
-                  <TableCell className="font-mono text-xs text-muted-foreground">#{d.orderId}</TableCell>
+                  <TableCell className="font-mono text-sm text-muted-foreground">#{d.orderId}</TableCell>
                   <TableCell className="text-right tabular-nums font-medium text-red-400">
                     {d.currency === "EUR" ? "€" : "$"}{d.amount.toFixed(2)}
                   </TableCell>
                   <TableCell>
-                    <Badge variant="outline" className="text-[10px] px-1.5 py-0 border-border/40 text-muted-foreground">
+                    <Badge variant="outline" className="text-xs px-1.5 py-0 border-border/40 text-muted-foreground">
                       {d.gateway}
                     </Badge>
                   </TableCell>
-                  <TableCell className="text-xs text-muted-foreground max-w-[160px] truncate">{d.reason}</TableCell>
+                  <TableCell className="text-sm text-muted-foreground max-w-[160px] truncate">{d.reason}</TableCell>
                   <TableCell>
-                    <Badge variant="outline" className={`text-[10px] px-1.5 py-0 ${statusMap[d.status]?.cls ?? ""}`}>
+                    <Badge variant="outline" className={`text-xs px-1.5 py-0 ${statusMap[d.status]?.cls ?? ""}`}>
                       {statusMap[d.status]?.label ?? d.status}
                     </Badge>
                   </TableCell>
                   <TableCell className="text-right tabular-nums">
-                    <span className={`text-sm font-medium ${d.daysOpen > 14 ? "text-red-400" : d.daysOpen > 7 ? "text-amber-400" : "text-muted-foreground"}`}>
+                    <span className={`text-base font-medium ${d.daysOpen > 14 ? "text-red-400" : d.daysOpen > 7 ? "text-amber-400" : "text-muted-foreground"}`}>
                       {d.daysOpen} 天
                       {d.daysOpen > 14 && <AlertCircle className="ml-1 inline h-3 w-3 text-red-400" />}
                     </span>
@@ -250,10 +250,10 @@ function DisputesTable({ disputes }: { disputes: DisputeEntry[] }) {
             </TableBody>
           </Table>
         ) : (
-          <div className="flex flex-col items-center gap-2 py-8 text-sm text-muted-foreground">
-            <CheckCircle2 className="h-8 w-8 text-emerald-400/50" />
+          <div className="flex flex-col items-center gap-2 py-8 text-base text-muted-foreground">
+            <CheckCircle2 className="h-9 w-8 text-emerald-400/50" />
             <p>暂无未决争议</p>
-            <p className="text-xs text-muted-foreground/60">店铺风控状态健康</p>
+            <p className="text-sm text-muted-foreground/60">店铺风控状态健康</p>
           </div>
         )}
       </CardContent>
@@ -280,15 +280,15 @@ function ReviewAlerts({ reviews }: { reviews: MerchantReview[] }) {
             r.severity === "high" ? "text-red-400" : r.severity === "medium" ? "text-amber-400" : "text-sky-400"
           }`} />
           <div className="flex-1">
-            <p className={`text-sm font-semibold ${
+            <p className={`text-base font-semibold ${
               r.severity === "high" ? "text-red-300" : r.severity === "medium" ? "text-amber-300" : "text-sky-300"
             }`}>{r.title}</p>
-            <p className="text-xs text-muted-foreground mt-0.5">{r.description}</p>
+            <p className="text-sm text-muted-foreground mt-0.5">{r.description}</p>
             <div className="flex items-center gap-2 mt-2">
-              <Badge variant="outline" className={`text-[10px] px-1.5 py-0 ${r.status === "pending" ? "border-red-500/30 text-red-400" : "border-emerald-500/30 text-emerald-400"}`}>
+              <Badge variant="outline" className={`text-xs px-1.5 py-0 ${r.status === "pending" ? "border-red-500/30 text-red-400" : "border-emerald-500/30 text-emerald-400"}`}>
                 {r.status === "pending" ? "未处理" : "已解决"}
               </Badge>
-              <span className="text-[10px] text-muted-foreground">开启于 {r.openedAt}</span>
+              <span className="text-xs text-muted-foreground">开启于 {r.openedAt}</span>
             </div>
           </div>
         </div>
@@ -305,7 +305,7 @@ function RiskTimelineBar({ disputeRate }: { disputeRate: number }) {
 
   return (
     <div className="w-full">
-      <div className="flex items-center justify-between text-[10px] font-medium text-muted-foreground mb-1.5">
+      <div className="flex items-center justify-between text-xs font-medium text-muted-foreground mb-1.5">
         <span>0%</span>
         <span className="text-emerald-400">1.0%</span>
         <span className="text-amber-400">1.5%</span>
@@ -323,7 +323,7 @@ function RiskTimelineBar({ disputeRate }: { disputeRate: number }) {
           style={{ left: leftPct + "%" }}
         >
           <div className="h-4 w-1 rounded-full bg-foreground/80" />
-          <span className="text-[10px] font-bold tabular-nums mt-0.5" style={{ color: disputeRate >= 1.5 ? "#ef4444" : disputeRate >= 1.0 ? "#f59e0b" : "#10b981" }}>
+          <span className="text-xs font-bold tabular-nums mt-0.5" style={{ color: disputeRate >= 1.5 ? "#ef4444" : disputeRate >= 1.0 ? "#f59e0b" : "#10b981" }}>
             {disputeRate.toFixed(2)}%
           </span>
         </div>
@@ -484,9 +484,9 @@ export default function RiskRadarDashboard({
           <Shield className="h-6 w-6" style={{ color: worstStyle.color }} />
           风控雷达与店铺健康中心
         </h2>
-        <p className="mt-1 text-sm text-muted-foreground">
+        <p className="mt-1 text-base text-muted-foreground">
           {isDemo ? "多店风控推演 (演示模式)" : shopName} · 滚动纠纷率 · Merchant Review · 拒付追踪
-          {isDemo && <span className="ml-2 text-xs text-amber-400">(包含 MinimalHome 高危风控演示数据)</span>}
+          {isDemo && <span className="ml-2 text-sm text-amber-400">(包含 MinimalHome 高危风控演示数据)</span>}
         </p>
       </div>
 
@@ -497,10 +497,10 @@ export default function RiskRadarDashboard({
             ? <Ban className="mt-0.5 h-5 w-5 shrink-0 text-red-400" />
             : <AlertTriangle className="mt-0.5 h-5 w-5 shrink-0 text-amber-400" />}
           <div>
-            <p className="text-sm font-semibold" style={{ color: worstStyle.color }}>
+            <p className="text-base font-semibold" style={{ color: worstStyle.color }}>
               {worstRisk === "critical" ? "🔴 全局风控危机" : "🟡 部分店铺风控预警"}
             </p>
-            <p className="text-xs mt-1" style={{ color: worstStyle.color, opacity: 0.7 }}>
+            <p className="text-sm mt-1" style={{ color: worstStyle.color, opacity: 0.7 }}>
               {worstRisk === "critical"
                 ? "检测到至少一家店铺拒付率超标或存在未处理的 Merchant Review。请立即介入处理，避免冻结支付或关停风险。"
                 : "部分指标接近安全阈值，建议提前优化物流时效与售后响应。"}
@@ -518,7 +518,7 @@ export default function RiskRadarDashboard({
           <Card className="col-span-full border-border/40 bg-card/60 shadow-lg backdrop-blur-lg">
             <CardContent className="flex flex-col items-center gap-3 py-12">
               <Gauge className="h-12 w-12 text-muted-foreground/30" />
-              <p className="text-sm text-muted-foreground">正在加载风控数据...</p>
+              <p className="text-base text-muted-foreground">正在加载风控数据...</p>
             </CardContent>
           </Card>
         )}
@@ -538,8 +538,8 @@ export default function RiskRadarDashboard({
             {profiles.map((p) => (
               <div key={p.storeId} className="space-y-1">
                 <div className="flex items-center justify-between">
-                  <span className="text-sm font-medium text-foreground">{p.storeName}</span>
-                  <span className="text-xs text-muted-foreground">
+                  <span className="text-base font-medium text-foreground">{p.storeName}</span>
+                  <span className="text-sm text-muted-foreground">
                     {p.disputedOrders30d} 争议 / {p.totalOrders30d} 订单
                   </span>
                 </div>
@@ -598,7 +598,7 @@ export default function RiskRadarDashboard({
                       <TableCell className="text-right tabular-nums">{p.refundRate.toFixed(2)}%</TableCell>
                       <TableCell className="text-right tabular-nums">{p.avgFulfillmentHours}h</TableCell>
                       <TableCell>
-                        <Badge className={`text-[10px] px-2 py-0 ${s.bg} ${s.text}`}>{s.label}</Badge>
+                        <Badge className={`text-xs px-2 py-0 ${s.bg} ${s.text}`}>{s.label}</Badge>
                       </TableCell>
                     </TableRow>
                   );

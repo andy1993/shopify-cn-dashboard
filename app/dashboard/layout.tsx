@@ -38,12 +38,19 @@ import {
   PieChart,
   Users2,
   Link,
+  Braces,
+  Bot,
+  Code2,
+  Wand,
+  GitCompare,
+  Sparkles,
+  Compass,
 } from "lucide-react";
 import { cn } from "@/lib/utils";
 
 // ─── Context ───────────────────────────────────────────
 
-type MenuKey = "overview" | "ai" | "finance" | "risk" | "trend" | "aggregator" | "gateway" | "funnel" | "ad" | "product-control" | "batch-op" | "bulk-edit" | "scheduled-tasks" | "rule-engine" | "orders" | "customers" | "fulfillment" | "collections" | "navigation" | "content-pages" | "metafields" | "operation-history" | "inventory-alert" | "markets" | "multi-currency" | "multi-location" | "translations" | "shipping-rates" | "tax-overview" | "product-analytics" | "category-analytics" | "customer-segmentation" | "sales-forecast" | "product-affinity";
+export type MenuKey = "overview" | "ai" | "finance" | "risk" | "trend" | "aggregator" | "gateway" | "funnel" | "ad" | "product-control" | "batch-op" | "bulk-edit" | "scheduled-tasks" | "rule-engine" | "orders" | "customers" | "fulfillment" | "collections" | "navigation" | "content-pages" | "metafields" | "operation-history" | "inventory-alert" | "markets" | "multi-currency" | "multi-location" | "translations" | "shipping-rates" | "tax-overview" | "product-analytics" | "category-analytics" | "customer-segmentation" | "sales-forecast" | "product-affinity" | "schema-audit" | "schema-generator" | "ai-indexability" | "competitor-geo" | "ai-simulation" | "geo-wizard";
 
 interface DashboardContextValue {
   activeMenu: MenuKey;
@@ -113,6 +120,19 @@ const NAV_CATEGORIES: NavCategory[] = [
     ],
   },
   {
+    id: "geo-center",
+    label: "🌐 GEO 优化",
+    icon: Braces,
+    items: [
+      { id: "geo-wizard", label: "GEO 优化向导", icon: Compass },
+      { id: "ai-indexability", label: "AI 可索引性检查", icon: Bot },
+      { id: "schema-audit", label: "Schema 检测", icon: Code2 },
+      { id: "schema-generator", label: "Schema 自动生成", icon: Wand },
+      { id: "competitor-geo", label: "竞品 GEO 对标", icon: GitCompare },
+      { id: "ai-simulation", label: "AI 引用模拟器", icon: Sparkles },
+    ],
+  },
+  {
     id: "finance-center",
     label: "💰 财务对账",
     icon: DollarSign,
@@ -168,15 +188,23 @@ export default function DashboardLayout({
   const router = useRouter();
   const [activeMenu, setActiveMenu] = useState<MenuKey>("overview");
   const [expandedCategories, setExpandedCategories] = useState<Set<string>>(
-    new Set(["data-center", "order-customer", "product-content", "finance-center", "markets-center", "risk-center", "intelligence-center"]),
+    new Set(["data-center", "order-customer", "product-content", "geo-center", "finance-center", "markets-center", "risk-center", "intelligence-center"]),
   );
   const [soonMsg, setSoonMsg] = useState<string | null>(null);
 
   const toggleCategory = (id: string) => {
     setExpandedCategories((prev) => {
       const next = new Set(prev);
-      if (next.has(id)) next.delete(id);
-      else next.add(id);
+      const wasExpanded = next.has(id);
+      if (wasExpanded) next.delete(id);
+      else {
+        next.add(id);
+        // GEO 分类默认入口：展开时若当前不在该分类内，跳转到向导面板
+        if (id === "geo-center" && !NAV_CATEGORIES.find((c) => c.id === "geo-center")?.items.some((i) => i.id === activeMenu)) {
+          const first = NAV_CATEGORIES.find((c) => c.id === "geo-center")?.items[0];
+          if (first) setActiveMenu(first.id as MenuKey);
+        }
+      }
       return next;
     });
   };
@@ -197,15 +225,15 @@ export default function DashboardLayout({
         <aside className="fixed inset-y-0 left-0 z-40 flex w-64 flex-col border-r border-zinc-800 bg-zinc-950">
           {/* Logo */}
           <div className="flex h-16 shrink-0 items-center gap-2.5 border-b border-zinc-800 px-5">
-            <div className="flex h-8 w-8 items-center justify-center rounded-lg bg-emerald-500/15 ring-1 ring-emerald-500/20">
-              <span className="text-sm">🚀</span>
+            <div className="flex h-9 w-8 items-center justify-center rounded-lg bg-emerald-500/15 ring-1 ring-emerald-500/20">
+              <span className="text-base">🚀</span>
             </div>
             <div>
-              <p className="text-sm font-semibold tracking-tight text-zinc-100">
+              <p className="text-base font-semibold tracking-tight text-zinc-100">
                 Shopify CN Pro
               </p>
-              <p className="text-[10px] font-medium text-zinc-500">
-                v0.2.4.0-beta · MVP 2.4
+              <p className="text-xs font-medium text-zinc-500">
+                v0.3.0.1 · MVP 3.0
               </p>
             </div>
           </div>
@@ -216,7 +244,7 @@ export default function DashboardLayout({
             <button
               onClick={() => handleMenuClick("overview")}
               className={cn(
-                "flex w-full items-center gap-3 rounded-lg px-3 py-2.5 text-sm font-medium transition-all",
+                "flex w-full items-center gap-3 rounded-lg px-3 py-2.5 text-base font-medium transition-all",
                 activeMenu === "overview"
                   ? "bg-emerald-500/10 text-emerald-400"
                   : "text-zinc-500 hover:bg-zinc-800/60 hover:text-zinc-300",
@@ -251,7 +279,7 @@ export default function DashboardLayout({
                     <button
                       onClick={() => toggleCategory(cat.id)}
                       className={cn(
-                        "flex w-full items-center gap-2 rounded-md px-2 py-1.5 text-left text-xs font-medium transition-colors",
+                        "flex w-full items-center gap-2 rounded-md px-2 py-1.5 text-left text-sm font-medium transition-colors",
                         hasActiveChild
                           ? "text-zinc-300"
                           : "text-zinc-500 hover:text-zinc-400",
@@ -278,7 +306,7 @@ export default function DashboardLayout({
                               <button
                                 onClick={() => handleMenuClick(item.id, item.soon)}
                                 className={cn(
-                                  "flex w-full items-center gap-2.5 rounded-lg px-3 py-2 text-sm font-medium transition-all",
+                                  "flex w-full items-center gap-2.5 rounded-lg px-3 py-2 text-base font-medium transition-all",
                                   item.soon
                                     ? "text-zinc-600 hover:bg-zinc-800/40 hover:text-zinc-400"
                                     : isActive
@@ -300,7 +328,7 @@ export default function DashboardLayout({
                                   {item.label}
                                 </span>
                                 {item.soon && (
-                                  <span className="text-[10px] font-semibold text-amber-500/60">
+                                  <span className="text-xs font-semibold text-amber-500/60">
                                     即将开放
                                   </span>
                                 )}
@@ -329,7 +357,7 @@ export default function DashboardLayout({
             )}
             <button
               onClick={() => router.push("/config")}
-              className="flex w-full items-center gap-3 rounded-lg px-3 py-2.5 text-sm font-medium text-zinc-500 transition-all hover:bg-zinc-800/60 hover:text-zinc-300"
+              className="flex w-full items-center gap-3 rounded-lg px-3 py-2.5 text-base font-medium text-zinc-500 transition-all hover:bg-zinc-800/60 hover:text-zinc-300"
             >
               <Settings className="h-4 w-4 shrink-0 text-zinc-600" />
               <span>重新绑定店铺</span>

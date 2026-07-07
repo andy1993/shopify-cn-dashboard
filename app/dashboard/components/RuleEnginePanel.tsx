@@ -213,17 +213,17 @@ export default function RuleEnginePanel({ isDemo, shopUrl, accessToken, shopName
   /* ── Render ────────────────────────────────────────── */
   return (
     <div className="space-y-4">
-      {toast && <div className="fixed bottom-6 left-1/2 -translate-x-1/2 z-50 rounded-lg bg-emerald-600/90 px-4 py-2 text-sm font-medium text-white shadow-2xl">{toast}</div>}
+      {toast && <div className="fixed bottom-6 left-1/2 -translate-x-1/2 z-50 rounded-lg bg-emerald-600/90 px-4 py-2 text-base font-medium text-white shadow-2xl">{toast}</div>}
 
       <div className="flex items-center justify-between">
         <div>
           <h2 className="flex items-center gap-2 text-xl font-bold text-foreground"><Workflow className="h-6 w-6 text-violet-400" />规则引擎</h2>
-          <p className="mt-1 text-sm text-muted-foreground">{shopName} · {rules.length} 条规则 · {logs.length} 条日志{isDemo && <span className="ml-2 text-xs text-amber-400">(演示)</span>}</p>
+          <p className="mt-1 text-base text-muted-foreground">{shopName} · {rules.length} 条规则 · {logs.length} 条日志{isDemo && <span className="ml-2 text-sm text-amber-400">(演示)</span>}</p>
         </div>
-        <Button size="sm" onClick={openCreate} className="h-8 gap-1 bg-violet-600 hover:bg-violet-500 text-white text-xs"><Plus className="h-3 w-3"/>创建规则</Button>
+        <Button size="sm" onClick={openCreate} className="h-9 gap-1 bg-violet-600 hover:bg-violet-500 text-white text-sm"><Plus className="h-3 w-3"/>创建规则</Button>
       </div>
 
-      {rules.length === 0 && <div className="text-center py-16"><Workflow className="h-12 w-12 mx-auto mb-3 text-muted-foreground/25"/><p className="text-sm text-muted-foreground">暂无规则</p></div>}
+      {rules.length === 0 && <div className="text-center py-16"><Workflow className="h-12 w-12 mx-auto mb-3 text-muted-foreground/25"/><p className="text-base text-muted-foreground">暂无规则</p></div>}
 
       <div className="space-y-2">
         {[...rules].sort((a, b) => a.priority - b.priority).map((rule, idx) => (
@@ -237,12 +237,12 @@ export default function RuleEnginePanel({ isDemo, shopUrl, accessToken, shopName
                 </button>
                 <div className="flex-1 min-w-0">
                   <div className="flex items-center gap-2">
-                    <p className="text-sm font-semibold text-foreground truncate">{rule.name}</p>
+                    <p className="text-base font-semibold text-foreground truncate">{rule.name}</p>
                     <Badge className="text-[9px] px-1.5 py-0 bg-violet-500/15 text-violet-400">{TRIGGER_LABELS[rule.trigger]}</Badge>
                     <Badge className="text-[9px] px-1.5 py-0 bg-muted/20 text-muted-foreground">{RULE_TYPE_MAP[rule.trigger] === "order" ? "订单规则" : RULE_TYPE_MAP[rule.trigger] === "inventory" ? "库存规则" : RULE_TYPE_MAP[rule.trigger] === "customer" ? "客户规则" : "退款规则"}</Badge>
                   </div>
-                  <p className="text-[10px] text-muted-foreground mt-0.5">{rule.description || "—"}</p>
-                  <div className="flex items-center gap-3 mt-1 text-[10px] text-muted-foreground">
+                  <p className="text-xs text-muted-foreground mt-0.5">{rule.description || "—"}</p>
+                  <div className="flex items-center gap-3 mt-1 text-xs text-muted-foreground">
                     <span>⬆ {rule.lastTriggered ? new Date(rule.lastTriggered).toLocaleString("zh-CN") : "从未"}</span>
                     <span>触发 {rule.hitCount} 次</span>
                   </div>
@@ -258,8 +258,8 @@ export default function RuleEnginePanel({ isDemo, shopUrl, accessToken, shopName
               {/* Expanded: conditions + actions summary */}
               {expandedId === rule.id && (
                 <div className="mt-2 pt-2 border-t border-border/20 space-y-1.5">
-                  <p className="text-[10px] text-muted-foreground"><span className="font-semibold">条件 ({rule.conditionMode === "and" ? "AND" : "OR"}):</span> {rule.conditions.length > 0 ? rule.conditions.map((c) => `${FIELDS.find((f) => f.value === c.field)?.label || c.field} ${OPERATORS[c.operator] || c.operator} ${c.value}`).join(", ") : "无条件(始终匹配)"}</p>
-                  <p className="text-[10px] text-muted-foreground"><span className="font-semibold">动作:</span> {rule.actions.length > 0 ? rule.actions.map((a) => ACTION_TYPES.find((at) => at.value === a.type)?.label || a.type).join(" → ") : "无动作"}</p>
+                  <p className="text-xs text-muted-foreground"><span className="font-semibold">条件 ({rule.conditionMode === "and" ? "AND" : "OR"}):</span> {rule.conditions.length > 0 ? rule.conditions.map((c) => `${FIELDS.find((f) => f.value === c.field)?.label || c.field} ${OPERATORS[c.operator] || c.operator} ${c.value}`).join(", ") : "无条件(始终匹配)"}</p>
+                  <p className="text-xs text-muted-foreground"><span className="font-semibold">动作:</span> {rule.actions.length > 0 ? rule.actions.map((a) => ACTION_TYPES.find((at) => at.value === a.type)?.label || a.type).join(" → ") : "无动作"}</p>
                 </div>
               )}
             </CardContent>
@@ -273,28 +273,28 @@ export default function RuleEnginePanel({ isDemo, shopUrl, accessToken, shopName
           <div className="fixed inset-0 z-40 bg-black/50" onClick={() => setModalRule(null)}/>
           <div className="fixed inset-0 z-50 flex items-center justify-center p-4">
             <div className="w-full max-w-xl max-h-[85vh] bg-card border border-border/40 rounded-xl shadow-2xl flex flex-col">
-              <div className="flex items-center justify-between px-5 py-3 border-b border-border/20 shrink-0"><h3 className="text-sm font-semibold">{modalRule.id ? "编辑规则" : "创建规则"}</h3><Button size="sm" variant="ghost" onClick={() => setModalRule(null)}><X className="h-4 w-4"/></Button></div>
-              <div className="flex gap-1 px-5 py-2 border-b border-border/20 shrink-0">{[{l:"触发器"}, {l:"条件"}, {l:"动作"}].map((s, i) => (<button key={i} onClick={() => setModalStep(i)} className={`px-3 py-1 rounded text-[10px] font-medium ${modalStep === i ? "bg-violet-500/15 text-violet-400" : "text-muted-foreground"}`}>{i+1}. {s.l}</button>))}</div>
+              <div className="flex items-center justify-between px-5 py-3 border-b border-border/20 shrink-0"><h3 className="text-base font-semibold">{modalRule.id ? "编辑规则" : "创建规则"}</h3><Button size="sm" variant="ghost" onClick={() => setModalRule(null)}><X className="h-4 w-4"/></Button></div>
+              <div className="flex gap-1 px-5 py-2 border-b border-border/20 shrink-0">{[{l:"触发器"}, {l:"条件"}, {l:"动作"}].map((s, i) => (<button key={i} onClick={() => setModalStep(i)} className={`px-3 py-1 rounded text-xs font-medium ${modalStep === i ? "bg-violet-500/15 text-violet-400" : "text-muted-foreground"}`}>{i+1}. {s.l}</button>))}</div>
               <div className="flex-1 overflow-y-auto p-5 space-y-3">
 
                 {/* Step 0: Trigger */}
                 {modalStep === 0 && (<>
-                  <div><label className="text-[10px] font-semibold text-muted-foreground mb-0.5 block">规则名称 *</label><Input value={modalRule.name} onChange={(e) => setModalRule({ ...modalRule, name: e.target.value })} autoFocus className="h-9 text-sm" /></div>
-                  <div><label className="text-[10px] font-semibold text-muted-foreground mb-0.5 block">描述</label><Input value={modalRule.description} onChange={(e) => setModalRule({ ...modalRule, description: e.target.value })} className="h-9 text-sm" /></div>
-                  <div><label className="text-[10px] font-semibold text-muted-foreground mb-0.5 block">触发器</label>
-                    <select value={modalRule.trigger} onChange={(e) => setModalRule({ ...modalRule, trigger: e.target.value as TriggerType })} className="h-9 w-full rounded border border-border/40 bg-background px-3 text-sm text-foreground">
+                  <div><label className="text-sm font-semibold text-muted-foreground mb-0.5 block">规则名称 *</label><Input value={modalRule.name} onChange={(e) => setModalRule({ ...modalRule, name: e.target.value })} autoFocus className="h-9 text-sm" /></div>
+                  <div><label className="text-sm font-semibold text-muted-foreground mb-0.5 block">描述</label><Input value={modalRule.description} onChange={(e) => setModalRule({ ...modalRule, description: e.target.value })} className="h-9 text-sm" /></div>
+                  <div><label className="text-xs font-semibold text-muted-foreground mb-0.5 block">触发器</label>
+                    <select value={modalRule.trigger} onChange={(e) => setModalRule({ ...modalRule, trigger: e.target.value as TriggerType })} className="h-9 w-full rounded border border-border/40 bg-background px-3 text-base text-foreground">
                       {(Object.entries(TRIGGER_LABELS) as [TriggerType, string][]).map(([k, v]) => <option key={k} value={k}>{v}</option>)}
                     </select>
                   </div>
-                  <label className="flex items-center gap-2 text-xs cursor-pointer"><input type="checkbox" checked={modalRule.enabled} onChange={() => setModalRule({ ...modalRule, enabled: !modalRule.enabled })} className="accent-violet-500"/>启用规则</label>
+                  <label className="flex items-center gap-2 text-sm cursor-pointer"><input type="checkbox" checked={modalRule.enabled} onChange={() => setModalRule({ ...modalRule, enabled: !modalRule.enabled })} className="accent-violet-500"/>启用规则</label>
                 </>)}
 
                 {/* Step 1: Conditions */}
                 {modalStep === 1 && (<>
                   <div className="flex items-center gap-2">
-                    <span className="text-[10px] text-muted-foreground">模式:</span>
-                    <button onClick={() => setModalRule({ ...modalRule, conditionMode: "and" })} className={`px-2 py-0.5 text-[10px] rounded ${modalRule.conditionMode === "and" ? "bg-violet-500/15 text-violet-400" : "text-muted-foreground"}`}>AND (全部满足)</button>
-                    <button onClick={() => setModalRule({ ...modalRule, conditionMode: "or" })} className={`px-2 py-0.5 text-[10px] rounded ${modalRule.conditionMode === "or" ? "bg-violet-500/15 text-violet-400" : "text-muted-foreground"}`}>OR (任一满足)</button>
+                    <span className="text-xs text-muted-foreground">模式:</span>
+                    <button onClick={() => setModalRule({ ...modalRule, conditionMode: "and" })} className={`px-2 py-0.5 text-xs rounded ${modalRule.conditionMode === "and" ? "bg-violet-500/15 text-violet-400" : "text-muted-foreground"}`}>AND (全部满足)</button>
+                    <button onClick={() => setModalRule({ ...modalRule, conditionMode: "or" })} className={`px-2 py-0.5 text-xs rounded ${modalRule.conditionMode === "or" ? "bg-violet-500/15 text-violet-400" : "text-muted-foreground"}`}>OR (任一满足)</button>
                   </div>
                   <div className="rounded-lg border border-border/20 bg-muted/10 p-3 space-y-2">
                     {modalRule.conditions.map((c) => {
@@ -303,18 +303,18 @@ export default function RuleEnginePanel({ isDemo, shopUrl, accessToken, shopName
                       const ops = field?.operators || ["equals"];
                       return (
                         <div key={c.id} className="flex items-center gap-1.5">
-                          <select value={c.field} onChange={(e) => { const newField = e.target.value; const newOps = fields.find((f) => f.value === newField)?.operators[0] || "equals"; setModalRule({ ...modalRule, conditions: modalRule.conditions.map((x) => x.id === c.id ? { ...x, field: newField, operator: newOps } : x) }); }} className="h-7 rounded border border-border/30 bg-background text-[10px] text-foreground px-1.5 flex-1">
+                          <select value={c.field} onChange={(e) => { const newField = e.target.value; const newOps = fields.find((f) => f.value === newField)?.operators[0] || "equals"; setModalRule({ ...modalRule, conditions: modalRule.conditions.map((x) => x.id === c.id ? { ...x, field: newField, operator: newOps } : x) }); }} className="h-7 rounded border border-border/30 bg-background text-xs text-foreground px-1.5 flex-1">
                             {fields.map((f) => <option key={f.value} value={f.value}>{f.label}</option>)}
                           </select>
-                          <select value={c.operator} onChange={(e) => setModalRule({ ...modalRule, conditions: modalRule.conditions.map((x) => x.id === c.id ? { ...x, operator: e.target.value } : x) })} className="h-7 rounded border border-border/30 bg-background text-[10px] text-foreground px-1 w-20">
+                          <select value={c.operator} onChange={(e) => setModalRule({ ...modalRule, conditions: modalRule.conditions.map((x) => x.id === c.id ? { ...x, operator: e.target.value } : x) })} className="h-7 rounded border border-border/30 bg-background text-xs text-foreground px-1 w-20">
                             {ops.map((op) => <option key={op} value={op}>{OPERATORS[op] || op}</option>)}
                           </select>
-                          <Input value={c.value} onChange={(e) => setModalRule({ ...modalRule, conditions: modalRule.conditions.map((x) => x.id === c.id ? { ...x, value: e.target.value } : x) })} className="h-7 text-[10px] w-24" />
+                          <Input value={c.value} onChange={(e) => setModalRule({ ...modalRule, conditions: modalRule.conditions.map((x) => x.id === c.id ? { ...x, value: e.target.value } : x) })} className="h-7 text-sm w-24" />
                           <button onClick={() => setModalRule({ ...modalRule, conditions: modalRule.conditions.filter((x) => x.id !== c.id) })} className="text-muted-foreground hover:text-red-400"><X className="h-3 w-3" /></button>
                         </div>
                       );
                     })}
-                    <Button size="sm" variant="ghost" onClick={() => setModalRule({ ...modalRule, conditions: [...modalRule.conditions, { id: genId(), field: "total_price", operator: "gt", value: "" }] })} className="h-7 gap-1 text-[10px]"><Plus className="h-3 w-3"/>添加条件</Button>
+                    <Button size="sm" variant="ghost" onClick={() => setModalRule({ ...modalRule, conditions: [...modalRule.conditions, { id: genId(), field: "total_price", operator: "gt", value: "" }] })} className="h-7 gap-1 text-xs"><Plus className="h-3 w-3"/>添加条件</Button>
                   </div>
                 </>)}
 
@@ -324,25 +324,25 @@ export default function RuleEnginePanel({ isDemo, shopUrl, accessToken, shopName
                     {modalRule.actions.map((a) => (
                       <div key={a.id} className="rounded-lg border border-border/20 bg-muted/10 p-3 space-y-2">
                         <div className="flex items-center justify-between">
-                          <select value={a.type} onChange={(e) => setModalRule({ ...modalRule, actions: modalRule.actions.map((x) => x.id === a.id ? { ...x, type: e.target.value as RuleAction["type"], config: {} } : x) })} className="h-7 rounded border border-border/30 bg-background text-[10px] text-foreground px-1.5 flex-1">
+                          <select value={a.type} onChange={(e) => setModalRule({ ...modalRule, actions: modalRule.actions.map((x) => x.id === a.id ? { ...x, type: e.target.value as RuleAction["type"], config: {} } : x) })} className="h-7 rounded border border-border/30 bg-background text-xs text-foreground px-1.5 flex-1">
                             {ACTION_TYPES.map((at) => <option key={at.value} value={at.value}>{at.label}</option>)}
                           </select>
                           <button onClick={() => setModalRule({ ...modalRule, actions: modalRule.actions.filter((x) => x.id !== a.id) })} className="text-muted-foreground hover:text-red-400 ml-2"><X className="h-3 w-3"/></button>
                         </div>
-                        {a.type === "desktopNotify" && <Input value={a.config.message || ""} onChange={(e) => setModalRule({ ...modalRule, actions: modalRule.actions.map((x) => x.id === a.id ? { ...x, config: { message: e.target.value } } : x) })} placeholder="通知文案，支持 {order_id} {customer_name} {amount}" className="h-8 text-xs"/>}
-                        {(a.type === "addOrderTag" || a.type === "addCustomerTag") && <Input value={a.config.tag || ""} onChange={(e) => setModalRule({ ...modalRule, actions: modalRule.actions.map((x) => x.id === a.id ? { ...x, config: { tag: e.target.value } } : x) })} placeholder="标签名" className="h-8 text-xs"/>}
-                        {a.type === "addOrderNote" && <Input value={a.config.note || ""} onChange={(e) => setModalRule({ ...modalRule, actions: modalRule.actions.map((x) => x.id === a.id ? { ...x, config: { note: e.target.value } } : x) })} placeholder="备注内容" className="h-8 text-xs"/>}
+                        {a.type === "desktopNotify" && <Input value={a.config.message || ""} onChange={(e) => setModalRule({ ...modalRule, actions: modalRule.actions.map((x) => x.id === a.id ? { ...x, config: { message: e.target.value } } : x) })} placeholder="通知文案，支持 {order_id} {customer_name} {amount}" className="h-9 text-sm"/>}
+                        {(a.type === "addOrderTag" || a.type === "addCustomerTag") && <Input value={a.config.tag || ""} onChange={(e) => setModalRule({ ...modalRule, actions: modalRule.actions.map((x) => x.id === a.id ? { ...x, config: { tag: e.target.value } } : x) })} placeholder="标签名" className="h-9 text-sm"/>}
+                        {a.type === "addOrderNote" && <Input value={a.config.note || ""} onChange={(e) => setModalRule({ ...modalRule, actions: modalRule.actions.map((x) => x.id === a.id ? { ...x, config: { note: e.target.value } } : x) })} placeholder="备注内容" className="h-9 text-sm"/>}
                       </div>
                     ))}
-                    <Button size="sm" variant="ghost" onClick={() => setModalRule({ ...modalRule, actions: [...modalRule.actions, { id: genId(), type: "addCustomerTag", config: {} }] })} className="h-7 gap-1 text-[10px]"><Plus className="h-3 w-3"/>添加动作</Button>
+                    <Button size="sm" variant="ghost" onClick={() => setModalRule({ ...modalRule, actions: [...modalRule.actions, { id: genId(), type: "addCustomerTag", config: {} }] })} className="h-7 gap-1 text-xs"><Plus className="h-3 w-3"/>添加动作</Button>
                   </div>
                 </>)}
               </div>
               <div className="flex items-center justify-between px-5 py-3 border-t border-border/20 shrink-0">
                 <div className="flex gap-1">{[0,1,2].map((s) => <span key={s} className={`h-1.5 w-6 rounded ${modalStep >= s ? "bg-violet-500" : "bg-muted/20"}`}/>)}</div>
                 <div className="flex gap-2">
-                  {modalStep > 0 && <Button variant="outline" onClick={() => setModalStep((s) => s - 1)} className="h-9 text-xs">上一步</Button>}
-                  {modalStep < 2 ? <Button onClick={() => setModalStep((s) => s + 1)} className="h-9 text-xs bg-violet-600 text-white">下一步</Button> : <Button onClick={saveModal} disabled={!modalRule.name.trim()} className="h-9 gap-1 bg-emerald-600 text-white text-xs"><Save className="h-3 w-3"/>保存规则</Button>}
+                  {modalStep > 0 && <Button variant="outline" onClick={() => setModalStep((s) => s - 1)} className="h-9 text-sm">上一步</Button>}
+                  {modalStep < 2 ? <Button onClick={() => setModalStep((s) => s + 1)} className="h-9 text-sm bg-violet-600 text-white">下一步</Button> : <Button onClick={saveModal} disabled={!modalRule.name.trim()} className="h-9 gap-1 bg-emerald-600 text-white text-sm"><Save className="h-3 w-3"/>保存规则</Button>}
                 </div>
               </div>
             </div>
@@ -352,11 +352,11 @@ export default function RuleEnginePanel({ isDemo, shopUrl, accessToken, shopName
 
       {/* Recent logs */}
       <details className="group">
-        <summary className="text-[10px] font-semibold uppercase tracking-wider text-muted-foreground cursor-pointer flex items-center gap-1">执行日志 ({logs.length}) <ChevronDown className="h-3 w-3 group-open:rotate-180"/></summary>
+        <summary className="text-xs font-semibold uppercase tracking-wider text-muted-foreground cursor-pointer flex items-center gap-1">执行日志 ({logs.length}) <ChevronDown className="h-3 w-3 group-open:rotate-180"/></summary>
         <div className="space-y-0.5 mt-2 max-h-48 overflow-y-auto">
-          {logs.length === 0 ? <p className="text-[10px] text-muted-foreground/50">暂无执行记录</p> :
+          {logs.length === 0 ? <p className="text-xs text-muted-foreground/50">暂无执行记录</p> :
             logs.map((l) => (
-              <div key={l.id} className="flex items-center gap-2 text-[10px] py-0.5">
+              <div key={l.id} className="flex items-center gap-2 text-xs py-0.5">
                 <span>{l.success ? "✅" : "❌"}</span>
                 <span className="text-muted-foreground tabular-nums">{new Date(l.timestamp).toLocaleString("zh-CN")}</span>
                 <span className="text-violet-400 font-medium">{l.ruleName}</span>

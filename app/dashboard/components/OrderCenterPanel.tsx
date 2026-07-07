@@ -208,10 +208,10 @@ const FULFILLMENT_STATUS_MAP: Record<string, { label: string; cls: string }> = {
 };
 
 function FulfillmentBadge({ status }: { status: string | null }) {
-  if (!status) return <span className="text-xs text-muted-foreground">未处理</span>;
+  if (!status) return <span className="text-sm text-muted-foreground">未处理</span>;
   const m = FULFILLMENT_STATUS_MAP[status];
-  if (!m) return <span className="text-xs text-muted-foreground">{status}</span>;
-  return <Badge className={"text-[10px] px-1.5 py-0 " + m.cls}>{m.label}</Badge>;
+  if (!m) return <span className="text-sm text-muted-foreground">{status}</span>;
+  return <Badge className={"text-xs px-1.5 py-0 " + m.cls}>{m.label}</Badge>;
 }
 
 // ─── Pagination ──────────────────────────────────────
@@ -227,7 +227,7 @@ function Pagination({
 }) {
   return (
     <div className="flex items-center justify-between pt-3">
-      <span className="text-xs text-muted-foreground">
+      <span className="text-sm text-muted-foreground">
         第 {page} / {totalPages} 页
       </span>
       <div className="flex items-center gap-1">
@@ -236,7 +236,7 @@ function Pagination({
           variant="outline"
           disabled={page <= 1}
           onClick={() => onPage(page - 1)}
-          className="h-8 w-8 p-0"
+          className="h-9 w-8 p-0"
         >
           <ChevronLeft className="h-4 w-4" />
         </Button>
@@ -250,7 +250,7 @@ function Pagination({
               size="sm"
               variant={p === page ? "default" : "outline"}
               onClick={() => onPage(p)}
-              className={"h-8 w-8 p-0 text-xs " + (p === page ? "bg-emerald-600 hover:bg-emerald-500" : "")}
+              className={"h-9 w-8 p-0 text-sm " + (p === page ? "bg-emerald-600 hover:bg-emerald-500" : "")}
             >
               {p}
             </Button>
@@ -261,7 +261,7 @@ function Pagination({
           variant="outline"
           disabled={page >= totalPages}
           onClick={() => onPage(page + 1)}
-          className="h-8 w-8 p-0"
+          className="h-9 w-8 p-0"
         >
           <ChevronRight className="h-4 w-4" />
         </Button>
@@ -455,9 +455,9 @@ export default function OrderCenterPanel({
             <ShoppingBag className="h-6 w-6 text-emerald-400" />
             订单管理中心
           </h2>
-          <p className="mt-1 text-sm text-muted-foreground">
+          <p className="mt-1 text-base text-muted-foreground">
             {shopName} · 共 {filtered.length} 笔订单
-            {isDemo && <span className="ml-2 text-xs text-amber-400">(演示数据)</span>}
+            {isDemo && <span className="ml-2 text-sm text-amber-400">(演示数据)</span>}
           </p>
         </div>
         <div className="flex items-center gap-2">
@@ -478,7 +478,7 @@ export default function OrderCenterPanel({
                   {ALL_COLUMNS.map((col) => (
                     <label
                       key={col}
-                      className="flex items-center gap-2 px-2 py-1.5 cursor-pointer hover:bg-muted/20 rounded text-sm"
+                      className="flex items-center gap-2 px-2 py-1.5 cursor-pointer hover:bg-muted/20 rounded text-base"
                     >
                       <input
                         type="checkbox"
@@ -506,7 +506,7 @@ export default function OrderCenterPanel({
           <select
             value={filterStatus}
             onChange={(e) => setFilterStatus(e.target.value)}
-            className="h-8 rounded border border-border/40 bg-background px-2 text-xs text-foreground"
+            className="h-9 rounded border border-border/40 bg-background px-2 text-sm text-foreground"
           >
             <option value="all">全部状态</option>
             <option value="paid">已付款</option>
@@ -518,7 +518,7 @@ export default function OrderCenterPanel({
           <select
             value={filterFulfillment}
             onChange={(e) => setFilterFulfillment(e.target.value)}
-            className="h-8 rounded border border-border/40 bg-background px-2 text-xs text-foreground"
+            className="h-9 rounded border border-border/40 bg-background px-2 text-sm text-foreground"
           >
             <option value="all">全部履约</option>
             <option value="fulfilled">已发货</option>
@@ -529,7 +529,7 @@ export default function OrderCenterPanel({
           <select
             value={filterCountry}
             onChange={(e) => setFilterCountry(e.target.value)}
-            className="h-8 rounded border border-border/40 bg-background px-2 text-xs text-foreground"
+            className="h-9 rounded border border-border/40 bg-background px-2 text-sm text-foreground"
           >
             <option value="all">全部国家</option>
             {countries.map((c) => (
@@ -541,15 +541,15 @@ export default function OrderCenterPanel({
             type="date"
             value={dateFrom}
             onChange={(e) => setDateFrom(e.target.value)}
-            className="h-8 w-34 text-xs"
+            className="h-9 w-34 text-sm"
             placeholder="开始日期"
           />
-          <span className="text-xs text-muted-foreground">-</span>
+          <span className="text-sm text-muted-foreground">-</span>
           <Input
             type="date"
             value={dateTo}
             onChange={(e) => setDateTo(e.target.value)}
-            className="h-8 w-34 text-xs"
+            className="h-9 w-34 text-sm"
             placeholder="结束日期"
           />
 
@@ -558,15 +558,15 @@ export default function OrderCenterPanel({
             value={amountMin}
             onChange={(e) => setAmountMin(e.target.value)}
             placeholder="¥最低"
-            className="h-8 w-20 text-xs"
+            className="h-9 w-20 text-sm"
           />
-          <span className="text-xs text-muted-foreground">-</span>
+          <span className="text-sm text-muted-foreground">-</span>
           <Input
             type="number"
             value={amountMax}
             onChange={(e) => setAmountMax(e.target.value)}
             placeholder="¥最高"
-            className="h-8 w-20 text-xs"
+            className="h-9 w-20 text-sm"
           />
 
           <div className="relative flex-1 min-w-[160px]">
@@ -575,7 +575,7 @@ export default function OrderCenterPanel({
               value={filterKeyword}
               onChange={(e) => setFilterKeyword(e.target.value)}
               placeholder="搜索订单号/客户/商品..."
-              className="h-8 pl-7 text-xs"
+              className="h-9 pl-7 text-sm"
             />
           </div>
 
@@ -583,7 +583,7 @@ export default function OrderCenterPanel({
             <Button
               size="sm"
               variant="ghost"
-              className="h-8 text-xs text-muted-foreground"
+              className="h-9 text-sm text-muted-foreground"
               onClick={() => {
                 setFilterStatus("all");
                 setFilterFulfillment("all");
@@ -604,12 +604,12 @@ export default function OrderCenterPanel({
       {/* Batch bar */}
       {selectedIds.size > 0 && (
         <div className="sticky bottom-0 z-30 -mx-1 flex items-center gap-2 rounded-lg border border-border/40 bg-card/95 px-4 py-2.5 shadow-2xl backdrop-blur-xl">
-          <span className="text-sm font-medium text-foreground">已选 {selectedIds.size} 笔</span>
-          <Button size="sm" variant="outline" className="h-8 gap-1 text-xs"><Truck className="h-3 w-3" />标记已发货</Button>
-          <Button size="sm" variant="outline" className="h-8 gap-1 text-xs"><Archive className="h-3 w-3" />归档</Button>
-          <Button size="sm" variant="outline" className="h-8 gap-1 text-xs"><Ban className="h-3 w-3" />取消订单</Button>
-          <Button size="sm" variant="outline" className="h-8 gap-1 text-xs"><Tag className="h-3 w-3" />添加标签</Button>
-          <Button size="sm" variant="outline" className="h-8 gap-1 text-xs ml-auto" onClick={clearSelection}><X className="h-3 w-3" />取消选择</Button>
+          <span className="text-base font-medium text-foreground">已选 {selectedIds.size} 笔</span>
+          <Button size="sm" variant="outline" className="h-9 gap-1 text-sm"><Truck className="h-3 w-3" />标记已发货</Button>
+          <Button size="sm" variant="outline" className="h-9 gap-1 text-sm"><Archive className="h-3 w-3" />归档</Button>
+          <Button size="sm" variant="outline" className="h-9 gap-1 text-sm"><Ban className="h-3 w-3" />取消订单</Button>
+          <Button size="sm" variant="outline" className="h-9 gap-1 text-sm"><Tag className="h-3 w-3" />添加标签</Button>
+          <Button size="sm" variant="outline" className="h-9 gap-1 text-sm ml-auto" onClick={clearSelection}><X className="h-3 w-3" />取消选择</Button>
         </div>
       )}
 
@@ -630,37 +630,37 @@ export default function OrderCenterPanel({
                       />
                     </th>
                     {visibleColumns.has("orderNumber") && (
-                      <th className="py-2.5 px-2 text-left text-[10px] font-semibold uppercase tracking-wider text-muted-foreground">订单号</th>
+                      <th className="py-2.5 px-2 text-left text-xs font-semibold uppercase tracking-wider text-muted-foreground">订单号</th>
                     )}
                     {visibleColumns.has("customer") && (
-                      <th className="py-2.5 px-2 text-left text-[10px] font-semibold uppercase tracking-wider text-muted-foreground">客户</th>
+                      <th className="py-2.5 px-2 text-left text-xs font-semibold uppercase tracking-wider text-muted-foreground">客户</th>
                     )}
                     {visibleColumns.has("amount") && (
-                      <th className="py-2.5 px-2 text-right text-[10px] font-semibold uppercase tracking-wider text-muted-foreground">金额</th>
+                      <th className="py-2.5 px-2 text-right text-xs font-semibold uppercase tracking-wider text-muted-foreground">金额</th>
                     )}
                     {visibleColumns.has("currency") && (
-                      <th className="py-2.5 px-2 text-center text-[10px] font-semibold uppercase tracking-wider text-muted-foreground">币种</th>
+                      <th className="py-2.5 px-2 text-center text-xs font-semibold uppercase tracking-wider text-muted-foreground">币种</th>
                     )}
                     {visibleColumns.has("financialStatus") && (
-                      <th className="py-2.5 px-2 text-left text-[10px] font-semibold uppercase tracking-wider text-muted-foreground">支付</th>
+                      <th className="py-2.5 px-2 text-left text-xs font-semibold uppercase tracking-wider text-muted-foreground">支付</th>
                     )}
                     {visibleColumns.has("fulfillmentStatus") && (
-                      <th className="py-2.5 px-2 text-left text-[10px] font-semibold uppercase tracking-wider text-muted-foreground">履约</th>
+                      <th className="py-2.5 px-2 text-left text-xs font-semibold uppercase tracking-wider text-muted-foreground">履约</th>
                     )}
                     {visibleColumns.has("createdAt") && (
-                      <th className="py-2.5 px-2 text-left text-[10px] font-semibold uppercase tracking-wider text-muted-foreground">时间</th>
+                      <th className="py-2.5 px-2 text-left text-xs font-semibold uppercase tracking-wider text-muted-foreground">时间</th>
                     )}
                     {visibleColumns.has("country") && (
-                      <th className="py-2.5 px-2 text-center text-[10px] font-semibold uppercase tracking-wider text-muted-foreground">国家</th>
+                      <th className="py-2.5 px-2 text-center text-xs font-semibold uppercase tracking-wider text-muted-foreground">国家</th>
                     )}
                     {visibleColumns.has("itemCount") && (
-                      <th className="py-2.5 px-2 text-center text-[10px] font-semibold uppercase tracking-wider text-muted-foreground">商品</th>
+                      <th className="py-2.5 px-2 text-center text-xs font-semibold uppercase tracking-wider text-muted-foreground">商品</th>
                     )}
                     {visibleColumns.has("tags") && (
-                      <th className="py-2.5 px-2 text-left text-[10px] font-semibold uppercase tracking-wider text-muted-foreground">标签</th>
+                      <th className="py-2.5 px-2 text-left text-xs font-semibold uppercase tracking-wider text-muted-foreground">标签</th>
                     )}
                     {visibleColumns.has("gateway") && (
-                      <th className="py-2.5 px-2 text-left text-[10px] font-semibold uppercase tracking-wider text-muted-foreground">网关</th>
+                      <th className="py-2.5 px-2 text-left text-xs font-semibold uppercase tracking-wider text-muted-foreground">网关</th>
                     )}
                   </tr>
                 </thead>
@@ -679,30 +679,30 @@ export default function OrderCenterPanel({
                         <td className="py-2.5 px-2">
                           <button
                             onClick={() => { setDetailOrder(o); setDetailTab("info"); }}
-                            className="text-xs font-mono font-medium text-emerald-400 hover:underline cursor-pointer"
+                            className="text-sm font-mono font-medium text-emerald-400 hover:underline cursor-pointer"
                           >
                             {o.orderNumber}
                           </button>
                         </td>
                       )}
                       {visibleColumns.has("customer") && (
-                        <td className="py-2.5 px-2 text-sm text-foreground">{o.customer.name}</td>
+                        <td className="py-2.5 px-2 text-base text-foreground">{o.customer.name}</td>
                       )}
                       {visibleColumns.has("amount") && (
-                        <td className="py-2.5 px-2 text-right tabular-nums text-sm font-semibold text-emerald-400">
+                        <td className="py-2.5 px-2 text-right tabular-nums text-base font-semibold text-emerald-400">
                           {formatCny(o.totalPrice * 7.25)}
                         </td>
                       )}
                       {visibleColumns.has("currency") && (
-                        <td className="py-2.5 px-2 text-center text-xs text-muted-foreground">{o.currency}</td>
+                        <td className="py-2.5 px-2 text-center text-sm text-muted-foreground">{o.currency}</td>
                       )}
                       {visibleColumns.has("financialStatus") && (
                         <td className="py-2.5 px-2">
                           {(FINANCIAL_STATUS_MAP[o.financialStatus] && (
-                            <Badge className={"text-[10px] px-1.5 py-0 " + FINANCIAL_STATUS_MAP[o.financialStatus].cls}>
+                            <Badge className={"text-xs px-1.5 py-0 " + FINANCIAL_STATUS_MAP[o.financialStatus].cls}>
                               {FINANCIAL_STATUS_MAP[o.financialStatus].label}
                             </Badge>
-                          )) || <span className="text-xs text-muted-foreground">{o.financialStatus}</span>}
+                          )) || <span className="text-sm text-muted-foreground">{o.financialStatus}</span>}
                         </td>
                       )}
                       {visibleColumns.has("fulfillmentStatus") && (
@@ -711,19 +711,19 @@ export default function OrderCenterPanel({
                         </td>
                       )}
                       {visibleColumns.has("createdAt") && (
-                        <td className="py-2.5 px-2 text-xs text-muted-foreground whitespace-nowrap">
+                        <td className="py-2.5 px-2 text-sm text-muted-foreground whitespace-nowrap">
                           {new Date(o.createdAt).toLocaleString("zh-CN", { month: "2-digit", day: "2-digit", hour: "2-digit", minute: "2-digit" })}
                         </td>
                       )}
                       {visibleColumns.has("country") && (
                         <td className="py-2.5 px-2 text-center">
-                          <Badge variant="outline" className="text-[10px] px-1.5 py-0 border-border/40 text-muted-foreground">
+                          <Badge variant="outline" className="text-xs px-1.5 py-0 border-border/40 text-muted-foreground">
                             {o.countryCode}
                           </Badge>
                         </td>
                       )}
                       {visibleColumns.has("itemCount") && (
-                        <td className="py-2.5 px-2 text-center text-xs text-muted-foreground">{o.itemCount}</td>
+                        <td className="py-2.5 px-2 text-center text-sm text-muted-foreground">{o.itemCount}</td>
                       )}
                       {visibleColumns.has("tags") && (
                         <td className="py-2.5 px-2">
@@ -731,12 +731,12 @@ export default function OrderCenterPanel({
                             {o.tags.map((t) => (
                               <Badge key={t} variant="outline" className="text-[9px] px-1 py-0 border-border/30 text-muted-foreground">{t}</Badge>
                             ))}
-                            {o.tags.length === 0 && <span className="text-xs text-muted-foreground/40">-</span>}
+                            {o.tags.length === 0 && <span className="text-sm text-muted-foreground/40">-</span>}
                           </div>
                         </td>
                       )}
                       {visibleColumns.has("gateway") && (
-                        <td className="py-2.5 px-2 text-xs text-muted-foreground">{o.gateway}</td>
+                        <td className="py-2.5 px-2 text-sm text-muted-foreground">{o.gateway}</td>
                       )}
                     </tr>
                   ))}
@@ -751,8 +751,8 @@ export default function OrderCenterPanel({
           ) : (
             <div className="flex flex-col items-center gap-3 py-16">
               <Inbox className="h-12 w-12 text-muted-foreground/25" />
-              <p className="text-sm font-medium text-muted-foreground">暂无匹配的订单数据</p>
-              <p className="text-xs text-muted-foreground/60">尝试调整筛选条件或查看其他状态</p>
+              <p className="text-base font-medium text-muted-foreground">暂无匹配的订单数据</p>
+              <p className="text-sm text-muted-foreground/60">尝试调整筛选条件或查看其他状态</p>
             </div>
           )}
         </CardContent>
@@ -766,12 +766,12 @@ export default function OrderCenterPanel({
             {/* Sheet Header */}
             <div className="sticky top-0 z-10 flex items-center justify-between border-b border-border/20 bg-card/95 px-5 py-3 backdrop-blur-md">
               <div>
-                <p className="text-sm font-semibold text-foreground">{detailOrder.orderNumber}</p>
-                <p className="text-xs text-muted-foreground">
+                <p className="text-base font-semibold text-foreground">{detailOrder.orderNumber}</p>
+                <p className="text-sm text-muted-foreground">
                   {new Date(detailOrder.createdAt).toLocaleString("zh-CN")}
                 </p>
               </div>
-              <Button size="sm" variant="ghost" onClick={() => setDetailOrder(null)} className="h-8 w-8 p-0">
+              <Button size="sm" variant="ghost" onClick={() => setDetailOrder(null)} className="h-9 w-8 p-0">
                 <X className="h-4 w-4" />
               </Button>
             </div>
@@ -782,7 +782,7 @@ export default function OrderCenterPanel({
                 <button
                   key={tab}
                   onClick={() => setDetailTab(tab)}
-                  className={`px-3 py-2.5 text-xs font-semibold border-b-2 transition-colors ${
+                  className={`px-3 py-2.5 text-sm font-semibold border-b-2 transition-colors ${
                     detailTab === tab
                       ? "border-emerald-500 text-emerald-400"
                       : "border-transparent text-muted-foreground hover:text-foreground"
@@ -798,20 +798,20 @@ export default function OrderCenterPanel({
                 <>
                   {/* Customer */}
                   <div>
-                    <p className="text-[10px] font-semibold uppercase tracking-wider text-muted-foreground mb-2">客户信息</p>
+                    <p className="text-xs font-semibold uppercase tracking-wider text-muted-foreground mb-2">客户信息</p>
                     <div className="space-y-1.5 rounded-lg border border-border/20 bg-muted/10 px-3 py-2.5">
-                      <div className="flex items-center gap-2 text-sm"><User className="h-3.5 w-3.5 text-muted-foreground" /><span className="text-foreground">{detailOrder.customer.name}</span></div>
-                      <div className="flex items-center gap-2 text-xs"><Mail className="h-3.5 w-3.5 text-muted-foreground" /><span className="text-muted-foreground">{detailOrder.customer.email}</span></div>
+                      <div className="flex items-center gap-2 text-base"><User className="h-3.5 w-3.5 text-muted-foreground" /><span className="text-foreground">{detailOrder.customer.name}</span></div>
+                      <div className="flex items-center gap-2 text-sm"><Mail className="h-3.5 w-3.5 text-muted-foreground" /><span className="text-muted-foreground">{detailOrder.customer.email}</span></div>
                       {detailOrder.customer.phone && (
-                        <div className="flex items-center gap-2 text-xs"><Phone className="h-3.5 w-3.5 text-muted-foreground" /><span className="text-muted-foreground">{detailOrder.customer.phone}</span></div>
+                        <div className="flex items-center gap-2 text-sm"><Phone className="h-3.5 w-3.5 text-muted-foreground" /><span className="text-muted-foreground">{detailOrder.customer.phone}</span></div>
                       )}
                     </div>
                   </div>
 
                   {/* Address */}
                   <div>
-                    <p className="text-[10px] font-semibold uppercase tracking-wider text-muted-foreground mb-2">配送地址</p>
-                    <div className="space-y-1 rounded-lg border border-border/20 bg-muted/10 px-3 py-2.5 text-xs text-muted-foreground">
+                    <p className="text-xs font-semibold uppercase tracking-wider text-muted-foreground mb-2">配送地址</p>
+                    <div className="space-y-1 rounded-lg border border-border/20 bg-muted/10 px-3 py-2.5 text-sm text-muted-foreground">
                       <p className="text-foreground font-medium">{detailOrder.shippingAddress.name}</p>
                       <p>{detailOrder.shippingAddress.address1}</p>
                       <p>{detailOrder.shippingAddress.city}, {detailOrder.shippingAddress.country} {detailOrder.shippingAddress.zip ?? ""}</p>
@@ -820,30 +820,30 @@ export default function OrderCenterPanel({
 
                   {/* Payment */}
                   <div>
-                    <p className="text-[10px] font-semibold uppercase tracking-wider text-muted-foreground mb-2">支付信息</p>
+                    <p className="text-xs font-semibold uppercase tracking-wider text-muted-foreground mb-2">支付信息</p>
                     <div className="space-y-1.5 rounded-lg border border-border/20 bg-muted/10 px-3 py-2.5">
-                      <div className="flex items-center justify-between text-sm">
+                      <div className="flex items-center justify-between text-base">
                         <span className="text-muted-foreground">网关</span>
                         <span className="text-foreground font-medium">{detailOrder.gateway}</span>
                       </div>
-                      <div className="flex items-center justify-between text-sm">
+                      <div className="flex items-center justify-between text-base">
                         <span className="text-muted-foreground">金额</span>
                         <span className="text-emerald-400 font-semibold">{detailOrder.currency} {detailOrder.totalPrice.toFixed(2)}</span>
                       </div>
-                      <div className="flex items-center justify-between text-xs">
+                      <div className="flex items-center justify-between text-sm">
                         <span className="text-muted-foreground">状态</span>
                         {(FINANCIAL_STATUS_MAP[detailOrder.financialStatus] && (
-                          <Badge className={"text-[10px] px-1.5 py-0 " + FINANCIAL_STATUS_MAP[detailOrder.financialStatus].cls}>
+                          <Badge className={"text-xs px-1.5 py-0 " + FINANCIAL_STATUS_MAP[detailOrder.financialStatus].cls}>
                             {FINANCIAL_STATUS_MAP[detailOrder.financialStatus].label}
                           </Badge>
-                        )) || <span className="text-xs text-muted-foreground">{detailOrder.financialStatus}</span>}
+                        )) || <span className="text-sm text-muted-foreground">{detailOrder.financialStatus}</span>}
                       </div>
                     </div>
                   </div>
 
                   {/* Order Tags & Note */}
                   <div>
-                    <p className="text-[10px] font-semibold uppercase tracking-wider text-muted-foreground mb-2">标签与备注</p>
+                    <p className="text-xs font-semibold uppercase tracking-wider text-muted-foreground mb-2">标签与备注</p>
                     <div className="rounded-lg border border-border/20 bg-muted/10 px-3 py-2.5">
                       <OrderTags
                         orderId={detailOrder.id}
@@ -862,18 +862,18 @@ export default function OrderCenterPanel({
 
               {detailTab === "items" && (
                 <div>
-                  <p className="text-[10px] font-semibold uppercase tracking-wider text-muted-foreground mb-2">商品列表 ({detailOrder.lineItems.length} 件)</p>
+                  <p className="text-xs font-semibold uppercase tracking-wider text-muted-foreground mb-2">商品列表 ({detailOrder.lineItems.length} 件)</p>
                   <div className="space-y-2">
                     {detailOrder.lineItems.map((item) => (
                       <div key={item.id} className="flex items-center gap-3 rounded-lg border border-border/20 bg-muted/10 px-3 py-2.5">
-                        <Layers className="h-8 w-8 text-muted-foreground/30" />
+                        <Layers className="h-9 w-8 text-muted-foreground/30" />
                         <div className="flex-1 min-w-0">
-                          <p className="text-sm font-medium text-foreground truncate">{item.title}</p>
-                          <p className="text-[10px] text-muted-foreground">{item.sku ?? "-"}</p>
+                          <p className="text-base font-medium text-foreground truncate">{item.title}</p>
+                          <p className="text-xs text-muted-foreground">{item.sku ?? "-"}</p>
                         </div>
                         <div className="text-right">
-                          <p className="text-sm font-semibold text-foreground">{detailOrder.currency} {parseFloat(item.price).toFixed(2)}</p>
-                          <p className="text-xs text-muted-foreground">× {item.quantity}</p>
+                          <p className="text-base font-semibold text-foreground">{detailOrder.currency} {parseFloat(item.price).toFixed(2)}</p>
+                          <p className="text-sm text-muted-foreground">× {item.quantity}</p>
                         </div>
                       </div>
                     ))}
@@ -883,7 +883,7 @@ export default function OrderCenterPanel({
 
               {detailTab === "timeline" && (
                 <div>
-                  <p className="text-[10px] font-semibold uppercase tracking-wider text-muted-foreground mb-3">订单时间线</p>
+                  <p className="text-xs font-semibold uppercase tracking-wider text-muted-foreground mb-3">订单时间线</p>
                   <div className="space-y-0">
                     {[
                       { label: "订单创建", time: detailOrder.createdAt, done: true },
@@ -897,9 +897,9 @@ export default function OrderCenterPanel({
                           {i < 3 && <div className={`w-0.5 flex-1 my-0.5 ${step.done ? "bg-emerald-500" : "bg-muted/20"}`} />}
                         </div>
                         <div className="pb-4">
-                          <p className={`text-sm font-medium ${step.done ? "text-foreground" : "text-muted-foreground"}`}>{step.label}</p>
+                          <p className={`text-base font-medium ${step.done ? "text-foreground" : "text-muted-foreground"}`}>{step.label}</p>
                           {step.time && (
-                            <p className="text-[10px] text-muted-foreground">
+                            <p className="text-xs text-muted-foreground">
                               {new Date(step.time).toLocaleString("zh-CN")}
                             </p>
                           )}

@@ -138,29 +138,29 @@ export default function ShippingRatesPanel({ isDemo, shopUrl, accessToken, shopN
 
   return (
     <div className="space-y-4">
-      {toast && <div className="fixed bottom-6 left-1/2 -translate-x-1/2 z-50 rounded-lg bg-emerald-600/90 px-4 py-2 text-sm font-medium text-white shadow-2xl">{toast}</div>}
+      {toast && <div className="fixed bottom-6 left-1/2 -translate-x-1/2 z-50 rounded-lg bg-emerald-600/90 px-4 py-2 text-base font-medium text-white shadow-2xl">{toast}</div>}
 
       <div>
         <h2 className="flex items-center gap-2 text-xl font-bold text-foreground"><Truck className="h-6 w-6 text-teal-400" />运费管理</h2>
-        <p className="mt-1 text-sm text-muted-foreground">{shopName}{isDemo && <span className="ml-2 text-xs text-amber-400">(演示)</span>}</p>
+        <p className="mt-1 text-base text-muted-foreground">{shopName}{isDemo && <span className="ml-2 text-sm text-amber-400">(演示)</span>}</p>
       </div>
 
       {/* Rate difference alert */}
       {rateAnalysis && (
-        <Card className="border-amber-500/20 bg-amber-500/5"><CardContent className="p-3 flex items-center gap-2 text-[10px]">
+        <Card className="border-amber-500/20 bg-amber-500/5"><CardContent className="p-3 flex items-center gap-2 text-xs">
           <AlertCircle className="h-4 w-4 text-amber-400 shrink-0"/>
           <span className="text-amber-300">运费差异较大：{rateAnalysis.min.name} ¥{rateAnalysis.min.price.toFixed(2)} vs {rateAnalysis.max.name} ¥{rateAnalysis.max.price.toFixed(2)}，差异 {rateAnalysis.diff}%，建议优化仓储备货</span>
         </CardContent></Card>
       )}
 
-      {rates.length === 0 && <div className="text-center py-16"><Truck className="h-12 w-12 mx-auto mb-3 text-muted-foreground/25"/><p className="text-sm text-muted-foreground">暂未获取到运费数据，请在 Shopify Settings → Shipping 中配置</p></div>}
+      {rates.length === 0 && <div className="text-center py-16"><Truck className="h-12 w-12 mx-auto mb-3 text-muted-foreground/25"/><p className="text-base text-muted-foreground">暂未获取到运费数据，请在 Shopify Settings → Shipping 中配置</p></div>}
 
       {rates.length > 0 && (
         <>
           {/* Market selector */}
           <div className="flex items-center gap-2">
-            <span className="text-[10px] text-muted-foreground">市场:</span>
-            <select value={selectedMarket} onChange={(e) => setSelectedMarket(e.target.value)} className="h-7 rounded border border-border/40 bg-background text-[10px] text-foreground px-1">
+            <span className="text-xs text-muted-foreground">市场:</span>
+            <select value={selectedMarket} onChange={(e) => setSelectedMarket(e.target.value)} className="h-7 rounded border border-border/40 bg-background text-xs text-foreground px-1">
               <option value="all">所有市场</option>
               {countries.map((c) => <option key={c.code} value={c.code}>{countryCodeToFlag(c.code)} {c.name}</option>)}
             </select>
@@ -169,8 +169,8 @@ export default function ShippingRatesPanel({ isDemo, shopUrl, accessToken, shopN
           {/* Rate Comparison Table */}
           <Card className="border-border/40 bg-card/60 shadow-lg backdrop-blur-lg overflow-x-auto">
             <CardContent className="p-0">
-              <table className="w-full text-xs min-w-[500px]">
-                <thead><tr className="border-b border-border/20 text-[10px] font-semibold uppercase tracking-wider text-muted-foreground">
+              <table className="w-full text-sm min-w-[500px]">
+                <thead><tr className="border-b border-border/20 text-xs font-semibold uppercase tracking-wider text-muted-foreground">
                   <th className="py-2.5 pl-3 text-left sticky left-0 bg-card/90 backdrop-blur">运费规则</th>
                   {visibleRates.map((r) => <th key={r.countryCode} className="py-2.5 px-3 text-center min-w-[90px]">{countryCodeToFlag(r.countryCode)} {r.countryName}</th>)}
                 </tr></thead>
@@ -195,14 +195,14 @@ export default function ShippingRatesPanel({ isDemo, shopUrl, accessToken, shopN
           </Card>
 
           {/* Carrier Delivery Times */}
-          <div onClick={() => setShowWarehouse(!showWarehouse)} className="flex items-center gap-1 text-[10px] text-muted-foreground cursor-pointer hover:text-foreground">
+          <div onClick={() => setShowWarehouse(!showWarehouse)} className="flex items-center gap-1 text-xs text-muted-foreground cursor-pointer hover:text-foreground">
             {showWarehouse ? <ChevronDown className="h-3 w-3"/> : <ChevronRight className="h-3 w-3"/>}物流商送达时效
           </div>
           {showWarehouse && (
             <Card className="border-border/40 bg-card/60 overflow-x-auto">
               <CardContent className="p-0">
-                <table className="w-full text-xs min-w-[500px]">
-                  <thead><tr className="border-b border-border/20 text-[10px] text-muted-foreground">
+                <table className="w-full text-sm min-w-[500px]">
+                  <thead><tr className="border-b border-border/20 text-xs text-muted-foreground">
                     <th className="py-2 pl-3 text-left">物流商</th>
                     {countries.map((c) => <th key={c.code} className="py-2 px-3 text-center">{countryCodeToFlag(c.code)} {c.name}</th>)}
                   </tr></thead>
@@ -220,30 +220,30 @@ export default function ShippingRatesPanel({ isDemo, shopUrl, accessToken, shopN
           )}
 
           {/* Warehouse Zones (collapsed by default) */}
-          <div onClick={() => {}} className="flex items-center gap-1 text-[10px] text-muted-foreground cursor-pointer hover:text-foreground invisible">{/* spacer */}</div>
+          <div onClick={() => {}} className="flex items-center gap-1 text-xs text-muted-foreground cursor-pointer hover:text-foreground invisible">{/* spacer */}</div>
         </>
       )}
 
       {/* Shipping Calculator */}
-      <button onClick={() => setShowCalculator(!showCalculator)} className="flex items-center gap-1 text-[10px] text-muted-foreground hover:text-foreground">
+      <button onClick={() => setShowCalculator(!showCalculator)} className="flex items-center gap-1 text-xs text-muted-foreground hover:text-foreground">
         <Calculator className="h-3 w-3"/>{showCalculator ? <ChevronDown className="h-3 w-3"/> : <ChevronRight className="h-3 w-3"/>}运费计算器
       </button>
       {showCalculator && (
         <Card className="border-border/40 bg-card/60"><CardContent className="p-4 space-y-3">
           <div className="grid grid-cols-2 gap-3">
-            <div><label className="text-[10px] text-muted-foreground block mb-0.5">商品重量 (g)</label><Input type="number" value={calcWeight} onChange={(e)=>setCalcWeight(e.target.value)} className="h-8 text-xs"/></div>
-            <div><label className="text-[10px] text-muted-foreground block mb-0.5">商品价格</label><Input type="number" step="0.01" value={calcPrice} onChange={(e)=>setCalcPrice(e.target.value)} className="h-8 text-xs"/></div>
-            <div><label className="text-[10px] text-muted-foreground block mb-0.5">发往市场</label>
-              <select value={calcCountry} onChange={(e)=>setCalcCountry(e.target.value)} className="h-8 w-full rounded border border-border/40 bg-background px-2 text-xs text-foreground">{countries.map((c)=><option key={c.code} value={c.code}>{c.name}</option>)}</select>
+            <div><label className="text-sm text-muted-foreground block mb-0.5">商品重量 (g)</label><Input type="number" value={calcWeight} onChange={(e)=>setCalcWeight(e.target.value)} className="h-9 text-sm"/></div>
+            <div><label className="text-sm text-muted-foreground block mb-0.5">商品价格</label><Input type="number" step="0.01" value={calcPrice} onChange={(e)=>setCalcPrice(e.target.value)} className="h-9 text-sm"/></div>
+            <div><label className="text-xs text-muted-foreground block mb-0.5">发往市场</label>
+              <select value={calcCountry} onChange={(e)=>setCalcCountry(e.target.value)} className="h-9 w-full rounded border border-border/40 bg-background px-2 text-sm text-foreground">{countries.map((c)=><option key={c.code} value={c.code}>{c.name}</option>)}</select>
             </div>
-            <div><label className="text-[10px] text-muted-foreground block mb-0.5">仓库</label>
-              <select value={calcWarehouse} onChange={(e)=>setCalcWarehouse(e.target.value)} className="h-8 w-full rounded border border-border/40 bg-background px-2 text-xs text-foreground">
+            <div><label className="text-xs text-muted-foreground block mb-0.5">仓库</label>
+              <select value={calcWarehouse} onChange={(e)=>setCalcWarehouse(e.target.value)} className="h-9 w-full rounded border border-border/40 bg-background px-2 text-sm text-foreground">
                 {[...new Set(DEMO_WAREHOUSE_ZONES.map((z)=>z.warehouseName))].map((w)=><option key={w} value={w}>{w}</option>)}
               </select>
             </div>
           </div>
           {calcResult && (
-            <div className="rounded-lg bg-muted/10 p-3 space-y-1 text-[10px]">
+            <div className="rounded-lg bg-muted/10 p-3 space-y-1 text-xs">
               <p className="text-muted-foreground">匹配规则: <span className="text-foreground font-semibold">{calcResult.matchedRule?.label || "—"}</span>{calcResult.matchedRule ? ` → ${calcResult.matchedRule.currency} ${calcResult.matchedRule.price}` : ""}</p>
               {calcResult.cnyPrice !== null && <p className="text-muted-foreground">预估运费: <span className="text-teal-400 font-semibold">{formatCny(calcResult.cnyPrice)}{calcResult.matchedRule && calcResult.matchedRule.currency !== "CNY" ? ` (约 ${calcResult.matchedRule.currency} ${calcResult.matchedRule.price})` : ""}</span></p>}
               {calcResult.triggersFree ? (

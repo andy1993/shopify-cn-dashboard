@@ -279,7 +279,7 @@ function GrowthKpiCard({
       <CardContent className="relative p-6">
         <div className="flex items-start justify-between">
           <div className="space-y-1">
-            <p className="text-sm font-medium text-muted-foreground">{title}</p>
+            <p className="text-base font-medium text-muted-foreground">{title}</p>
             <p className="text-3xl font-bold tracking-tight text-foreground">{value}</p>
             <div className="flex items-center gap-1.5">
               {growth >= 0 ? (
@@ -287,10 +287,10 @@ function GrowthKpiCard({
               ) : (
                 <ArrowDownRight className="h-4 w-4 text-red-500" />
               )}
-              <span className={`text-sm font-semibold ${growth >= 0 ? "text-emerald-500" : "text-red-500"}`}>
+              <span className={`text-base font-semibold ${growth >= 0 ? "text-emerald-500" : "text-red-500"}`}>
                 {growth >= 0 ? "+" : ""}{growth.toFixed(1)}%
               </span>
-              <span className="text-xs text-muted-foreground">{subtitle}</span>
+              <span className="text-sm text-muted-foreground">{subtitle}</span>
             </div>
           </div>
           <div className={`flex h-11 w-11 items-center justify-center rounded-xl ring-1 ${colors[accent]}`}>
@@ -316,9 +316,9 @@ function ChartTooltip({
   if (!active || !payload?.length) return null;
   return (
     <div className="rounded-lg border border-border/50 bg-card px-3 py-2 shadow-lg backdrop-blur-sm">
-      <p className="mb-1 text-xs font-medium text-muted-foreground">{label}</p>
+      <p className="mb-1 text-sm font-medium text-muted-foreground">{label}</p>
       {payload.map((entry, i) => (
-        <p key={i} className="text-sm font-semibold" style={{ color: entry.color }}>
+        <p key={i} className="text-base font-semibold" style={{ color: entry.color }}>
           {entry.name}: {formatCny(entry.value)}
         </p>
       ))}
@@ -398,9 +398,9 @@ export default function TrendAnalysisPanel({
             <BarChart3 className="h-6 w-6 text-sky-400" />
             趋势同比 / 环比分析
           </h2>
-          <p className="mt-1 text-sm text-muted-foreground">
+          <p className="mt-1 text-base text-muted-foreground">
             {shopName} · 多维度历史数据动态对比
-            {isDemo && <span className="ml-2 text-xs text-amber-400">(模拟 14 天数据流)</span>}
+            {isDemo && <span className="ml-2 text-sm text-amber-400">(模拟 14 天数据流)</span>}
           </p>
         </div>
         <Select value={timeRange} onValueChange={(v) => setTimeRange(v as TimeRange)}>
@@ -416,7 +416,7 @@ export default function TrendAnalysisPanel({
       </div>
 
       {/* Period Info Bar */}
-      <div className="flex items-center gap-4 rounded-lg border border-border/30 bg-muted/20 px-4 py-2.5 text-xs text-muted-foreground">
+      <div className="flex items-center gap-4 rounded-lg border border-border/30 bg-muted/20 px-4 py-2.5 text-sm text-muted-foreground">
         <span className="font-medium text-foreground">{rangeLabel[timeRange]}对比</span>
         <span>当前：{formatDate(currentStart)} ~ {formatDate(currentEnd)}</span>
         <span className="text-muted-foreground/50">vs</span>
@@ -515,14 +515,14 @@ export default function TrendAnalysisPanel({
           ) : (
             <div className="flex flex-col items-center gap-4 py-16 text-center">
               <BarChart3 className="h-12 w-12 text-muted-foreground/40" />
-              <p className="text-sm text-muted-foreground">
+              <p className="text-base text-muted-foreground">
                 {isDemo
                   ? "正在生成 14 天趋势数据..."
                   : "连接真实店铺后，系统将自动拉取历史订单生成同比/环比趋势图"}
               </p>
               {!isDemo && (
                 <div className="mt-2 w-full max-w-lg rounded-lg border border-border/30 bg-muted/20 p-4 text-left">
-                  <p className="mb-2 text-xs font-medium text-muted-foreground">
+                  <p className="mb-2 text-sm font-medium text-muted-foreground">
                     📡 后端 API 接入说明
                   </p>
                   <pre className="whitespace-pre-wrap text-[11px] leading-relaxed text-muted-foreground/70">

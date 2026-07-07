@@ -72,30 +72,30 @@ export default function ProductAffinityPanel({ isDemo, shopUrl, accessToken, sho
 
   return (
     <div className="space-y-4">
-      {toast && <div className="fixed bottom-6 left-1/2 -translate-x-1/2 z-50 rounded-lg bg-emerald-600/90 px-4 py-2 text-sm font-medium text-white shadow-2xl">{toast}</div>}
+      {toast && <div className="fixed bottom-6 left-1/2 -translate-x-1/2 z-50 rounded-lg bg-emerald-600/90 px-4 py-2 text-base font-medium text-white shadow-2xl">{toast}</div>}
 
       <div>
         <h2 className="flex items-center gap-2 text-xl font-bold text-foreground"><Link className="h-6 w-6 text-violet-400" />商品关联分析</h2>
-        <p className="mt-1 text-sm text-muted-foreground">{shopName} · {allRules.length} 条关联规则{isDemo && <span className="ml-2 text-xs text-amber-400">(演示)</span>}</p>
+        <p className="mt-1 text-base text-muted-foreground">{shopName} · {allRules.length} 条关联规则{isDemo && <span className="ml-2 text-sm text-amber-400">(演示)</span>}</p>
       </div>
 
       {/* Filters */}
       <Card className="border-border/40 bg-card/60"><CardContent className="flex flex-wrap items-center gap-1.5 px-3 py-2">
-        <div className="relative flex-1 min-w-[100px]"><Search className="absolute left-2 top-1/2 h-3 w-3 -translate-y-1/2 text-muted-foreground" /><Input value={search} onChange={function (e) { setSearch(e.target.value); setSelectedRule(-1); }} placeholder="搜索商品..." className="h-7 pl-7 text-[10px]" /></div>
+        <div className="relative flex-1 min-w-[100px]"><Search className="absolute left-2 top-1/2 h-3 w-3 -translate-y-1/2 text-muted-foreground" /><Input value={search} onChange={function (e) { setSearch(e.target.value); setSelectedRule(-1); }} placeholder="搜索商品..." className="h-7 pl-7 text-sm" /></div>
         <span className="text-[9px] text-muted-foreground">支持度≥</span>
-        <Input type="number" value={minSupport || ""} onChange={function (e) { setMinSupport(Number(e.target.value) || 0); }} className="h-7 w-14 text-[10px]" />
+        <Input type="number" value={minSupport || ""} onChange={function (e) { setMinSupport(Number(e.target.value) || 0); }} className="h-7 w-14 text-sm" />
         <span className="text-[9px] text-muted-foreground">置信度≥</span>
-        <Input type="number" value={minConfidence || ""} onChange={function (e) { setMinConfidence(Number(e.target.value) || 0); }} className="h-7 w-14 text-[10px]" placeholder="%" />
+        <Input type="number" value={minConfidence || ""} onChange={function (e) { setMinConfidence(Number(e.target.value) || 0); }} className="h-7 w-14 text-sm" placeholder="%" />
         <span className="text-[9px] text-muted-foreground">提升度≥</span>
-        <Input type="number" value={minLift || ""} onChange={function (e) { setMinLift(Number(e.target.value) || 0); }} className="h-7 w-14 text-[10px]" />
-        <select value={sortBy} onChange={function (e) { setSortBy(e.target.value); }} className="h-7 rounded border border-border/40 bg-background text-[10px] px-1"><option value="lift">提升度</option><option value="confidence">置信度</option><option value="abCount">共现次数</option></select>
-        <Button size="sm" variant="outline" onClick={function () { setShowBundler(!showBundler); }} className="h-7 text-[10px]"><Package className="h-3 w-3"/>捆绑模拟</Button>
+        <Input type="number" value={minLift || ""} onChange={function (e) { setMinLift(Number(e.target.value) || 0); }} className="h-7 w-14 text-sm" />
+        <select value={sortBy} onChange={function (e) { setSortBy(e.target.value); }} className="h-7 rounded border border-border/40 bg-background text-xs px-1"><option value="lift">提升度</option><option value="confidence">置信度</option><option value="abCount">共现次数</option></select>
+        <Button size="sm" variant="outline" onClick={function () { setShowBundler(!showBundler); }} className="h-7 text-xs"><Package className="h-3 w-3"/>捆绑模拟</Button>
       </CardContent></Card>
 
       {/* Main Table */}
       <Card className="border-border/40 bg-card/60 shadow-lg overflow-x-auto"><CardContent className="p-0">
-        <table className="w-full text-xs min-w-[600px]">
-          <thead><tr className="border-b border-border/20 text-[10px] font-semibold text-muted-foreground"><th className="py-2 pl-3 text-left">源商品</th><th className="py-2 w-8" /><th className="py-2 text-left">关联商品</th><th className="py-2 px-2 text-right">共现</th><th className="py-2 px-2 text-right">置信度</th><th className="py-2 px-2 text-right">提升度</th><th className="py-2 px-2 text-center">建议</th></tr></thead>
+        <table className="w-full text-sm min-w-[600px]">
+          <thead><tr className="border-b border-border/20 text-xs font-semibold text-muted-foreground"><th className="py-2 pl-3 text-left">源商品</th><th className="py-2 w-8" /><th className="py-2 text-left">关联商品</th><th className="py-2 px-2 text-right">共现</th><th className="py-2 px-2 text-right">置信度</th><th className="py-2 px-2 text-right">提升度</th><th className="py-2 px-2 text-center">建议</th></tr></thead>
           <tbody>
             {topRules.map(function (r, i) {
               var action = getAction(r);
@@ -118,7 +118,7 @@ export default function ProductAffinityPanel({ isDemo, shopUrl, accessToken, sho
       {/* Affinity Network Viz (simplified CSS) */}
       {topRules.length > 0 && (
         <Card className="border-border/40 bg-card/60"><CardContent className="p-3">
-          <p className="text-[10px] font-semibold text-muted-foreground mb-2">关联网络 Top 10</p>
+          <p className="text-xs font-semibold text-muted-foreground mb-2">关联网络 Top 10</p>
           <div className="flex flex-wrap gap-2">
             {topRules.slice(0, 10).map(function (r, i) {
               var size = Math.max(10, Math.min(40, r.abCount * 0.8));
@@ -142,16 +142,16 @@ export default function ProductAffinityPanel({ isDemo, shopUrl, accessToken, sho
         <Card className="border-border/40 bg-card/60 shadow-xl border-l-2 border-l-violet-500">
           <CardContent className="p-4 space-y-3">
             <div className="flex items-center justify-between">
-              <p className="text-sm font-semibold text-foreground">{selected.productA} → {selected.productB}</p>
+              <p className="text-base font-semibold text-foreground">{selected.productA} → {selected.productB}</p>
               <Button size="sm" variant="ghost" onClick={function () { setSelectedRule(-1); }}><X className="h-4 w-4"/></Button>
             </div>
-            <div className="grid grid-cols-4 gap-2 text-[10px]">
+            <div className="grid grid-cols-4 gap-2 text-xs">
               <div className="bg-muted/10 rounded p-2"><p className="text-muted-foreground">共现次数</p><p className="text-lg font-bold tabular-nums">{selected.abCount}</p></div>
               <div className="bg-muted/10 rounded p-2"><p className="text-muted-foreground">置信度</p><p className="text-lg font-bold tabular-nums text-violet-400">{selected.confidence.toFixed(1)}%</p></div>
               <div className="bg-muted/10 rounded p-2"><p className="text-muted-foreground">提升度</p><p className="text-lg font-bold tabular-nums text-violet-400">{selected.lift.toFixed(1)}x</p></div>
-              <div className="bg-muted/10 rounded p-2"><p className="text-muted-foreground">建议</p><p className="text-sm font-semibold text-foreground">{getAction(selected)}</p></div>
+              <div className="bg-muted/10 rounded p-2"><p className="text-muted-foreground">建议</p><p className="text-base font-semibold text-foreground">{getAction(selected)}</p></div>
             </div>
-            <div className="grid grid-cols-2 gap-2 text-[10px]">
+            <div className="grid grid-cols-2 gap-2 text-xs">
               <div className="bg-muted/10 rounded p-2"><p className="text-muted-foreground">解读</p><p className="mt-0.5">购买「{selected.productA}」的客户中，{selected.confidence.toFixed(0)}% 也购买了「{selected.productB}」，是随机概率的 {selected.lift.toFixed(1)} 倍。</p></div>
               <div className="bg-muted/10 rounded p-2"><p className="text-muted-foreground">捆绑建议</p><p className="mt-0.5">建议将两件商品捆绑销售，原价合计 ¥200 → 8折 ¥160，预估增量 GMV ¥1,200。</p></div>
             </div>
@@ -163,12 +163,12 @@ export default function ProductAffinityPanel({ isDemo, shopUrl, accessToken, sho
       {showBundler && bundles.length > 0 && (
         <Card className="border-border/40 bg-card/60 shadow-lg"><CardContent className="p-3 space-y-3">
           <div className="flex items-center justify-between">
-            <p className="text-[10px] font-semibold text-muted-foreground">捆绑销售模拟器</p>
+            <p className="text-xs font-semibold text-muted-foreground">捆绑销售模拟器</p>
             <div className="flex items-center gap-1"><span className="text-[9px] text-muted-foreground">折扣:</span>
-              <Input type="number" value={bundleDiscount} onChange={function (e) { setBundleDiscount(Number(e.target.value) || 0.8); }} className="h-6 w-14 text-[10px]" step="0.05" min="0.5" max="1" />
+              <Input type="number" value={bundleDiscount} onChange={function (e) { setBundleDiscount(Number(e.target.value) || 0.8); }} className="h-6 w-14 text-sm" step="0.05" min="0.5" max="1" />
             </div>
           </div>
-          <table className="w-full text-[10px]">
+          <table className="w-full text-xs">
             <thead><tr className="text-muted-foreground border-b border-border/20"><th className="py-1 text-left">商品组合</th><th className="py-1 text-right">原价</th><th className="py-1 text-right">捆绑价</th><th className="py-1 text-right">预估销量</th><th className="py-1 text-right">预估 GMV</th></tr></thead>
             <tbody>{bundles.map(function (b, i) { return <tr key={i} className="border-b border-border/10"><td className="py-1">{b.products.join(" + ")}</td><td className="py-1 text-right tabular-nums">¥{b.originalTotal}</td><td className="py-1 text-right tabular-nums text-violet-400">¥{b.bundledPrice}</td><td className="py-1 text-right tabular-nums">{b.estimatedSales}</td><td className="py-1 text-right tabular-nums text-emerald-400">{formatCny(Math.round(b.bundleGMV * EXCHANGE_RATE))}</td></tr>; })}</tbody>
           </table>

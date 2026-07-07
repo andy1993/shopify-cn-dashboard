@@ -91,11 +91,11 @@ export default function TaxOverviewPanel({ isDemo, shopUrl, accessToken, shopNam
 
   return (
     <div className="space-y-4">
-      {toast && <div className="fixed bottom-6 left-1/2 -translate-x-1/2 z-50 rounded-lg bg-emerald-600/90 px-4 py-2 text-sm font-medium text-white shadow-2xl">{toast}</div>}
+      {toast && <div className="fixed bottom-6 left-1/2 -translate-x-1/2 z-50 rounded-lg bg-emerald-600/90 px-4 py-2 text-base font-medium text-white shadow-2xl">{toast}</div>}
 
       <div>
         <h2 className="flex items-center gap-2 text-xl font-bold text-foreground"><Receipt className="h-6 w-6 text-rose-400" />税务总览</h2>
-        <p className="mt-1 text-sm text-muted-foreground">{shopName} · {markets.length} 个市场{isDemo && <span className="ml-2 text-xs text-amber-400">(演示)</span>}</p>
+        <p className="mt-1 text-base text-muted-foreground">{shopName} · {markets.length} 个市场{isDemo && <span className="ml-2 text-sm text-amber-400">(演示)</span>}</p>
       </div>
 
       {/* Risk Scan Alerts */}
@@ -107,9 +107,9 @@ export default function TaxOverviewPanel({ isDemo, shopUrl, accessToken, shopNam
                 {risk.level === "high" ? <AlertCircle className="h-4 w-4 text-red-400 shrink-0 mt-0.5"/> : <AlertTriangle className="h-4 w-4 text-amber-400 shrink-0 mt-0.5"/>}
                 <div className="flex-1 min-w-0">
                   <div className="flex items-center gap-2"><Badge className={`text-[8px] px-1 py-0 ${risk.level==="high"?"bg-red-500/15 text-red-400":"bg-amber-500/15 text-amber-400"}`}>{risk.level==="high"?"高风险":"中风险"}</Badge>
-                    <span className="text-[10px] text-muted-foreground">{countryCodeToFlag(market.countryCode)} {market.countryName}</span>
+                    <span className="text-xs text-muted-foreground">{countryCodeToFlag(market.countryCode)} {market.countryName}</span>
                   </div>
-                  <p className="text-xs text-foreground mt-0.5">{risk.message}</p>
+                  <p className="text-sm text-foreground mt-0.5">{risk.message}</p>
                 </div>
                 <div className="flex gap-1 shrink-0">
                   <Button size="sm" variant="ghost" onClick={() => setExpandedMarket(market.marketId)} className="h-6 text-[9px]">详情</Button>
@@ -124,7 +124,7 @@ export default function TaxOverviewPanel({ isDemo, shopUrl, accessToken, shopNam
       {/* Status Cards */}
       <div className="grid grid-cols-3 gap-3">
         {[{v:stats.configured,l:"已配置",c:"text-emerald-400",bg:"bg-emerald-500/10"},{v:stats.withRisk,l:"需关注",c:"text-amber-400",bg:"bg-amber-500/10"},{v:stats.unconfigured,l:"未配置",c:"text-red-400",bg:"bg-red-500/10"}].map((s,i)=>
-          <Card key={i} className="border-border/40 bg-card/60"><CardContent className="p-3 text-center"><p className={`text-2xl font-bold tabular-nums ${s.c}`}>{s.v}</p><p className="text-[10px] text-muted-foreground mt-0.5">{s.l}</p></CardContent></Card>
+          <Card key={i} className="border-border/40 bg-card/60"><CardContent className="p-3 text-center"><p className={`text-2xl font-bold tabular-nums ${s.c}`}>{s.v}</p><p className="text-xs text-muted-foreground mt-0.5">{s.l}</p></CardContent></Card>
         )}
       </div>
 
@@ -132,8 +132,8 @@ export default function TaxOverviewPanel({ isDemo, shopUrl, accessToken, shopNam
       {markets.length > 0 && (
         <Card className="border-border/40 bg-card/60 shadow-lg backdrop-blur-lg overflow-x-auto">
           <CardContent className="p-0">
-            <table className="w-full text-xs min-w-[600px]">
-              <thead><tr className="border-b border-border/20 text-[10px] font-semibold uppercase tracking-wider text-muted-foreground">
+            <table className="w-full text-sm min-w-[600px]">
+              <thead><tr className="border-b border-border/20 text-xs font-semibold uppercase tracking-wider text-muted-foreground">
                 <th className="py-2 pl-3 text-left sticky left-0 bg-card/90 backdrop-blur">税种</th>
                 {markets.map((m) => <th key={m.marketId} className="py-2 px-3 text-center min-w-[100px]">{countryCodeToFlag(m.countryCode)} {m.countryName}</th>)}
               </tr></thead>
@@ -171,10 +171,10 @@ export default function TaxOverviewPanel({ isDemo, shopUrl, accessToken, shopNam
           <Card className="border-border/40 bg-card/60 shadow-lg border-l-2 border-l-rose-500">
             <CardContent className="p-4 space-y-2">
               <div className="flex items-center justify-between">
-                <p className="text-sm font-semibold flex items-center gap-2">{countryCodeToFlag(m.countryCode)} {m.countryName}<Badge className={`text-[9px] ${m.taxConfigured?"bg-emerald-500/15 text-emerald-400":"bg-red-500/15 text-red-400"}`}>{m.taxConfigured?"已配置":"未配置"}</Badge></p>
+                <p className="text-base font-semibold flex items-center gap-2">{countryCodeToFlag(m.countryCode)} {m.countryName}<Badge className={`text-[9px] ${m.taxConfigured?"bg-emerald-500/15 text-emerald-400":"bg-red-500/15 text-red-400"}`}>{m.taxConfigured?"已配置":"未配置"}</Badge></p>
                 <Button size="sm" variant="ghost" onClick={()=>setExpandedMarket(null)}><X className="h-4 w-4"/></Button>
               </div>
-              <div className="grid grid-cols-3 gap-2 text-[10px]">
+              <div className="grid grid-cols-3 gap-2 text-xs">
                 <div className="bg-muted/10 rounded px-2 py-1.5"><p className="text-muted-foreground">标准税率</p><p className="text-foreground font-semibold">{m.taxRate ? `${m.taxRate}%` : "未配置"}</p></div>
                 <div className="bg-muted/10 rounded px-2 py-1.5"><p className="text-muted-foreground">低税率</p><p className="text-foreground font-semibold">{m.reducedRate ? `${m.reducedRate}%` : "—"}</p></div>
                 <div className="bg-muted/10 rounded px-2 py-1.5"><p className="text-muted-foreground">VAT/IOSS号</p><p className="text-foreground font-semibold font-mono">{m.vatId || "—"}</p></div>
@@ -184,9 +184,9 @@ export default function TaxOverviewPanel({ isDemo, shopUrl, accessToken, shopNam
               </div>
               {m.risks.length > 0 && (
                 <div className="pt-2 border-t border-border/20">
-                  <p className="text-[10px] font-semibold text-muted-foreground mb-1">风险项</p>
+                  <p className="text-xs font-semibold text-muted-foreground mb-1">风险项</p>
                   {m.risks.map((r,i) => (
-                    <div key={i} className="flex items-center gap-1.5 text-[10px]">
+                    <div key={i} className="flex items-center gap-1.5 text-xs">
                       <span className={r.level==="high"?"text-red-400":"text-amber-400"}>{r.level==="high"?"🔴":"🟡"}</span><span className="text-muted-foreground">{r.message}</span>
                     </div>
                   ))}
@@ -198,20 +198,20 @@ export default function TaxOverviewPanel({ isDemo, shopUrl, accessToken, shopNam
       })()}
 
       {/* Tax Tips */}
-      <button onClick={() => setShowTips(!showTips)} className="flex items-center gap-1 text-[10px] text-muted-foreground hover:text-foreground">
+      <button onClick={() => setShowTips(!showTips)} className="flex items-center gap-1 text-xs text-muted-foreground hover:text-foreground">
         <Info className="h-3 w-3"/>{showTips ? <ChevronDown className="h-3 w-3"/> : <ChevronRight className="h-3 w-3"/>}税务知识提示
       </button>
       {showTips && (
         <div className="space-y-1">
           {TAX_TIPS.map((tip) => (
-            <Card key={tip.title} className="border-border/40 bg-muted/10"><CardContent className="p-2"><p className="text-[10px] font-semibold text-foreground">{tip.title}</p><p className="text-[9px] text-muted-foreground mt-0.5">{tip.content}</p></CardContent></Card>
+            <Card key={tip.title} className="border-border/40 bg-muted/10"><CardContent className="p-2"><p className="text-xs font-semibold text-foreground">{tip.title}</p><p className="text-[9px] text-muted-foreground mt-0.5">{tip.content}</p></CardContent></Card>
           ))}
         </div>
       )}
 
       {/* Export */}
       <div className="flex justify-end">
-        <Button size="sm" variant="outline" onClick={exportCSV} className="h-7 gap-1 text-[10px]"><Download className="h-3 w-3"/>导出税务报告</Button>
+        <Button size="sm" variant="outline" onClick={exportCSV} className="h-7 gap-1 text-xs"><Download className="h-3 w-3"/>导出税务报告</Button>
       </div>
     </div>
   );

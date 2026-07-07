@@ -427,12 +427,12 @@ export default function ProductControlPanel({
   return (
     <div className="space-y-4 animate-in fade-in duration-300">
       {/* Toast */}
-      {toast && <div className="fixed bottom-6 left-1/2 -translate-x-1/2 z-50 rounded-lg bg-emerald-600/90 px-4 py-2 text-sm font-medium text-white shadow-2xl backdrop-blur-md">{toast}</div>}
+      {toast && <div className="fixed bottom-6 left-1/2 -translate-x-1/2 z-50 rounded-lg bg-emerald-600/90 px-4 py-2 text-base font-medium text-white shadow-2xl backdrop-blur-md">{toast}</div>}
 
       {/* Header */}
       <div>
         <h2 className="flex items-center gap-2 text-xl font-bold text-foreground"><ShoppingCart className="h-6 w-6 text-amber-400" />跨店改价控制</h2>
-        <p className="mt-1 text-sm text-muted-foreground">{isDemo ? "多店演示" : stores[0]?.shopName || "商品库"} · {catalog.length} 个商品 · {catalog.reduce((s, p) => s + p.variants.length, 0)} 个变体</p>
+        <p className="mt-1 text-base text-muted-foreground">{isDemo ? "多店演示" : stores[0]?.shopName || "商品库"} · {catalog.length} 个商品 · {catalog.reduce((s, p) => s + p.variants.length, 0)} 个变体</p>
       </div>
 
       {/* Filter / Search / Sort Bar */}
@@ -440,25 +440,25 @@ export default function ProductControlPanel({
         <CardContent className="flex flex-wrap items-center gap-2 px-4 py-2.5">
           <div className="relative flex-1 min-w-[140px]">
             <Search className="absolute left-2 top-1/2 h-3 w-3 -translate-y-1/2 text-muted-foreground" />
-            <Input value={searchQuery} onChange={(e) => setSearchQuery(e.target.value)} placeholder="搜索标题或 SKU..." className="h-8 pl-7 text-xs" />
+            <Input value={searchQuery} onChange={(e) => setSearchQuery(e.target.value)} placeholder="搜索标题或 SKU..." className="h-9 pl-7 text-sm" />
           </div>
-          <select value={filterStatus} onChange={(e) => setFilterStatus(e.target.value)} className="h-8 rounded border border-border/40 bg-background px-2 text-xs text-foreground">
+          <select value={filterStatus} onChange={(e) => setFilterStatus(e.target.value)} className="h-9 rounded border border-border/40 bg-background px-2 text-sm text-foreground">
             <option value="all">全部状态</option>
             <option value="ACTIVE">上架 (ACTIVE)</option>
             <option value="DRAFT">下架 (DRAFT)</option>
           </select>
           {(["title", "inventory", "price"] as const).map((k) => (
-            <button key={k} onClick={() => toggleSort(k)} className="flex items-center gap-0.5 h-8 rounded border border-border/40 bg-background px-2 text-xs text-muted-foreground hover:text-foreground">
+            <button key={k} onClick={() => toggleSort(k)} className="flex items-center gap-0.5 h-9 rounded border border-border/40 bg-background px-2 text-sm text-muted-foreground hover:text-foreground">
               {k === "title" ? "标题" : k === "inventory" ? "库存" : "价格"}
               {sortKey === k ? (sortDir === "asc" ? "↑" : "↓") : "↕"}
             </button>
           ))}
           {(searchQuery || filterStatus !== "all") && (
-            <Button size="sm" variant="ghost" className="h-8 text-xs text-muted-foreground" onClick={() => { setSearchQuery(""); setFilterStatus("all"); }}>
+            <Button size="sm" variant="ghost" className="h-9 text-sm text-muted-foreground" onClick={() => { setSearchQuery(""); setFilterStatus("all"); }}>
               <X className="h-3 w-3" />清除
             </Button>
           )}
-          <span className="ml-auto text-xs text-muted-foreground">{filteredCatalog.length} 个商品</span>
+          <span className="ml-auto text-sm text-muted-foreground">{filteredCatalog.length} 个商品</span>
         </CardContent>
       </Card>
 
@@ -469,44 +469,44 @@ export default function ProductControlPanel({
             {/* Main row */}
             <div className={`flex items-center gap-3 px-5 py-4 hover:bg-muted/20 transition-colors ${product.expanded ? "border-b border-border/20" : ""} ${product.hasMultipleVariants ? "cursor-pointer" : ""}`}
               onClick={() => product.hasMultipleVariants && toggleExpand(product.id)}>
-              <div className="flex h-8 w-8 shrink-0 items-center justify-center">
+              <div className="flex h-9 w-8 shrink-0 items-center justify-center">
                 {product.hasMultipleVariants ? (product.expanded ? <ChevronDown className="h-4 w-4 text-amber-400" /> : <ChevronRight className="h-4 w-4 text-muted-foreground" />) : <div className="h-4 w-4" />}
               </div>
               {product.image ? <img src={product.image} alt={product.title} className="h-10 w-10 rounded-md border border-border/50 object-cover shrink-0" /> : <div className="flex h-10 w-10 shrink-0 items-center justify-center rounded-md border border-border/50 bg-muted/20"><ImageOff className="h-5 w-5 text-muted-foreground/30" /></div>}
-              <div className="min-w-0 flex-1"><p className="text-sm font-semibold text-foreground truncate">{product.title}</p>
+              <div className="min-w-0 flex-1"><p className="text-base font-semibold text-foreground truncate">{product.title}</p>
                 <div className="flex items-center gap-2 mt-0.5"><span className="text-[11px] text-muted-foreground">{product.shopFlag} {product.shopName}</span></div>
               </div>
-              <Badge variant="outline" className={`shrink-0 text-[10px] px-2 py-0 border ${product.hasMultipleVariants ? "border-amber-500/30 text-amber-400" : "border-border/40 text-muted-foreground"}`}>
+              <Badge variant="outline" className={`shrink-0 text-xs px-2 py-0 border ${product.hasMultipleVariants ? "border-amber-500/30 text-amber-400" : "border-border/40 text-muted-foreground"}`}>
                 {product.hasMultipleVariants ? "多规格 (" + product.variants.length + ")" : "单规格"}
               </Badge>
-              <Badge className={`shrink-0 text-[10px] px-2 py-0 ${product.status === "ACTIVE" ? "bg-emerald-500/15 text-emerald-400" : "bg-zinc-500/15 text-zinc-400"}`}>
+              <Badge className={`shrink-0 text-xs px-2 py-0 ${product.status === "ACTIVE" ? "bg-emerald-500/15 text-emerald-400" : "bg-zinc-500/15 text-zinc-400"}`}>
                 {product.status === "ACTIVE" ? "上架" : "草稿"}
               </Badge>
 
               {/* Action buttons */}
               <div className="flex items-center gap-1 shrink-0" onClick={(e) => e.stopPropagation()}>
-                <Button size="sm" variant="ghost" onClick={() => openEdit(product)} className="h-8 w-8 p-0" title="编辑详情"><Edit3 className="h-3.5 w-3.5 text-muted-foreground" /></Button>
+                <Button size="sm" variant="ghost" onClick={() => openEdit(product)} className="h-9 w-8 p-0" title="编辑详情"><Edit3 className="h-3.5 w-3.5 text-muted-foreground" /></Button>
                 <StatusToggle status={product.status} onChange={() => toggleStatus(product)} />
               </div>
 
               {product.hasMultipleVariants ? (
-                <p className="text-xs text-muted-foreground/50 shrink-0">点击展开变体</p>
+                <p className="text-sm text-muted-foreground/50 shrink-0">点击展开变体</p>
               ) : (() => {
                 const v = product.variants[0];
                 return (
                   <div className="flex items-center gap-2 shrink-0" onClick={(e) => e.stopPropagation()}>
-                    <span className="text-sm font-semibold text-emerald-400 tabular-nums w-20 text-right">${v.price.toFixed(2)}</span>
-                    <span className={`text-sm font-medium tabular-nums w-10 text-right ${v.inventory < 10 ? "text-red-400" : "text-foreground"}`}>{v.inventory}</span>
+                    <span className="text-base font-semibold text-emerald-400 tabular-nums w-20 text-right">${v.price.toFixed(2)}</span>
+                    <span className={`text-base font-medium tabular-nums w-10 text-right ${v.inventory < 10 ? "text-red-400" : "text-foreground"}`}>{v.inventory}</span>
                     <div className="flex items-center gap-1"><DollarSign className="h-3 w-3 text-muted-foreground" />
                       <Input type="number" step={0.01} min={0} value={v.newPrice} onChange={(e) => setCatalog((prev) => prev.map((p) => ({ ...p, variants: p.variants.map((vv) => vv.variantId === v.variantId ? { ...vv, newPrice: Number(e.target.value) || 0, synced: false } : vv) })))}
-                        className={`h-8 w-24 text-center text-sm tabular-nums ${v.newPrice < v.price ? "border-emerald-500/40 bg-emerald-500/5 text-emerald-400" : v.newPrice > v.price ? "border-amber-500/40 bg-amber-500/5 text-amber-400" : ""}`} />
+                        className={`h-9 w-24 text-center text-base tabular-nums ${v.newPrice < v.price ? "border-emerald-500/40 bg-emerald-500/5 text-emerald-400" : v.newPrice > v.price ? "border-amber-500/40 bg-amber-500/5 text-amber-400" : ""}`} />
                     </div>
                     <Input type="number" step={1} min={0} value={v.newInventory} onChange={(e) => setCatalog((prev) => prev.map((p) => ({ ...p, variants: p.variants.map((vv) => vv.variantId === v.variantId ? { ...vv, newInventory: Number(e.target.value) || 0, synced: false } : vv) })))}
-                      className="h-8 w-20 text-center text-sm tabular-nums" />
-                    {v.syncing ? <Button size="sm" disabled className="h-8 gap-1 text-xs"><RefreshCw className="h-3 w-3 animate-spin" />同步中</Button>
-                    : v.synced ? <Badge className="bg-emerald-500/15 text-emerald-400 px-2 py-1 text-[10px] gap-1"><CheckCircle2 className="h-3 w-3" />已同步</Badge>
-                    : v.newPrice !== v.price || v.newInventory !== v.inventory ? <Button size="sm" onClick={() => syncVariant(product.id, v.variantId)} className="h-8 gap-1 bg-amber-600 text-white hover:bg-amber-500 text-xs"><Save className="h-3 w-3" />同步</Button>
-                    : <span className="text-xs text-muted-foreground w-14 text-center">无变更</span>}
+                      className="h-9 w-20 text-center text-base tabular-nums" />
+                    {v.syncing ? <Button size="sm" disabled className="h-9 gap-1 text-sm"><RefreshCw className="h-3 w-3 animate-spin" />同步中</Button>
+                    : v.synced ? <Badge className="bg-emerald-500/15 text-emerald-400 px-2 py-1 text-xs gap-1"><CheckCircle2 className="h-3 w-3" />已同步</Badge>
+                    : v.newPrice !== v.price || v.newInventory !== v.inventory ? <Button size="sm" onClick={() => syncVariant(product.id, v.variantId)} className="h-9 gap-1 bg-amber-600 text-white hover:bg-amber-500 text-sm"><Save className="h-3 w-3" />同步</Button>
+                    : <span className="text-sm text-muted-foreground w-14 text-center">无变更</span>}
                   </div>
                 );
               })()}
@@ -516,12 +516,12 @@ export default function ProductControlPanel({
             {product.expanded && product.hasMultipleVariants && (
               <CardContent className="px-5 py-3 animate-[fadeIn_0.2s_ease-out]">
                 <div className="flex items-center gap-2 mb-3">
-                  <Button size="sm" onClick={() => syncAllVariants(product.id)} className="h-8 gap-1 bg-emerald-600 text-white hover:bg-emerald-500 text-xs"><Zap className="h-3 w-3" />一键同步全部变体</Button>
-                  <Button size="sm" variant="outline" onClick={() => resetProduct(product.id)} className="h-8 gap-1 text-xs"><RotateCcw className="h-3 w-3" />重置</Button>
+                  <Button size="sm" onClick={() => syncAllVariants(product.id)} className="h-9 gap-1 bg-emerald-600 text-white hover:bg-emerald-500 text-sm"><Zap className="h-3 w-3" />一键同步全部变体</Button>
+                  <Button size="sm" variant="outline" onClick={() => resetProduct(product.id)} className="h-9 gap-1 text-sm"><RotateCcw className="h-3 w-3" />重置</Button>
                 </div>
-                <table className="w-full text-sm">
+                <table className="w-full text-base">
                   <thead>
-                    <tr className="border-b border-border/20 text-[10px] font-semibold uppercase tracking-wider text-muted-foreground">
+                    <tr className="border-b border-border/20 text-xs font-semibold uppercase tracking-wider text-muted-foreground">
                       <th className="py-2 text-left pl-2">变体</th>
                       <th className="py-2 text-left">SKU</th>
                       <th className="py-2 text-right">当前价</th>
@@ -534,24 +534,24 @@ export default function ProductControlPanel({
                   <tbody>
                     {product.variants.map((v) => (
                       <tr key={v.variantId} className="border-b border-border/10 transition-colors hover:bg-muted/10">
-                        <td className="py-2 pl-2 text-sm text-foreground">{v.name}</td>
-                        <td className="py-2 text-xs text-muted-foreground font-mono">{v.sku}</td>
+                        <td className="py-2 pl-2 text-base text-foreground">{v.name}</td>
+                        <td className="py-2 text-sm text-muted-foreground font-mono">{v.sku}</td>
                         <td className="py-2 text-right tabular-nums text-emerald-400 font-semibold">${v.price.toFixed(2)}</td>
                         <td className={`py-2 text-right tabular-nums font-medium ${v.inventory < 10 ? "text-red-400" : "text-foreground"}`}>{v.inventory}</td>
                         <td className="py-2 text-right">
                           <Input type="number" step={0.01} min={0} value={v.newPrice} onChange={(e) => setCatalog((prev) => prev.map((p) => ({ ...p, variants: p.variants.map((vv) => vv.variantId === v.variantId ? { ...vv, newPrice: Number(e.target.value) || 0, synced: false } : vv) })))}
-                            className={`h-7 w-24 text-center text-xs tabular-nums inline-block ${v.newPrice < v.price ? "border-emerald-500/40 bg-emerald-500/5 text-emerald-400" : v.newPrice > v.price ? "border-amber-500/40 bg-amber-500/5 text-amber-400" : ""}`} />
+                            className={`h-7 w-24 text-center text-sm tabular-nums inline-block ${v.newPrice < v.price ? "border-emerald-500/40 bg-emerald-500/5 text-emerald-400" : v.newPrice > v.price ? "border-amber-500/40 bg-amber-500/5 text-amber-400" : ""}`} />
                         </td>
                         <td className="py-2 text-right">
                           <Input type="number" step={1} min={0} value={v.newInventory} onChange={(e) => setCatalog((prev) => prev.map((p) => ({ ...p, variants: p.variants.map((vv) => vv.variantId === v.variantId ? { ...vv, newInventory: Number(e.target.value) || 0, synced: false } : vv) })))}
-                            className="h-7 w-20 text-center text-xs tabular-nums inline-block" />
+                            className="h-7 w-20 text-center text-sm tabular-nums inline-block" />
                         </td>
                         <td className="py-2 text-center">
-                          {v.errorMsg && <p className="text-[10px] text-red-400">{v.errorMsg}</p>}
-                          {v.syncing ? <Button size="sm" disabled className="h-7 gap-1 text-[10px]"><RefreshCw className="h-2.5 w-2.5 animate-spin" />中</Button>
-                          : v.synced ? <Badge className="bg-emerald-500/15 text-emerald-400 px-2 py-0.5 text-[10px]"><CheckCircle2 className="h-2.5 w-2.5 mr-0.5" />已同步</Badge>
-                          : v.newPrice !== v.price || v.newInventory !== v.inventory ? <Button size="sm" onClick={() => syncVariant(product.id, v.variantId)} className="h-7 gap-1 bg-amber-600 text-white hover:bg-amber-500 text-[10px]"><Save className="h-2.5 w-2.5" />同步</Button>
-                          : <span className="text-[10px] text-muted-foreground">-</span>}
+                          {v.errorMsg && <p className="text-xs text-red-400">{v.errorMsg}</p>}
+                          {v.syncing ? <Button size="sm" disabled className="h-7 gap-1 text-xs"><RefreshCw className="h-2.5 w-2.5 animate-spin" />中</Button>
+                          : v.synced ? <Badge className="bg-emerald-500/15 text-emerald-400 px-2 py-0.5 text-xs"><CheckCircle2 className="h-2.5 w-2.5 mr-0.5" />已同步</Badge>
+                          : v.newPrice !== v.price || v.newInventory !== v.inventory ? <Button size="sm" onClick={() => syncVariant(product.id, v.variantId)} className="h-7 gap-1 bg-amber-600 text-white hover:bg-amber-500 text-xs"><Save className="h-2.5 w-2.5" />同步</Button>
+                          : <span className="text-xs text-muted-foreground">-</span>}
                         </td>
                       </tr>
                     ))}
@@ -572,16 +572,16 @@ export default function ProductControlPanel({
               {/* Header */}
               <div className="flex items-center justify-between border-b border-border/20 px-5 py-3 shrink-0">
                 <div>
-                  <h3 className="text-sm font-semibold text-foreground">编辑商品</h3>
-                  <p className="text-[10px] text-muted-foreground">{editProduct.title}</p>
+                  <h3 className="text-base font-semibold text-foreground">编辑商品</h3>
+                  <p className="text-xs text-muted-foreground">{editProduct.title}</p>
                 </div>
-                <Button size="sm" variant="ghost" onClick={() => { setEditProduct(null); setEditFields(null); }} className="h-8 w-8 p-0"><X className="h-4 w-4" /></Button>
+                <Button size="sm" variant="ghost" onClick={() => { setEditProduct(null); setEditFields(null); }} className="h-9 w-8 p-0"><X className="h-4 w-4" /></Button>
               </div>
 
               {/* Tabs */}
               <div className="flex border-b border-border/20 px-5 shrink-0">
                 {(["basic", "images", "seo", "variants"] as const).map((t) => (
-                  <button key={t} onClick={() => setEditTab(t)} className={`px-3 py-2.5 text-xs font-semibold border-b-2 transition-colors ${editTab === t ? "border-emerald-500 text-emerald-400" : "border-transparent text-muted-foreground hover:text-foreground"}`}>
+                  <button key={t} onClick={() => setEditTab(t)} className={`px-3 py-2.5 text-sm font-semibold border-b-2 transition-colors ${editTab === t ? "border-emerald-500 text-emerald-400" : "border-transparent text-muted-foreground hover:text-foreground"}`}>
                     {t === "basic" ? "基本信息" : t === "images" ? "图片管理" : t === "seo" ? "SEO 元数据" : "变体编辑"}
                   </button>
                 ))}
@@ -592,22 +592,22 @@ export default function ProductControlPanel({
                 {editTab === "basic" && (
                   <>
                     <div>
-                      <label className="text-[10px] font-semibold uppercase tracking-wider text-muted-foreground mb-1 block">商品标题 *</label>
+                      <label className="text-xs font-semibold uppercase tracking-wider text-muted-foreground mb-1 block">商品标题 *</label>
                       <Input value={editFields.title} onChange={(e) => setEditFields({ ...editFields, title: e.target.value })} className="h-9 text-sm" />
                     </div>
                     <div>
                       <div className="flex items-center justify-between mb-1">
-                        <label className="text-[10px] font-semibold uppercase tracking-wider text-muted-foreground">商品描述</label>
+                        <label className="text-xs font-semibold uppercase tracking-wider text-muted-foreground">商品描述</label>
                         <div className="flex bg-muted/20 rounded-md p-0.5">
-                          <button onClick={() => setDescMode("preview")} className={`px-2 py-0.5 text-[10px] rounded font-medium transition-colors ${descMode === "preview" ? "bg-emerald-500/20 text-emerald-400" : "text-muted-foreground hover:text-foreground"}`}>预览</button>
-                          <button onClick={() => setDescMode("edit")} className={`px-2 py-0.5 text-[10px] rounded font-medium transition-colors ${descMode === "edit" ? "bg-sky-500/20 text-sky-400" : "text-muted-foreground hover:text-foreground"}`}>编辑</button>
+                          <button onClick={() => setDescMode("preview")} className={`px-2 py-0.5 text-xs rounded font-medium transition-colors ${descMode === "preview" ? "bg-emerald-500/20 text-emerald-400" : "text-muted-foreground hover:text-foreground"}`}>预览</button>
+                          <button onClick={() => setDescMode("edit")} className={`px-2 py-0.5 text-xs rounded font-medium transition-colors ${descMode === "edit" ? "bg-sky-500/20 text-sky-400" : "text-muted-foreground hover:text-foreground"}`}>编辑</button>
                         </div>
                       </div>
                       {descMode === "preview" ? (
                         <div
-                          className="min-h-[100px] rounded-md border border-border/40 bg-muted/10 px-3 py-2 text-xs text-foreground overflow-auto
+                          className="min-h-[100px] rounded-md border border-border/40 bg-muted/10 px-3 py-2 text-sm text-foreground overflow-auto
                             [&_ul]:list-disc [&_ul]:pl-4 [&_ol]:list-decimal [&_ol]:pl-4
-                            [&_h1]:text-sm [&_h2]:text-xs [&_h3]:text-xs
+                            [&_h1]:text-base [&_h2]:text-sm [&_h3]:text-sm
                             [&_strong]:font-bold [&_em]:italic
                             [&_p]:mb-1 [&_li]:mb-0.5"
                           dangerouslySetInnerHTML={{ __html: editFields.bodyHtml || "<span class='text-muted-foreground italic'>暂无描述</span>" }}
@@ -618,40 +618,40 @@ export default function ProductControlPanel({
                           onChange={(e) => setEditFields({ ...editFields, bodyHtml: e.target.value })}
                           placeholder={"输入 HTML 格式的商品描述，支持 <p> <ul> <strong> 等标签"}
                           rows={5}
-                          className="w-full rounded-md border border-border/40 bg-background px-3 py-2 text-xs text-foreground font-mono resize-y placeholder:text-muted-foreground/50"
+                          className="w-full rounded-md border border-border/40 bg-background px-3 py-2 text-sm text-foreground font-mono resize-y placeholder:text-muted-foreground/50"
                         />
                       )}
                     </div>
                     <div className="grid grid-cols-2 gap-3">
                       <div>
-                        <label className="text-[10px] font-semibold uppercase tracking-wider text-muted-foreground mb-1 block">供应商/Vendor</label>
+                        <label className="text-xs font-semibold uppercase tracking-wider text-muted-foreground mb-1 block">供应商/Vendor</label>
                         <Input value={editFields.vendor} onChange={(e) => setEditFields({ ...editFields, vendor: e.target.value })} className="h-9 text-sm" />
                       </div>
                       <div>
-                        <label className="text-[10px] font-semibold uppercase tracking-wider text-muted-foreground mb-1 block">品类/Product Type</label>
+                        <label className="text-xs font-semibold uppercase tracking-wider text-muted-foreground mb-1 block">品类/Product Type</label>
                         <Input value={editFields.productType} onChange={(e) => setEditFields({ ...editFields, productType: e.target.value })} className="h-9 text-sm" />
                       </div>
                     </div>
                     <div>
-                      <label className="text-[10px] font-semibold uppercase tracking-wider text-muted-foreground mb-1 block">标签 (逗号分隔)</label>
+                      <label className="text-xs font-semibold uppercase tracking-wider text-muted-foreground mb-1 block">标签 (逗号分隔)</label>
                       <div className="flex flex-wrap gap-1 mb-1.5">
                         {editFields.tags.map((t) => (
-                          <Badge key={t} className="text-[10px] px-2 py-0.5 gap-1 bg-zinc-500/15 text-zinc-400 border border-zinc-500/30">
+                          <Badge key={t} className="text-xs px-2 py-0.5 gap-1 bg-zinc-500/15 text-zinc-400 border border-zinc-500/30">
                             {t} <button onClick={() => setEditFields({ ...editFields, tags: editFields.tags.filter((x) => x !== t) })}><X className="h-2.5 w-2.5" /></button>
                           </Badge>
                         ))}
                       </div>
                       <div className="flex gap-1">
-                        <Input placeholder="新标签..." className="h-8 text-xs" onKeyDown={(e) => {
+                        <Input placeholder="新标签..." className="h-9 text-sm" onKeyDown={(e) => {
                           if (e.key === "Enter") { const v = (e.target as HTMLInputElement).value.trim(); if (v && !editFields.tags.includes(v)) setEditFields({ ...editFields, tags: [...editFields.tags, v] }); (e.target as HTMLInputElement).value = ""; }
                         }} />
                       </div>
                     </div>
                     <div>
-                      <label className="text-[10px] font-semibold uppercase tracking-wider text-muted-foreground mb-1 block">商品状态</label>
+                      <label className="text-xs font-semibold uppercase tracking-wider text-muted-foreground mb-1 block">商品状态</label>
                       <div className="flex items-center gap-2">
-                        <button onClick={() => setEditFields({ ...editFields, status: "active" })} className={`px-3 py-1.5 rounded text-xs font-medium ${editFields.status === "active" ? "bg-emerald-500/15 text-emerald-400 border border-emerald-500/30" : "border border-border/30 text-muted-foreground"}`}>上架 (Active)</button>
-                        <button onClick={() => setEditFields({ ...editFields, status: "draft" })} className={`px-3 py-1.5 rounded text-xs font-medium ${editFields.status === "draft" ? "bg-zinc-500/15 text-zinc-400 border border-zinc-500/30" : "border border-border/30 text-muted-foreground"}`}>下架 (Draft)</button>
+                        <button onClick={() => setEditFields({ ...editFields, status: "active" })} className={`px-3 py-1.5 rounded text-sm font-medium ${editFields.status === "active" ? "bg-emerald-500/15 text-emerald-400 border border-emerald-500/30" : "border border-border/30 text-muted-foreground"}`}>上架 (Active)</button>
+                        <button onClick={() => setEditFields({ ...editFields, status: "draft" })} className={`px-3 py-1.5 rounded text-sm font-medium ${editFields.status === "draft" ? "bg-zinc-500/15 text-zinc-400 border border-zinc-500/30" : "border border-border/30 text-muted-foreground"}`}>下架 (Draft)</button>
                       </div>
                     </div>
                   </>
@@ -660,8 +660,8 @@ export default function ProductControlPanel({
                 {editTab === "images" && (
                   <>
                     <div className="flex items-center justify-between">
-                      <p className="text-xs text-muted-foreground">{editFields.images.length} 张图片</p>
-                      <Button size="sm" variant="outline" onClick={addImage} className="h-8 gap-1 text-xs"><Upload className="h-3 w-3" />添加图片 (模拟)</Button>
+                      <p className="text-sm text-muted-foreground">{editFields.images.length} 张图片</p>
+                      <Button size="sm" variant="outline" onClick={addImage} className="h-9 gap-1 text-sm"><Upload className="h-3 w-3" />添加图片 (模拟)</Button>
                     </div>
                     <div className="grid grid-cols-3 gap-3">
                       {editFields.images.length > 0 ? editFields.images.map((img, idx) => (
@@ -672,12 +672,12 @@ export default function ProductControlPanel({
                             <button onClick={() => removeImage(img.id)} className="absolute top-1 right-1 h-5 w-5 flex items-center justify-center rounded bg-red-500/20 text-red-400 opacity-0 group-hover:opacity-100 transition-opacity"><Trash2 className="h-3 w-3" /></button>
                           )}
                           <div className="px-2 py-2">
-                            <Input value={img.alt || ""} onChange={(e) => setImageAlt(img.id, e.target.value)} placeholder="Alt 文本 (SEO)..." className="h-7 text-[10px]" />
+                            <Input value={img.alt || ""} onChange={(e) => setImageAlt(img.id, e.target.value)} placeholder="Alt 文本 (SEO)..." className="h-7 text-sm" />
                           </div>
                         </div>
                       )) : (
-                        <div className="col-span-3 flex flex-col items-center justify-center py-8 text-xs text-muted-foreground">
-                          <Image className="h-8 w-8 text-muted-foreground/20 mb-2" />
+                        <div className="col-span-3 flex flex-col items-center justify-center py-8 text-sm text-muted-foreground">
+                          <Image className="h-9 w-8 text-muted-foreground/20 mb-2" />
                           <span>暂无图片</span>
                         </div>
                       )}
@@ -689,22 +689,22 @@ export default function ProductControlPanel({
                   <>
                     <div>
                       <div className="flex items-center justify-between mb-1">
-                        <label className="text-[10px] font-semibold uppercase tracking-wider text-muted-foreground">页面标题 / SEO Title</label>
-                        <span className={"text-[10px] " + (editFields.seoTitle.length > 70 ? "text-red-400" : "text-muted-foreground")}>{editFields.seoTitle.length}/70</span>
+                        <label className="text-xs font-semibold uppercase tracking-wider text-muted-foreground">页面标题 / SEO Title</label>
+                        <span className={"text-xs " + (editFields.seoTitle.length > 70 ? "text-red-400" : "text-muted-foreground")}>{editFields.seoTitle.length}/70</span>
                       </div>
                       <Input value={editFields.seoTitle} onChange={(e) => setEditFields({ ...editFields, seoTitle: e.target.value })} maxLength={70} className="h-9 text-sm" />
                     </div>
                     <div>
                       <div className="flex items-center justify-between mb-1">
-                        <label className="text-[10px] font-semibold uppercase tracking-wider text-muted-foreground">SEO 描述 / Meta Description</label>
-                        <span className={"text-[10px] " + (editFields.seoDescription.length > 320 ? "text-red-400" : "text-muted-foreground")}>{editFields.seoDescription.length}/320</span>
+                        <label className="text-xs font-semibold uppercase tracking-wider text-muted-foreground">SEO 描述 / Meta Description</label>
+                        <span className={"text-xs " + (editFields.seoDescription.length > 320 ? "text-red-400" : "text-muted-foreground")}>{editFields.seoDescription.length}/320</span>
                       </div>
-                      <textarea value={editFields.seoDescription} onChange={(e) => setEditFields({ ...editFields, seoDescription: e.target.value })} maxLength={320} rows={3} className="w-full rounded-md border border-border/40 bg-background px-3 py-2 text-xs resize-none" />
+                      <textarea value={editFields.seoDescription} onChange={(e) => setEditFields({ ...editFields, seoDescription: e.target.value })} maxLength={320} rows={3} className="w-full rounded-md border border-border/40 bg-background px-3 py-2 text-sm resize-none" />
                     </div>
                     <div>
-                      <label className="text-[10px] font-semibold uppercase tracking-wider text-muted-foreground mb-1 block">URL 句柄 / Handle</label>
+                      <label className="text-xs font-semibold uppercase tracking-wider text-muted-foreground mb-1 block">URL 句柄 / Handle</label>
                       <Input value={editProduct.handle || ""} readOnly className="h-9 text-sm text-muted-foreground bg-muted/10" />
-                      <p className="text-[10px] text-muted-foreground/50 mt-0.5">Shopify 自动生成，不可手动编辑</p>
+                      <p className="text-xs text-muted-foreground/50 mt-0.5">Shopify 自动生成，不可手动编辑</p>
                     </div>
                   </>
                 )}
@@ -712,12 +712,12 @@ export default function ProductControlPanel({
                 {editTab === "variants" && (
                   <>
                     <div className="flex items-center gap-2 mb-3">
-                      <Input type="number" step={0.01} min={0} value={batchVariantPrice} onChange={(e) => setBatchVariantPrice(e.target.value)} placeholder="批量价格..." className="h-8 w-32 text-xs" />
-                      <Button size="sm" variant="outline" onClick={applyBatchPrice} className="h-8 text-xs">应用到全部变体</Button>
+                      <Input type="number" step={0.01} min={0} value={batchVariantPrice} onChange={(e) => setBatchVariantPrice(e.target.value)} placeholder="批量价格..." className="h-9 w-32 text-sm" />
+                      <Button size="sm" variant="outline" onClick={applyBatchPrice} className="h-9 text-sm">应用到全部变体</Button>
                     </div>
-                    <table className="w-full text-sm">
+                    <table className="w-full text-base">
                       <thead>
-                        <tr className="border-b border-border/20 text-[10px] font-semibold uppercase tracking-wider text-muted-foreground">
+                        <tr className="border-b border-border/20 text-xs font-semibold uppercase tracking-wider text-muted-foreground">
                           <th className="py-2 text-left">变体</th>
                           <th className="py-2 text-left">SKU</th>
                           <th className="py-2 text-right">价格</th>
@@ -728,22 +728,22 @@ export default function ProductControlPanel({
                       <tbody>
                         {editProduct.variants.map((v) => (
                           <tr key={v.variantId} className="border-b border-border/10">
-                            <td className="py-2 text-sm text-foreground">{v.name}</td>
-                            <td className="py-2 text-xs text-muted-foreground font-mono">{v.sku}</td>
+                            <td className="py-2 text-base text-foreground">{v.name}</td>
+                            <td className="py-2 text-sm text-muted-foreground font-mono">{v.sku}</td>
                             <td className="py-2 text-right">
                               <Input type="number" step={0.01} min={0} value={editFields.variantPrices[v.variantId] ?? v.newPrice}
                                 onChange={(e) => setEditFields({ ...editFields, variantPrices: { ...editFields.variantPrices, [v.variantId]: Number(e.target.value) || 0 } })}
-                                className="h-7 w-24 text-center text-xs inline-block" />
+                                className="h-7 w-24 text-center text-sm inline-block" />
                             </td>
                             <td className="py-2 text-right">
                               <Input type="number" step={1} min={0} value={editFields.variantInventories[v.variantId] ?? v.newInventory}
                                 onChange={(e) => setEditFields({ ...editFields, variantInventories: { ...editFields.variantInventories, [v.variantId]: Number(e.target.value) || 0 } })}
-                                className="h-7 w-20 text-center text-xs inline-block" />
+                                className="h-7 w-20 text-center text-sm inline-block" />
                             </td>
                             <td className="py-2 text-right">
                               <Input type="number" step={0.01} min={0} value={editFields.variantCosts[v.variantId] ?? 0}
                                 onChange={(e) => setEditFields({ ...editFields, variantCosts: { ...editFields.variantCosts, [v.variantId]: Number(e.target.value) || 0 } })}
-                                className="h-7 w-24 text-center text-xs inline-block" />
+                                className="h-7 w-24 text-center text-sm inline-block" />
                             </td>
                           </tr>
                         ))}

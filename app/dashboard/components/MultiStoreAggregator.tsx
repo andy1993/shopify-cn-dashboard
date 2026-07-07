@@ -248,9 +248,9 @@ function SummaryCard({
       <CardContent className="relative p-6">
         <div className="flex items-start justify-between">
           <div className="space-y-1">
-            <p className="text-sm font-medium text-muted-foreground">{title}</p>
+            <p className="text-base font-medium text-muted-foreground">{title}</p>
             <p className="text-3xl font-bold tracking-tight text-foreground">{value}</p>
-            <p className="text-xs text-muted-foreground">{subtitle}</p>
+            <p className="text-sm text-muted-foreground">{subtitle}</p>
           </div>
           <div className={`flex h-11 w-11 items-center justify-center rounded-xl ring-1 ${colors[accent]}`}>
             <Icon className="h-5 w-5" />
@@ -271,9 +271,9 @@ function StackedTooltip({
   if (!active || !payload?.length) return null;
   return (
     <div className="rounded-lg border border-border/50 bg-card px-3 py-2 shadow-lg backdrop-blur-sm">
-      <p className="mb-1 text-xs font-medium text-muted-foreground">{label}</p>
+      <p className="mb-1 text-sm font-medium text-muted-foreground">{label}</p>
       {payload.filter((e) => e.value > 0).map((entry, i) => (
-        <p key={i} className="text-sm font-semibold" style={{ color: entry.color }}>
+        <p key={i} className="text-base font-semibold" style={{ color: entry.color }}>
           {entry.name}: {formatCny(entry.value)}
         </p>
       ))}
@@ -421,8 +421,8 @@ export default function MultiStoreAggregator({
       <div className="flex items-center justify-center py-32">
         <Card className="border-border/40 bg-card/60 shadow-lg backdrop-blur-lg">
           <CardContent className="flex flex-col items-center gap-4 py-12 px-16">
-            <Loader2 className="h-8 w-8 animate-spin text-emerald-500" />
-            <p className="text-sm font-medium text-muted-foreground">
+            <Loader2 className="h-9 w-8 animate-spin text-emerald-500" />
+            <p className="text-base font-medium text-muted-foreground">
               {stores.length === 1 ? "正在读取当前店铺数据..." : `正在拉取 ${realCount} 家真实店铺数据...`}
             </p>
           </CardContent>
@@ -439,7 +439,7 @@ export default function MultiStoreAggregator({
           <Layers className="h-6 w-6 text-sky-400" />
           全店聚合大盘
         </h2>
-        <p className="mt-1 text-sm text-muted-foreground">
+        <p className="mt-1 text-base text-muted-foreground">
           {stores.length > 1 ? `${DEMO_LOOKBACK_DAYS} 天` : "今日"}综合数据汇总
           {demoCount > 0 && realCount > 0 && <span className="text-amber-400"> (含演示店铺)</span>}
           {demoCount > 0 && realCount === 0 && <span className="text-amber-400"> (演示模式)</span>}
@@ -458,7 +458,7 @@ export default function MultiStoreAggregator({
             <CardTitle className="text-base">多店铺营收堆叠分布</CardTitle>
             <CardDescription>北京时间每小时堆叠 · 每种颜色代表一家店铺 · 无未来数据泄漏</CardDescription>
           </div>
-          <button onClick={() => setShowChart(!showChart)} className="text-xs text-muted-foreground hover:text-foreground transition-colors">
+          <button onClick={() => setShowChart(!showChart)} className="text-sm text-muted-foreground hover:text-foreground transition-colors">
             {showChart ? "隐藏" : "显示"}
           </button>
         </CardHeader>
@@ -480,7 +480,7 @@ export default function MultiStoreAggregator({
                 </ResponsiveContainer>
               </div>
             ) : (
-              <div className="flex flex-col items-center gap-3 py-12 text-sm text-muted-foreground">暂无数据，请添加店铺后重试</div>
+              <div className="flex flex-col items-center gap-3 py-12 text-base text-muted-foreground">暂无数据，请添加店铺后重试</div>
             )}
           </CardContent>
         )}
@@ -510,19 +510,19 @@ export default function MultiStoreAggregator({
                 {storeData.map((store, index) => (
                   <TableRow key={store.id} className="group transition-colors hover:bg-muted/30">
                     <TableCell className="text-center">
-                      {index === 0 ? (<Badge className="bg-amber-500/20 text-amber-400 px-1.5 py-0 text-xs">🥇</Badge>)
-                      : index === 1 ? (<Badge className="bg-sky-500/20 text-sky-400 px-1.5 py-0 text-xs">🥈</Badge>)
-                      : index === 2 ? (<Badge className="bg-orange-500/20 text-orange-400 px-1.5 py-0 text-xs">🥉</Badge>)
-                      : <span className="text-xs font-medium text-muted-foreground">{index + 1}</span>}
+                      {index === 0 ? (<Badge className="bg-amber-500/20 text-amber-400 px-1.5 py-0 text-sm">🥇</Badge>)
+                      : index === 1 ? (<Badge className="bg-sky-500/20 text-sky-400 px-1.5 py-0 text-sm">🥈</Badge>)
+                      : index === 2 ? (<Badge className="bg-orange-500/20 text-orange-400 px-1.5 py-0 text-sm">🥉</Badge>)
+                      : <span className="text-sm font-medium text-muted-foreground">{index + 1}</span>}
                     </TableCell>
                     <TableCell>
                       <div className="flex items-center gap-2">
                         <div className="h-3 w-3 shrink-0 rounded-full" style={{ backgroundColor: store.color }} />
                         <span className="font-medium text-foreground">{store.name}</span>
-                        <span className="text-xs text-muted-foreground">({store.domain})</span>
+                        <span className="text-sm text-muted-foreground">({store.domain})</span>
                         {store.isDemo
-                          ? <Badge variant="outline" className="text-[10px] px-1 py-0 border-amber-500/30 text-amber-400">演示</Badge>
-                          : <Badge variant="outline" className="text-[10px] px-1 py-0 border-emerald-500/30 text-emerald-400">真实</Badge>}
+                          ? <Badge variant="outline" className="text-xs px-1 py-0 border-amber-500/30 text-amber-400">演示</Badge>
+                          : <Badge variant="outline" className="text-xs px-1 py-0 border-emerald-500/30 text-emerald-400">真实</Badge>}
                       </div>
                     </TableCell>
                     <TableCell className="text-right tabular-nums">{store.orderCount} 单</TableCell>
@@ -532,7 +532,7 @@ export default function MultiStoreAggregator({
                         <div className="h-2 flex-1 overflow-hidden rounded-full bg-muted">
                           <div className="h-full rounded-full transition-all" style={{ width: `${Math.min(100, store.contribution)}%`, backgroundColor: store.color }} />
                         </div>
-                        <span className="w-14 text-right text-xs font-semibold tabular-nums text-muted-foreground">{store.contribution.toFixed(1)}%</span>
+                        <span className="w-14 text-right text-sm font-semibold tabular-nums text-muted-foreground">{store.contribution.toFixed(1)}%</span>
                       </div>
                     </TableCell>
                   </TableRow>
@@ -542,8 +542,8 @@ export default function MultiStoreAggregator({
           ) : (
             <div className="flex flex-col items-center gap-3 py-12 text-center">
               <Store className="h-10 w-10 text-muted-foreground/40" />
-              <p className="text-sm text-muted-foreground">暂无已绑定店铺数据</p>
-              <p className="text-xs text-muted-foreground/60">请前往配置页添加店铺以启用聚合面板</p>
+              <p className="text-base text-muted-foreground">暂无已绑定店铺数据</p>
+              <p className="text-sm text-muted-foreground/60">请前往配置页添加店铺以启用聚合面板</p>
             </div>
           )}
         </CardContent>

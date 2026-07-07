@@ -177,18 +177,18 @@ export default function TranslationManagerPanel({ isDemo, shopUrl, accessToken, 
 
   return (
     <div className="space-y-4">
-      {toast && <div className="fixed bottom-6 left-1/2 -translate-x-1/2 z-50 rounded-lg bg-emerald-600/90 px-4 py-2 text-sm font-medium text-white shadow-2xl">{toast}</div>}
+      {toast && <div className="fixed bottom-6 left-1/2 -translate-x-1/2 z-50 rounded-lg bg-emerald-600/90 px-4 py-2 text-base font-medium text-white shadow-2xl">{toast}</div>}
 
       <div>
         <h2 className="flex items-center gap-2 text-xl font-bold text-foreground"><Languages className="h-6 w-6 text-indigo-400" />翻译管理器</h2>
-        <p className="mt-1 text-sm text-muted-foreground">{shopName} · {untranslatedCount} 条待翻译{isDemo && <span className="ml-2 text-xs text-amber-400">(演示)</span>}</p>
+        <p className="mt-1 text-base text-muted-foreground">{shopName} · {untranslatedCount} 条待翻译{isDemo && <span className="ml-2 text-sm text-amber-400">(演示)</span>}</p>
       </div>
 
       {/* Progress Cards */}
       <div className="grid grid-cols-2 lg:grid-cols-4 gap-3">
         {[{k:"product",l:"商品",p:stats.product},{k:"collection",l:"集合",p:stats.collection},{k:"page",l:"页面",p:stats.page},{k:"total",l:"总计",p:{total:stats.total,done:stats.done}}].map((s) => {
           const pct = s.p.total > 0 ? Math.round((s.p.done / s.p.total) * 100) : 0;
-          return <Card key={s.k} className="border-border/40 bg-card/60"><CardContent className="p-3"><p className="text-[10px] text-muted-foreground mb-1">{s.l} · {s.p.done}/{s.p.total}</p>
+          return <Card key={s.k} className="border-border/40 bg-card/60"><CardContent className="p-3"><p className="text-xs text-muted-foreground mb-1">{s.l} · {s.p.done}/{s.p.total}</p>
             <div className="h-2 rounded bg-muted/20 overflow-hidden"><div className="h-full bg-indigo-500 rounded transition-all" style={{ width: `${pct}%` }} /></div>
           </CardContent></Card>;
         })}
@@ -196,18 +196,18 @@ export default function TranslationManagerPanel({ isDemo, shopUrl, accessToken, 
 
       {/* Toolbar */}
       <Card className="border-border/40 bg-card/60"><CardContent className="flex flex-wrap items-center gap-2 px-3 py-2">
-        <span className="text-[10px] text-muted-foreground">目标:</span>
-        <select value={targetLang} onChange={(e) => setTargetLang(e.target.value)} className="h-7 rounded border border-border/40 bg-background text-[10px] text-foreground px-1">
+        <span className="text-xs text-muted-foreground">目标:</span>
+        <select value={targetLang} onChange={(e) => setTargetLang(e.target.value)} className="h-7 rounded border border-border/40 bg-background text-xs text-foreground px-1">
           {TARGET_LANGUAGES.map((l) => <option key={l.code} value={l.code}>{l.name}</option>)}
         </select>
         <div className="flex gap-1 ml-2">
-          {RESOURCE_TYPE_TABS.map((t) => <button key={t.key} onClick={() => { setResourceTab(t.key); setExpandedId(null); }} className={`px-2 py-0.5 rounded text-[10px] ${resourceTab === t.key ? "bg-indigo-500/15 text-indigo-400" : "text-muted-foreground"}`}>{t.label}</button>)}
+          {RESOURCE_TYPE_TABS.map((t) => <button key={t.key} onClick={() => { setResourceTab(t.key); setExpandedId(null); }} className={`px-2 py-0.5 rounded text-xs ${resourceTab === t.key ? "bg-indigo-500/15 text-indigo-400" : "text-muted-foreground"}`}>{t.label}</button>)}
         </div>
-        <label className="flex items-center gap-1 text-[10px] cursor-pointer ml-2"><input type="checkbox" checked={showCompleted} onChange={() => setShowCompleted(!showCompleted)} className="accent-indigo-500"/>显示已翻译</label>
-        <div className="relative flex-1 min-w-[100px]"><Search className="absolute left-2 top-1/2 h-3 w-3 -translate-y-1/2 text-muted-foreground"/><Input value={search} onChange={(e) => setSearch(e.target.value)} placeholder="搜索..." className="h-7 pl-7 text-[10px]"/></div>
-        <Button size="sm" variant="outline" onClick={machineTranslateAll} disabled={translating} className="h-7 gap-1 text-[10px]"><Bot className="h-3 w-3"/>{translating ? "翻译中..." : "批量机翻"}</Button>
-        <Button size="sm" variant="outline" onClick={exportJSON} className="h-7 gap-1 text-[10px]"><Download className="h-3 w-3"/>导出</Button>
-        <label className="h-7 gap-1 text-[10px] flex items-center cursor-pointer border border-border/40 rounded px-2 hover:bg-muted/10"><Upload className="h-3 w-3"/>导入<input type="file" accept=".json" onChange={importJSON} className="hidden"/></label>
+        <label className="flex items-center gap-1 text-xs cursor-pointer ml-2"><input type="checkbox" checked={showCompleted} onChange={() => setShowCompleted(!showCompleted)} className="accent-indigo-500"/>显示已翻译</label>
+        <div className="relative flex-1 min-w-[100px]"><Search className="absolute left-2 top-1/2 h-3 w-3 -translate-y-1/2 text-muted-foreground"/><Input value={search} onChange={(e) => setSearch(e.target.value)} placeholder="搜索..." className="h-7 pl-7 text-sm"/></div>
+        <Button size="sm" variant="outline" onClick={machineTranslateAll} disabled={translating} className="h-7 gap-1 text-xs"><Bot className="h-3 w-3"/>{translating ? "翻译中..." : "批量机翻"}</Button>
+        <Button size="sm" variant="outline" onClick={exportJSON} className="h-7 gap-1 text-xs"><Download className="h-3 w-3"/>导出</Button>
+        <label className="h-7 gap-1 text-xs flex items-center cursor-pointer border border-border/40 rounded px-2 hover:bg-muted/10"><Upload className="h-3 w-3"/>导入<input type="file" accept=".json" onChange={importJSON} className="hidden"/></label>
       </CardContent></Card>
 
       {/* Translation List */}
@@ -223,22 +223,22 @@ export default function TranslationManagerPanel({ isDemo, shopUrl, accessToken, 
               <Card key={key} className={`border-border/40 bg-card/60 shadow-lg ${allDone ? "border-l-2 border-l-indigo-500" : ""}`}>
                 <CardContent className="p-3 space-y-2">
                   <div className="flex items-center justify-between">
-                    <p className="text-sm font-semibold text-foreground">{typeIcons[first.resourceType] || ""} {first.resourceName}</p>
+                    <p className="text-base font-semibold text-foreground">{typeIcons[first.resourceType] || ""} {first.resourceName}</p>
                     <div className="flex gap-1">
                       <Button size="sm" variant="ghost" onClick={() => items.forEach((i) => machineTranslateOne(i))} className="h-6 text-[9px]"><Bot className="h-3 w-3"/></Button>
                       <Button size="sm" variant="ghost" onClick={() => setExpandedId(null)} className="h-6"><X className="h-3 w-3"/></Button>
                     </div>
                   </div>
                   {items.map((f) => (
-                    <div key={f.field} className="grid grid-cols-2 gap-2 text-xs">
+                    <div key={f.field} className="grid grid-cols-2 gap-2 text-sm">
                       <div className="bg-muted/10 rounded px-2 py-1.5 text-muted-foreground"><span className="text-[9px] text-muted-foreground/50">{f.field}</span><p className="text-muted-foreground">{f.sourceText}</p></div>
                       <div className="relative">
-                        <textarea value={f.translation} onChange={(e) => updateTranslation(f.resourceType, f.resourceId, f.field, e.target.value)} rows={2} className="w-full rounded border border-border/40 bg-background px-2 py-1.5 text-foreground text-xs resize-none" placeholder="输入译文..." />
+                        <textarea value={f.translation} onChange={(e) => updateTranslation(f.resourceType, f.resourceId, f.field, e.target.value)} rows={2} className="w-full rounded border border-border/40 bg-background px-2 py-1.5 text-foreground text-sm resize-none" placeholder="输入译文..." />
                         {f.translated ? <CheckCircle2 className="absolute top-1 right-1 h-3 w-3 text-emerald-400"/> : <AlertCircle className="absolute top-1 right-1 h-3 w-3 text-amber-400"/>}
                       </div>
                     </div>
                   ))}
-                  <Button size="sm" onClick={() => showToast("翻译已保存")} className="h-7 text-[10px] bg-indigo-600 text-white"><Save className="h-3 w-3 mr-1"/>保存翻译</Button>
+                  <Button size="sm" onClick={() => showToast("翻译已保存")} className="h-7 text-xs bg-indigo-600 text-white"><Save className="h-3 w-3 mr-1"/>保存翻译</Button>
                 </CardContent>
               </Card>
             );
@@ -251,10 +251,10 @@ export default function TranslationManagerPanel({ isDemo, shopUrl, accessToken, 
                 <div className="flex items-center justify-between">
                   <div className="flex items-center gap-2">
                     <span>{typeIcons[first.resourceType] || ""}</span>
-                    <span className="text-sm font-semibold text-foreground">{first.resourceName}</span>
+                    <span className="text-base font-semibold text-foreground">{first.resourceName}</span>
                     <Badge className={`text-[8px] px-1 py-0 ${allDone ? "bg-indigo-500/15 text-indigo-400" : "bg-amber-500/15 text-amber-400"}`}>{allDone ? "已完成" : "待翻译"}</Badge>
                   </div>
-                  <div className="flex items-center gap-2 text-[10px] text-muted-foreground">
+                  <div className="flex items-center gap-2 text-xs text-muted-foreground">
                     <span>{items.filter((i) => i.translated).length}/{items.length} 字段</span>
                     <Button size="sm" variant="ghost" onClick={(e) => { e.stopPropagation(); items.forEach((i) => machineTranslateOne(i)); }} className="h-6 text-[9px]"><Bot className="h-3 w-3"/></Button>
                   </div>
@@ -272,7 +272,7 @@ export default function TranslationManagerPanel({ isDemo, shopUrl, accessToken, 
         })}
       </div>
 
-      {filtered.length === 0 && <div className="text-center py-16"><CheckCircle2 className="h-12 w-12 mx-auto mb-3 text-indigo-400/25"/><p className="text-sm text-muted-foreground">全部已翻译 ✓</p></div>}
+      {filtered.length === 0 && <div className="text-center py-16"><CheckCircle2 className="h-12 w-12 mx-auto mb-3 text-indigo-400/25"/><p className="text-base text-muted-foreground">全部已翻译 ✓</p></div>}
     </div>
   );
 }

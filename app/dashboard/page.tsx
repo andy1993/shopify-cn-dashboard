@@ -6,13 +6,13 @@ import { useRouter } from "next/navigation";
 import { Loader2, Globe, AlertCircle, RefreshCw, LogOut } from "lucide-react";
 import { Card, CardContent } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
-import { useDashboardMenu } from "./layout";
+import { useDashboardMenu, MenuKey } from "./layout";
 
 const OverviewPanel = dynamic(function () { return import("./components/OverviewPanel"); }, {
   loading: function () {
     return (
       <div className="space-y-4 animate-pulse">
-        <div className="h-8 w-48 rounded-lg bg-zinc-800" />
+        <div className="h-9 w-48 rounded-lg bg-zinc-800" />
         <div className="grid grid-cols-4 gap-4">
           <div className="h-24 rounded-xl bg-zinc-800" />
           <div className="h-24 rounded-xl bg-zinc-800" />
@@ -28,7 +28,7 @@ const AiChatPanel = dynamic(function () { return import("./components/AiChatPane
   loading: function () {
     return (
       <div className="space-y-4 animate-pulse">
-        <div className="h-8 w-48 rounded-lg bg-zinc-800" />
+        <div className="h-9 w-48 rounded-lg bg-zinc-800" />
         <div className="grid grid-cols-4 gap-4">
           <div className="h-24 rounded-xl bg-zinc-800" />
           <div className="h-24 rounded-xl bg-zinc-800" />
@@ -44,7 +44,7 @@ const FinancePanel = dynamic(function () { return import("./components/FinancePa
   loading: function () {
     return (
       <div className="space-y-4 animate-pulse">
-        <div className="h-8 w-48 rounded-lg bg-zinc-800" />
+        <div className="h-9 w-48 rounded-lg bg-zinc-800" />
         <div className="grid grid-cols-4 gap-4">
           <div className="h-24 rounded-xl bg-zinc-800" />
           <div className="h-24 rounded-xl bg-zinc-800" />
@@ -60,7 +60,7 @@ const RiskRadarDashboard = dynamic(function () { return import("./components/Ris
   loading: function () {
     return (
       <div className="space-y-4 animate-pulse">
-        <div className="h-8 w-48 rounded-lg bg-zinc-800" />
+        <div className="h-9 w-48 rounded-lg bg-zinc-800" />
         <div className="grid grid-cols-4 gap-4">
           <div className="h-24 rounded-xl bg-zinc-800" />
           <div className="h-24 rounded-xl bg-zinc-800" />
@@ -76,7 +76,7 @@ const TrendAnalysisPanel = dynamic(function () { return import("./components/Tre
   loading: function () {
     return (
       <div className="space-y-4 animate-pulse">
-        <div className="h-8 w-48 rounded-lg bg-zinc-800" />
+        <div className="h-9 w-48 rounded-lg bg-zinc-800" />
         <div className="grid grid-cols-4 gap-4">
           <div className="h-24 rounded-xl bg-zinc-800" />
           <div className="h-24 rounded-xl bg-zinc-800" />
@@ -92,7 +92,7 @@ const MultiStoreAggregator = dynamic(function () { return import("./components/M
   loading: function () {
     return (
       <div className="space-y-4 animate-pulse">
-        <div className="h-8 w-48 rounded-lg bg-zinc-800" />
+        <div className="h-9 w-48 rounded-lg bg-zinc-800" />
         <div className="grid grid-cols-4 gap-4">
           <div className="h-24 rounded-xl bg-zinc-800" />
           <div className="h-24 rounded-xl bg-zinc-800" />
@@ -108,7 +108,7 @@ const GatewayFinancePanel = dynamic(function () { return import("./components/Ga
   loading: function () {
     return (
       <div className="space-y-4 animate-pulse">
-        <div className="h-8 w-48 rounded-lg bg-zinc-800" />
+        <div className="h-9 w-48 rounded-lg bg-zinc-800" />
         <div className="grid grid-cols-4 gap-4">
           <div className="h-24 rounded-xl bg-zinc-800" />
           <div className="h-24 rounded-xl bg-zinc-800" />
@@ -124,7 +124,7 @@ const FunnelRetentionPanel = dynamic(function () { return import("./components/F
   loading: function () {
     return (
       <div className="space-y-4 animate-pulse">
-        <div className="h-8 w-48 rounded-lg bg-zinc-800" />
+        <div className="h-9 w-48 rounded-lg bg-zinc-800" />
         <div className="grid grid-cols-4 gap-4">
           <div className="h-24 rounded-xl bg-zinc-800" />
           <div className="h-24 rounded-xl bg-zinc-800" />
@@ -140,7 +140,7 @@ const AdPerformancePanel = dynamic(function () { return import("./components/AdP
   loading: function () {
     return (
       <div className="space-y-4 animate-pulse">
-        <div className="h-8 w-48 rounded-lg bg-zinc-800" />
+        <div className="h-9 w-48 rounded-lg bg-zinc-800" />
         <div className="grid grid-cols-4 gap-4">
           <div className="h-24 rounded-xl bg-zinc-800" />
           <div className="h-24 rounded-xl bg-zinc-800" />
@@ -156,7 +156,7 @@ const ProductControlPanel = dynamic(function () { return import("./components/Pr
   loading: function () {
     return (
       <div className="space-y-4 animate-pulse">
-        <div className="h-8 w-48 rounded-lg bg-zinc-800" />
+        <div className="h-9 w-48 rounded-lg bg-zinc-800" />
         <div className="grid grid-cols-4 gap-4">
           <div className="h-24 rounded-xl bg-zinc-800" />
           <div className="h-24 rounded-xl bg-zinc-800" />
@@ -172,7 +172,7 @@ const OrderCenterPanel = dynamic(function () { return import("./components/Order
   loading: function () {
     return (
       <div className="space-y-4 animate-pulse">
-        <div className="h-8 w-48 rounded-lg bg-zinc-800" />
+        <div className="h-9 w-48 rounded-lg bg-zinc-800" />
         <div className="grid grid-cols-4 gap-4">
           <div className="h-24 rounded-xl bg-zinc-800" />
           <div className="h-24 rounded-xl bg-zinc-800" />
@@ -188,7 +188,7 @@ const CustomerCenterPanel = dynamic(function () { return import("./components/Cu
   loading: function () {
     return (
       <div className="space-y-4 animate-pulse">
-        <div className="h-8 w-48 rounded-lg bg-zinc-800" />
+        <div className="h-9 w-48 rounded-lg bg-zinc-800" />
         <div className="grid grid-cols-4 gap-4">
           <div className="h-24 rounded-xl bg-zinc-800" />
           <div className="h-24 rounded-xl bg-zinc-800" />
@@ -204,7 +204,7 @@ const FulfillmentBoardPanel = dynamic(function () { return import("./components/
   loading: function () {
     return (
       <div className="space-y-4 animate-pulse">
-        <div className="h-8 w-48 rounded-lg bg-zinc-800" />
+        <div className="h-9 w-48 rounded-lg bg-zinc-800" />
         <div className="grid grid-cols-4 gap-4">
           <div className="h-24 rounded-xl bg-zinc-800" />
           <div className="h-24 rounded-xl bg-zinc-800" />
@@ -220,7 +220,7 @@ const BulkEditPanel = dynamic(function () { return import("./components/BulkEdit
   loading: function () {
     return (
       <div className="space-y-4 animate-pulse">
-        <div className="h-8 w-48 rounded-lg bg-zinc-800" />
+        <div className="h-9 w-48 rounded-lg bg-zinc-800" />
         <div className="grid grid-cols-4 gap-4">
           <div className="h-24 rounded-xl bg-zinc-800" />
           <div className="h-24 rounded-xl bg-zinc-800" />
@@ -236,7 +236,7 @@ const CollectionManagerPanel = dynamic(function () { return import("./components
   loading: function () {
     return (
       <div className="space-y-4 animate-pulse">
-        <div className="h-8 w-48 rounded-lg bg-zinc-800" />
+        <div className="h-9 w-48 rounded-lg bg-zinc-800" />
         <div className="grid grid-cols-4 gap-4">
           <div className="h-24 rounded-xl bg-zinc-800" />
           <div className="h-24 rounded-xl bg-zinc-800" />
@@ -252,7 +252,7 @@ const NavigationEditorPanel = dynamic(function () { return import("./components/
   loading: function () {
     return (
       <div className="space-y-4 animate-pulse">
-        <div className="h-8 w-48 rounded-lg bg-zinc-800" />
+        <div className="h-9 w-48 rounded-lg bg-zinc-800" />
         <div className="grid grid-cols-4 gap-4">
           <div className="h-24 rounded-xl bg-zinc-800" />
           <div className="h-24 rounded-xl bg-zinc-800" />
@@ -268,7 +268,7 @@ const ContentPagesPanel = dynamic(function () { return import("./components/Cont
   loading: function () {
     return (
       <div className="space-y-4 animate-pulse">
-        <div className="h-8 w-48 rounded-lg bg-zinc-800" />
+        <div className="h-9 w-48 rounded-lg bg-zinc-800" />
         <div className="grid grid-cols-4 gap-4">
           <div className="h-24 rounded-xl bg-zinc-800" />
           <div className="h-24 rounded-xl bg-zinc-800" />
@@ -284,7 +284,7 @@ const MetafieldsEditorPanel = dynamic(function () { return import("./components/
   loading: function () {
     return (
       <div className="space-y-4 animate-pulse">
-        <div className="h-8 w-48 rounded-lg bg-zinc-800" />
+        <div className="h-9 w-48 rounded-lg bg-zinc-800" />
         <div className="grid grid-cols-4 gap-4">
           <div className="h-24 rounded-xl bg-zinc-800" />
           <div className="h-24 rounded-xl bg-zinc-800" />
@@ -300,7 +300,7 @@ const BatchOperationPanel = dynamic(function () { return import("./components/Ba
   loading: function () {
     return (
       <div className="space-y-4 animate-pulse">
-        <div className="h-8 w-48 rounded-lg bg-zinc-800" />
+        <div className="h-9 w-48 rounded-lg bg-zinc-800" />
         <div className="grid grid-cols-4 gap-4">
           <div className="h-24 rounded-xl bg-zinc-800" />
           <div className="h-24 rounded-xl bg-zinc-800" />
@@ -316,7 +316,7 @@ const ScheduledTasksPanel = dynamic(function () { return import("./components/Sc
   loading: function () {
     return (
       <div className="space-y-4 animate-pulse">
-        <div className="h-8 w-48 rounded-lg bg-zinc-800" />
+        <div className="h-9 w-48 rounded-lg bg-zinc-800" />
         <div className="grid grid-cols-4 gap-4">
           <div className="h-24 rounded-xl bg-zinc-800" />
           <div className="h-24 rounded-xl bg-zinc-800" />
@@ -332,7 +332,7 @@ const OperationHistoryPanel = dynamic(function () { return import("./components/
   loading: function () {
     return (
       <div className="space-y-4 animate-pulse">
-        <div className="h-8 w-48 rounded-lg bg-zinc-800" />
+        <div className="h-9 w-48 rounded-lg bg-zinc-800" />
         <div className="grid grid-cols-4 gap-4">
           <div className="h-24 rounded-xl bg-zinc-800" />
           <div className="h-24 rounded-xl bg-zinc-800" />
@@ -348,7 +348,7 @@ const InventoryAlertPanel = dynamic(function () { return import("./components/In
   loading: function () {
     return (
       <div className="space-y-4 animate-pulse">
-        <div className="h-8 w-48 rounded-lg bg-zinc-800" />
+        <div className="h-9 w-48 rounded-lg bg-zinc-800" />
         <div className="grid grid-cols-4 gap-4">
           <div className="h-24 rounded-xl bg-zinc-800" />
           <div className="h-24 rounded-xl bg-zinc-800" />
@@ -364,7 +364,7 @@ const RuleEnginePanel = dynamic(function () { return import("./components/RuleEn
   loading: function () {
     return (
       <div className="space-y-4 animate-pulse">
-        <div className="h-8 w-48 rounded-lg bg-zinc-800" />
+        <div className="h-9 w-48 rounded-lg bg-zinc-800" />
         <div className="grid grid-cols-4 gap-4">
           <div className="h-24 rounded-xl bg-zinc-800" />
           <div className="h-24 rounded-xl bg-zinc-800" />
@@ -380,7 +380,7 @@ const MarketsOverviewPanel = dynamic(function () { return import("./components/M
   loading: function () {
     return (
       <div className="space-y-4 animate-pulse">
-        <div className="h-8 w-48 rounded-lg bg-zinc-800" />
+        <div className="h-9 w-48 rounded-lg bg-zinc-800" />
         <div className="grid grid-cols-4 gap-4">
           <div className="h-24 rounded-xl bg-zinc-800" />
           <div className="h-24 rounded-xl bg-zinc-800" />
@@ -396,7 +396,7 @@ const MultiCurrencyPricingPanel = dynamic(function () { return import("./compone
   loading: function () {
     return (
       <div className="space-y-4 animate-pulse">
-        <div className="h-8 w-48 rounded-lg bg-zinc-800" />
+        <div className="h-9 w-48 rounded-lg bg-zinc-800" />
         <div className="grid grid-cols-4 gap-4">
           <div className="h-24 rounded-xl bg-zinc-800" />
           <div className="h-24 rounded-xl bg-zinc-800" />
@@ -412,7 +412,7 @@ const MultiLocationInventoryPanel = dynamic(function () { return import("./compo
   loading: function () {
     return (
       <div className="space-y-4 animate-pulse">
-        <div className="h-8 w-48 rounded-lg bg-zinc-800" />
+        <div className="h-9 w-48 rounded-lg bg-zinc-800" />
         <div className="grid grid-cols-4 gap-4">
           <div className="h-24 rounded-xl bg-zinc-800" />
           <div className="h-24 rounded-xl bg-zinc-800" />
@@ -428,7 +428,7 @@ const TranslationManagerPanel = dynamic(function () { return import("./component
   loading: function () {
     return (
       <div className="space-y-4 animate-pulse">
-        <div className="h-8 w-48 rounded-lg bg-zinc-800" />
+        <div className="h-9 w-48 rounded-lg bg-zinc-800" />
         <div className="grid grid-cols-4 gap-4">
           <div className="h-24 rounded-xl bg-zinc-800" />
           <div className="h-24 rounded-xl bg-zinc-800" />
@@ -444,7 +444,7 @@ const ShippingRatesPanel = dynamic(function () { return import("./components/Shi
   loading: function () {
     return (
       <div className="space-y-4 animate-pulse">
-        <div className="h-8 w-48 rounded-lg bg-zinc-800" />
+        <div className="h-9 w-48 rounded-lg bg-zinc-800" />
         <div className="grid grid-cols-4 gap-4">
           <div className="h-24 rounded-xl bg-zinc-800" />
           <div className="h-24 rounded-xl bg-zinc-800" />
@@ -460,7 +460,7 @@ const TaxOverviewPanel = dynamic(function () { return import("./components/TaxOv
   loading: function () {
     return (
       <div className="space-y-4 animate-pulse">
-        <div className="h-8 w-48 rounded-lg bg-zinc-800" />
+        <div className="h-9 w-48 rounded-lg bg-zinc-800" />
         <div className="grid grid-cols-4 gap-4">
           <div className="h-24 rounded-xl bg-zinc-800" />
           <div className="h-24 rounded-xl bg-zinc-800" />
@@ -476,7 +476,7 @@ const ProductAnalyticsPanel = dynamic(function () { return import("./components/
   loading: function () {
     return (
       <div className="space-y-4 animate-pulse">
-        <div className="h-8 w-48 rounded-lg bg-zinc-800" />
+        <div className="h-9 w-48 rounded-lg bg-zinc-800" />
         <div className="grid grid-cols-4 gap-4">
           <div className="h-24 rounded-xl bg-zinc-800" />
           <div className="h-24 rounded-xl bg-zinc-800" />
@@ -492,7 +492,7 @@ const CategoryAnalyticsPanel = dynamic(function () { return import("./components
   loading: function () {
     return (
       <div className="space-y-4 animate-pulse">
-        <div className="h-8 w-48 rounded-lg bg-zinc-800" />
+        <div className="h-9 w-48 rounded-lg bg-zinc-800" />
         <div className="grid grid-cols-4 gap-4">
           <div className="h-24 rounded-xl bg-zinc-800" />
           <div className="h-24 rounded-xl bg-zinc-800" />
@@ -508,7 +508,7 @@ const CustomerSegmentationPanel = dynamic(function () { return import("./compone
   loading: function () {
     return (
       <div className="space-y-4 animate-pulse">
-        <div className="h-8 w-48 rounded-lg bg-zinc-800" />
+        <div className="h-9 w-48 rounded-lg bg-zinc-800" />
         <div className="grid grid-cols-4 gap-4">
           <div className="h-24 rounded-xl bg-zinc-800" />
           <div className="h-24 rounded-xl bg-zinc-800" />
@@ -524,7 +524,7 @@ const SalesForecastPanel = dynamic(function () { return import("./components/Sal
   loading: function () {
     return (
       <div className="space-y-4 animate-pulse">
-        <div className="h-8 w-48 rounded-lg bg-zinc-800" />
+        <div className="h-9 w-48 rounded-lg bg-zinc-800" />
         <div className="grid grid-cols-4 gap-4">
           <div className="h-24 rounded-xl bg-zinc-800" />
           <div className="h-24 rounded-xl bg-zinc-800" />
@@ -540,7 +540,7 @@ const ProductAffinityPanel = dynamic(function () { return import("./components/P
   loading: function () {
     return (
       <div className="space-y-4 animate-pulse">
-        <div className="h-8 w-48 rounded-lg bg-zinc-800" />
+        <div className="h-9 w-48 rounded-lg bg-zinc-800" />
         <div className="grid grid-cols-4 gap-4">
           <div className="h-24 rounded-xl bg-zinc-800" />
           <div className="h-24 rounded-xl bg-zinc-800" />
@@ -548,6 +548,119 @@ const ProductAffinityPanel = dynamic(function () { return import("./components/P
           <div className="h-24 rounded-xl bg-zinc-800" />
         </div>
         <div className="h-64 rounded-xl bg-zinc-800" />
+      </div>
+    );
+  },
+});
+const SchemaAuditPanel = dynamic(function () { return import("./components/SchemaAuditPanel"); }, {
+  loading: function () {
+    return (
+      <div className="space-y-4 animate-pulse">
+        <div className="h-9 w-48 rounded-lg bg-zinc-800" />
+        <div className="grid grid-cols-4 gap-4">
+          <div className="h-24 rounded-xl bg-zinc-800" />
+          <div className="h-24 rounded-xl bg-zinc-800" />
+          <div className="h-24 rounded-xl bg-zinc-800" />
+          <div className="h-24 rounded-xl bg-zinc-800" />
+        </div>
+        <div className="h-64 rounded-xl bg-zinc-800" />
+      </div>
+    );
+  },
+});
+
+const SchemaGeneratorPanel = dynamic(function () { return import("./components/SchemaGeneratorPanel"); }, {
+  loading: function () {
+    return (
+      <div className="space-y-4 animate-pulse">
+        <div className="h-9 w-48 rounded-lg bg-zinc-800" />
+        <div className="grid grid-cols-4 gap-4">
+          <div className="h-24 rounded-xl bg-zinc-800" />
+          <div className="h-24 rounded-xl bg-zinc-800" />
+          <div className="h-24 rounded-xl bg-zinc-800" />
+          <div className="h-24 rounded-xl bg-zinc-800" />
+        </div>
+        <div className="h-64 rounded-xl bg-zinc-800" />
+      </div>
+    );
+  },
+});
+
+const AIIndexabilityPanel = dynamic(function () { return import("./components/AIIndexabilityPanel"); }, {
+  loading: function () {
+    return (
+      <div className="space-y-4 animate-pulse">
+        <div className="h-9 w-48 rounded-lg bg-zinc-800" />
+        <div className="grid grid-cols-4 gap-4">
+          <div className="h-24 rounded-xl bg-zinc-800" />
+          <div className="h-24 rounded-xl bg-zinc-800" />
+          <div className="h-24 rounded-xl bg-zinc-800" />
+          <div className="h-24 rounded-xl bg-zinc-800" />
+        </div>
+        <div className="h-64 rounded-xl bg-zinc-800" />
+      </div>
+    );
+  },
+});
+
+const CompetitorGeoPanel = dynamic(function () { return import("./components/CompetitorGeoPanel"); }, {
+  loading: function () {
+    return (
+      <div className="space-y-4 animate-pulse">
+        <div className="h-9 w-48 rounded-lg bg-zinc-800" />
+        <div className="flex gap-2">
+          <div className="h-7 w-24 rounded-lg bg-zinc-800" />
+          <div className="h-7 w-24 rounded-lg bg-zinc-800" />
+          <div className="h-7 w-24 rounded-lg bg-zinc-800" />
+        </div>
+        <div className="grid grid-cols-4 gap-4">
+          <div className="h-24 rounded-xl bg-zinc-800" />
+          <div className="h-24 rounded-xl bg-zinc-800" />
+          <div className="h-24 rounded-xl bg-zinc-800" />
+          <div className="h-24 rounded-xl bg-zinc-800" />
+        </div>
+        <div className="h-64 rounded-xl bg-zinc-800" />
+      </div>
+    );
+  },
+});
+
+const AISimulationPanel = dynamic(function () { return import("./components/AISimulationPanel"); }, {
+  loading: function () {
+    return (
+      <div className="space-y-4 animate-pulse">
+        <div className="h-9 w-48 rounded-lg bg-zinc-800" />
+        <div className="flex gap-2">
+          <div className="h-7 w-40 rounded-lg bg-zinc-800" />
+          <div className="h-7 w-24 rounded-lg bg-zinc-800" />
+          <div className="h-7 w-24 rounded-lg bg-zinc-800" />
+        </div>
+        <div className="grid grid-cols-4 gap-4">
+          <div className="h-24 rounded-xl bg-zinc-800" />
+          <div className="h-24 rounded-xl bg-zinc-800" />
+          <div className="h-24 rounded-xl bg-zinc-800" />
+          <div className="h-24 rounded-xl bg-zinc-800" />
+        </div>
+        <div className="h-64 rounded-xl bg-zinc-800" />
+      </div>
+    );
+  },
+});
+
+const GeoWizardPanel = dynamic(function () { return import("./components/GeoWizardPanel"); }, {
+  loading: function () {
+    return (
+      <div className="space-y-4 animate-pulse">
+        <div className="h-12 rounded-lg bg-zinc-800" />
+        <div className="flex items-center justify-between">
+          <div className="h-10 w-28 rounded-full bg-zinc-800" />
+          <div className="h-10 w-28 rounded-full bg-zinc-800" />
+          <div className="h-10 w-28 rounded-full bg-zinc-800" />
+          <div className="h-10 w-28 rounded-full bg-zinc-800" />
+          <div className="h-10 w-28 rounded-full bg-zinc-800" />
+        </div>
+        <div className="h-40 rounded-xl bg-zinc-800" />
+        <div className="h-40 rounded-xl bg-zinc-800" />
       </div>
     );
   },
@@ -770,9 +883,9 @@ export default function DashboardPage() {
     var store = currentStore;
     if (!store || store.isDemo) return;
     var menu = activeMenu;
-    if (["product-control", "bulk-edit", "batch-op", "inventory-alert"].indexOf(menu) !== -1) { loadProductCatalog(store); }
+    if (["product-control", "bulk-edit", "batch-op", "inventory-alert", "schema-audit", "schema-generator", "ai-indexability", "competitor-geo", "ai-simulation", "geo-wizard"].indexOf(menu) !== -1) { loadProductCatalog(store); }
     if (["customers", "customer-segmentation"].indexOf(menu) !== -1) { loadCustomerData(store); }
-    if (["collections", "navigation", "content-pages", "metafields"].indexOf(menu) !== -1) { loadContentData(store); }
+    if (["collections", "navigation", "content-pages", "metafields", "schema-audit", "schema-generator", "ai-indexability", "competitor-geo", "ai-simulation", "geo-wizard"].indexOf(menu) !== -1) { loadContentData(store); }
     if (["markets", "multi-currency", "multi-location", "translations", "shipping-rates", "tax-overview"].indexOf(menu) !== -1) { loadMarketData(store); }
   }, [activeMenu, currentStore, loadProductCatalog, loadCustomerData, loadContentData, loadMarketData]);
 
@@ -945,7 +1058,7 @@ export default function DashboardPage() {
         <CardContent className="flex flex-col items-center gap-4 p-8">
           <div className="flex h-12 w-12 items-center justify-center rounded-full bg-red-500/10 ring-1 ring-red-500/20"><AlertCircle className="h-6 w-6 text-red-500" /></div>
           <p className="text-lg font-medium text-foreground">数据加载失败</p>
-          <p className="text-sm text-muted-foreground text-center">{error}</p>
+          <p className="text-base text-muted-foreground text-center">{error}</p>
           <div className="flex gap-3">
             <Button onClick={() => currentStore && fetchData(currentStore)} className="gap-2 bg-emerald-600 text-white hover:bg-emerald-500"><RefreshCw className="h-4 w-4" />重试</Button>
             <Button variant="outline" onClick={() => { localStorage.removeItem("shopify_stores"); localStorage.removeItem("shopify_current_store_id"); router.replace("/config"); }} className="gap-2"><LogOut className="h-4 w-4" />返回配置</Button>
@@ -1289,6 +1402,78 @@ export default function DashboardPage() {
           shopName={data.shopName}
           orders={data.orders as any}
           fullProducts={data.fullProducts as any}
+        />
+      )}
+      {activeMenu === "schema-audit" && (
+        <SchemaAuditPanel
+          isDemo={!!currentStore?.isDemo}
+          shopUrl={currentStore?.shopUrl || ""}
+          accessToken={currentStore?.accessToken || ""}
+          shopName={data.shopName}
+          domain={data.domain}
+          fullProducts={data.fullProducts as any}
+          pages={data.pages as any}
+          blogs={data.blogs as any}
+          collections={data.collections as any}
+        />
+      )}
+      {activeMenu === "schema-generator" && (
+        <SchemaGeneratorPanel
+          isDemo={!!currentStore?.isDemo}
+          shopUrl={currentStore?.shopUrl || ""}
+          accessToken={currentStore?.accessToken || ""}
+          shopName={data.shopName}
+          domain={data.domain}
+          currency={data.currency}
+          fullProducts={data.fullProducts as any}
+          pages={data.pages as any}
+          blogs={data.blogs as any}
+          collections={data.collections as any}
+        />
+      )}
+      {activeMenu === "ai-indexability" && (
+        <AIIndexabilityPanel
+          isDemo={!!currentStore?.isDemo}
+          shopUrl={currentStore?.shopUrl || ""}
+          accessToken={currentStore?.accessToken || ""}
+          shopName={data.shopName}
+          domain={data.domain}
+          fullProducts={data.fullProducts as any}
+          pages={data.pages as any}
+          blogs={data.blogs as any}
+          variantSales={data.variantSales as any}
+        />
+      )}
+      {activeMenu === "competitor-geo" && (
+        <CompetitorGeoPanel
+          isDemo={!!currentStore?.isDemo}
+          shopUrl={currentStore?.shopUrl || ""}
+          accessToken={currentStore?.accessToken || ""}
+          shopName={data.shopName}
+          domain={data.domain}
+          fullProducts={data.fullProducts as any}
+          pages={data.pages as any}
+          blogs={data.blogs as any}
+        />
+      )}
+      {activeMenu === "ai-simulation" && (
+        <AISimulationPanel
+          isDemo={!!currentStore?.isDemo}
+          shopName={data.shopName}
+          fullProducts={data.fullProducts as any}
+          pages={data.pages as any}
+          blogs={data.blogs as any}
+        />
+      )}
+      {activeMenu === "geo-wizard" && (
+        <GeoWizardPanel
+          isDemo={!!currentStore?.isDemo}
+          shopUrl={currentStore?.shopUrl || ""}
+          shopName={data.shopName}
+          fullProducts={data.fullProducts as any}
+          pages={data.pages as any}
+          blogs={data.blogs as any}
+          setActiveMenu={(m) => setActiveMenu(m as MenuKey)}
         />
       )}
     </div>

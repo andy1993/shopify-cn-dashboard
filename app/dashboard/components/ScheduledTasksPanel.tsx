@@ -195,18 +195,18 @@ export default function ScheduledTasksPanel({ isDemo, shopUrl, accessToken, shop
   /* ── Render ────────────────────────────────────────── */
   return (
     <div className="space-y-4">
-      {toast && <div className="fixed bottom-6 left-1/2 -translate-x-1/2 z-50 rounded-lg bg-emerald-600/90 px-4 py-2 text-sm font-medium text-white shadow-2xl">{toast}</div>}
+      {toast && <div className="fixed bottom-6 left-1/2 -translate-x-1/2 z-50 rounded-lg bg-emerald-600/90 px-4 py-2 text-base font-medium text-white shadow-2xl">{toast}</div>}
 
       <div className="flex items-center justify-between">
         <div>
           <h2 className="flex items-center gap-2 text-xl font-bold text-foreground"><CalendarClock className="h-6 w-6 text-cyan-400" />定时任务</h2>
-          <p className="mt-1 text-sm text-muted-foreground">{shopName} · {tasks.length} 个任务{isDemo && <span className="ml-2 text-xs text-amber-400">(演示)</span>}</p>
+          <p className="mt-1 text-base text-muted-foreground">{shopName} · {tasks.length} 个任务{isDemo && <span className="ml-2 text-sm text-amber-400">(演示)</span>}</p>
         </div>
-        <Button size="sm" onClick={openCreate} className="h-8 gap-1 bg-cyan-600 hover:bg-cyan-500 text-white text-xs"><Plus className="h-3 w-3"/>创建任务</Button>
+        <Button size="sm" onClick={openCreate} className="h-9 gap-1 bg-cyan-600 hover:bg-cyan-500 text-white text-sm"><Plus className="h-3 w-3"/>创建任务</Button>
       </div>
 
       {tasks.length === 0 && (
-        <div className="text-center py-16"><CalendarClock className="h-12 w-12 mx-auto mb-3 text-muted-foreground/25"/><p className="text-sm text-muted-foreground">暂无定时任务</p></div>
+        <div className="text-center py-16"><CalendarClock className="h-12 w-12 mx-auto mb-3 text-muted-foreground/25"/><p className="text-base text-muted-foreground">暂无定时任务</p></div>
       )}
 
       <div className="space-y-3">
@@ -222,12 +222,12 @@ export default function ScheduledTasksPanel({ isDemo, shopUrl, accessToken, shop
                 {/* Info */}
                 <div className="flex-1 min-w-0">
                   <div className="flex items-center gap-2">
-                    <p className="text-sm font-semibold text-foreground truncate">{task.name}</p>
+                    <p className="text-base font-semibold text-foreground truncate">{task.name}</p>
                     <Badge className="text-[9px] px-1.5 py-0 gap-1 bg-cyan-500/15 text-cyan-400">{ACTION_ICONS[task.actionType]}{ACTION_LABELS[task.actionType]}</Badge>
                     {task.running && <Badge className="text-[9px] bg-cyan-500/20 text-cyan-400 animate-pulse">执行中</Badge>}
                   </div>
-                  <p className="text-[10px] text-muted-foreground mt-0.5">{task.description || "—"}</p>
-                  <div className="flex items-center gap-3 mt-1.5 text-[10px] text-muted-foreground">
+                  <p className="text-xs text-muted-foreground mt-0.5">{task.description || "—"}</p>
+                  <div className="flex items-center gap-3 mt-1.5 text-xs text-muted-foreground">
                     <span>⏰ {freqLabel(task)}</span>
                     <span>⬆ {task.lastRun ? formatNextRun(task.lastRun) : "从未"}</span>
                     <span>⬇ {formatNextRun(task.nextRun)}</span>
@@ -247,11 +247,11 @@ export default function ScheduledTasksPanel({ isDemo, shopUrl, accessToken, shop
               {/* Execution Logs */}
               {expandedId === task.id && (
                 <div className="mt-3 pt-3 border-t border-border/20">
-                  <p className="text-[10px] font-semibold text-muted-foreground mb-1">执行日志</p>
-                  {task.logs.length === 0 ? <p className="text-[10px] text-muted-foreground/50">暂无执行记录</p> : (
+                  <p className="text-xs font-semibold text-muted-foreground mb-1">执行日志</p>
+                  {task.logs.length === 0 ? <p className="text-xs text-muted-foreground/50">暂无执行记录</p> : (
                     <div className="space-y-0.5 max-h-48 overflow-y-auto">
                       {task.logs.map((log) => (
-                        <div key={log.id} className="flex items-center gap-2 text-[10px] py-0.5">
+                        <div key={log.id} className="flex items-center gap-2 text-xs py-0.5">
                           <span className={log.status === "ok" ? "text-emerald-400" : "text-red-400"}>{log.status === "ok" ? "🟢" : "🔴"}</span>
                           <span className="text-muted-foreground tabular-nums">{new Date(log.timestamp).toLocaleString("zh-CN")}</span>
                           <span className="text-muted-foreground">{log.duration}ms</span>
@@ -274,14 +274,14 @@ export default function ScheduledTasksPanel({ isDemo, shopUrl, accessToken, shop
           <div className="fixed inset-0 z-50 flex items-center justify-center p-4">
             <div className="w-full max-w-lg bg-card border border-border/40 rounded-xl shadow-2xl overflow-hidden">
               <div className="flex items-center justify-between border-b border-border/20 px-5 py-3">
-                <h3 className="text-sm font-semibold">{modalTask.id ? "编辑任务" : "创建任务"}</h3>
+                <h3 className="text-base font-semibold">{modalTask.id ? "编辑任务" : "创建任务"}</h3>
                 <Button size="sm" variant="ghost" onClick={() => setModalTask(null)}><X className="h-4 w-4"/></Button>
               </div>
 
               {/* Step indicator */}
               <div className="flex items-center gap-1 px-5 py-2 border-b border-border/20">
                 {["基本信息","触发条件","执行动作"].map((label, i) => (
-                  <button key={i} onClick={() => setModalStep(i)} className={`px-3 py-1 rounded text-[10px] font-medium ${modalStep===i?"bg-cyan-500/15 text-cyan-400":"text-muted-foreground"}`}>
+                  <button key={i} onClick={() => setModalStep(i)} className={`px-3 py-1 rounded text-xs font-medium ${modalStep===i?"bg-cyan-500/15 text-cyan-400":"text-muted-foreground"}`}>
                     {i+1}. {label}
                   </button>
                 ))}
@@ -290,47 +290,47 @@ export default function ScheduledTasksPanel({ isDemo, shopUrl, accessToken, shop
               <div className="p-5 space-y-3">
                 {/* Step 0: Basic */}
                 {modalStep === 0 && (<>
-                  <div><label className="text-[10px] font-semibold text-muted-foreground mb-0.5 block">任务名称 *</label><Input value={modalTask.name} onChange={(e)=>setModalTask({...modalTask,name:e.target.value})} autoFocus className="h-9 text-sm"/></div>
-                  <div><label className="text-[10px] font-semibold text-muted-foreground mb-0.5 block">描述</label><textarea value={modalTask.description} onChange={(e)=>setModalTask({...modalTask,description:e.target.value})} rows={2} className="w-full rounded-md border border-border/40 bg-background px-3 py-2 text-xs resize-none"/></div>
-                  <label className="flex items-center gap-2 text-xs cursor-pointer"><input type="checkbox" checked={modalTask.enabled} onChange={()=>setModalTask({...modalTask,enabled:!modalTask.enabled})} className="accent-cyan-500"/>启用任务</label>
+                  <div><label className="text-sm font-semibold text-muted-foreground mb-0.5 block">任务名称 *</label><Input value={modalTask.name} onChange={(e)=>setModalTask({...modalTask,name:e.target.value})} autoFocus className="h-9 text-sm"/></div>
+                  <div><label className="text-sm font-semibold text-muted-foreground mb-0.5 block">描述</label><textarea value={modalTask.description} onChange={(e)=>setModalTask({...modalTask,description:e.target.value})} rows={2} className="w-full rounded-md border border-border/40 bg-background px-3 py-2 text-sm resize-none"/></div>
+                  <label className="flex items-center gap-2 text-sm cursor-pointer"><input type="checkbox" checked={modalTask.enabled} onChange={()=>setModalTask({...modalTask,enabled:!modalTask.enabled})} className="accent-cyan-500"/>启用任务</label>
                 </>)}
 
                 {/* Step 1: Schedule */}
                 {modalStep === 1 && (<>
                   <div>
-                    <label className="text-[10px] font-semibold text-muted-foreground mb-0.5 block">频率</label>
-                    <select value={modalTask.frequency} onChange={(e)=>{const f=e.target.value as ScheduledTask["frequency"];setModalTask({...modalTask,frequency:f});}} className="h-9 w-full rounded border border-border/40 bg-background px-3 text-sm text-foreground">
+                    <label className="text-xs font-semibold text-muted-foreground mb-0.5 block">频率</label>
+                    <select value={modalTask.frequency} onChange={(e)=>{const f=e.target.value as ScheduledTask["frequency"];setModalTask({...modalTask,frequency:f});}} className="h-9 w-full rounded border border-border/40 bg-background px-3 text-base text-foreground">
                       <option value="daily">每天</option><option value="weekly">每周</option><option value="monthly">每月</option><option value="interval">间隔执行</option><option value="once">一次性</option>
                     </select>
                   </div>
-                  {modalTask.frequency === "once" && <div><label className="text-[10px] font-semibold text-muted-foreground mb-0.5 block">日期</label><Input type="date" value={modalTask.date||""} onChange={(e)=>setModalTask({...modalTask,date:e.target.value})} className="h-9 text-sm"/></div>}
+                  {modalTask.frequency === "once" && <div><label className="text-sm font-semibold text-muted-foreground mb-0.5 block">日期</label><Input type="date" value={modalTask.date||""} onChange={(e)=>setModalTask({...modalTask,date:e.target.value})} className="h-9 text-sm"/></div>}
                   <div className="grid grid-cols-2 gap-3">
-                    <div><label className="text-[10px] font-semibold text-muted-foreground mb-0.5 block">时间</label><Input type="time" value={modalTask.time} onChange={(e)=>setModalTask({...modalTask,time:e.target.value})} className="h-9 text-sm"/></div>
-                    {modalTask.frequency === "weekly" && <div><label className="text-[10px] font-semibold text-muted-foreground mb-0.5 block">星期</label><select value={modalTask.weekday??1} onChange={(e)=>setModalTask({...modalTask,weekday:Number(e.target.value)})} className="h-9 w-full rounded border border-border/40 bg-background px-3 text-sm text-foreground">{WEEKDAYS.map((d,i)=><option key={i} value={i}>周{d}</option>)}</select></div>}
-                    {modalTask.frequency === "monthly" && <div><label className="text-[10px] font-semibold text-muted-foreground mb-0.5 block">日期</label><select value={modalTask.monthDay??1} onChange={(e)=>setModalTask({...modalTask,monthDay:Number(e.target.value)})} className="h-9 w-full rounded border border-border/40 bg-background px-3 text-sm text-foreground">{MONTH_DAYS.map((d)=><option key={d}>{d} 号</option>)}</select></div>}
-                    {modalTask.frequency === "interval" && <div><label className="text-[10px] font-semibold text-muted-foreground mb-0.5 block">间隔(分钟)</label><Input type="number" value={modalTask.intervalMinutes??60} onChange={(e)=>setModalTask({...modalTask,intervalMinutes:Number(e.target.value)||60})} className="h-9 text-sm"/></div>}
+                    <div><label className="text-sm font-semibold text-muted-foreground mb-0.5 block">时间</label><Input type="time" value={modalTask.time} onChange={(e)=>setModalTask({...modalTask,time:e.target.value})} className="h-9 text-sm"/></div>
+                    {modalTask.frequency === "weekly" && <div><label className="text-xs font-semibold text-muted-foreground mb-0.5 block">星期</label><select value={modalTask.weekday??1} onChange={(e)=>setModalTask({...modalTask,weekday:Number(e.target.value)})} className="h-9 w-full rounded border border-border/40 bg-background px-3 text-base text-foreground">{WEEKDAYS.map((d,i)=><option key={i} value={i}>周{d}</option>)}</select></div>}
+                    {modalTask.frequency === "monthly" && <div><label className="text-xs font-semibold text-muted-foreground mb-0.5 block">日期</label><select value={modalTask.monthDay??1} onChange={(e)=>setModalTask({...modalTask,monthDay:Number(e.target.value)})} className="h-9 w-full rounded border border-border/40 bg-background px-3 text-base text-foreground">{MONTH_DAYS.map((d)=><option key={d}>{d} 号</option>)}</select></div>}
+                    {modalTask.frequency === "interval" && <div><label className="text-sm font-semibold text-muted-foreground mb-0.5 block">间隔(分钟)</label><Input type="number" value={modalTask.intervalMinutes??60} onChange={(e)=>setModalTask({...modalTask,intervalMinutes:Number(e.target.value)||60})} className="h-9 text-sm"/></div>}
                   </div>
                 </>)}
 
                 {/* Step 2: Action */}
                 {modalStep === 2 && (<>
-                  <div><label className="text-[10px] font-semibold text-muted-foreground mb-0.5 block">动作类型</label>
-                    <select value={modalTask.actionType} onChange={(e)=>setModalTask({...modalTask,actionType:e.target.value as ActionType})} className="h-9 w-full rounded border border-border/40 bg-background px-3 text-sm text-foreground">
+                  <div><label className="text-xs font-semibold text-muted-foreground mb-0.5 block">动作类型</label>
+                    <select value={modalTask.actionType} onChange={(e)=>setModalTask({...modalTask,actionType:e.target.value as ActionType})} className="h-9 w-full rounded border border-border/40 bg-background px-3 text-base text-foreground">
                       {(Object.entries(ACTION_LABELS) as [ActionType,string][]).map(([k,v])=><option key={k} value={k}>{v}</option>)}
                     </select>
                   </div>
-                  {modalTask.actionType === "notify" && <div><label className="text-[10px] font-semibold text-muted-foreground mb-0.5 block">通知文案</label><Input value={modalTask.actionConfig?.message||""} onChange={(e)=>setModalTask({...modalTask,actionConfig:{message:e.target.value}})} placeholder="定时任务已触发" className="h-9 text-sm"/></div>}
-                  {modalTask.actionType === "batchPrice" && <div><label className="text-[10px] font-semibold text-muted-foreground mb-0.5 block">价格策略模板</label><Input value={modalTask.actionConfig?.template||""} onChange={(e)=>setModalTask({...modalTask,actionConfig:{template:e.target.value}})} placeholder="模板 ID" className="h-9 text-sm"/></div>}
-                  {modalTask.actionType === "exportCsv" && <div><label className="text-[10px] font-semibold text-muted-foreground mb-0.5 block">导出类型</label><select value={modalTask.actionConfig?.csvType||"orders"} onChange={(e)=>setModalTask({...modalTask,actionConfig:{csvType:e.target.value}})} className="h-9 w-full rounded border border-border/40 bg-background px-3 text-sm text-foreground"><option value="orders">订单</option><option value="customers">客户</option><option value="products">商品</option></select></div>}
+                  {modalTask.actionType === "notify" && <div><label className="text-sm font-semibold text-muted-foreground mb-0.5 block">通知文案</label><Input value={modalTask.actionConfig?.message||""} onChange={(e)=>setModalTask({...modalTask,actionConfig:{message:e.target.value}})} placeholder="定时任务已触发" className="h-9 text-sm"/></div>}
+                  {modalTask.actionType === "batchPrice" && <div><label className="text-sm font-semibold text-muted-foreground mb-0.5 block">价格策略模板</label><Input value={modalTask.actionConfig?.template||""} onChange={(e)=>setModalTask({...modalTask,actionConfig:{template:e.target.value}})} placeholder="模板 ID" className="h-9 text-sm"/></div>}
+                  {modalTask.actionType === "exportCsv" && <div><label className="text-xs font-semibold text-muted-foreground mb-0.5 block">导出类型</label><select value={modalTask.actionConfig?.csvType||"orders"} onChange={(e)=>setModalTask({...modalTask,actionConfig:{csvType:e.target.value}})} className="h-9 w-full rounded border border-border/40 bg-background px-3 text-base text-foreground"><option value="orders">订单</option><option value="customers">客户</option><option value="products">商品</option></select></div>}
                 </>)}
               </div>
 
               <div className="flex items-center justify-between border-t border-border/20 px-5 py-3">
                 <div className="flex gap-1">{[0,1,2].map((s)=><span key={s} className={`h-1.5 w-6 rounded ${modalStep>=s?"bg-cyan-500":"bg-muted/20"}`}/>)}</div>
                 <div className="flex gap-2">
-                  {modalStep > 0 && <Button variant="outline" onClick={()=>setModalStep((s)=>s-1)} className="h-9 text-xs">上一步</Button>}
-                  {modalStep < 2 ? <Button onClick={()=>setModalStep((s)=>s+1)} className="h-9 text-xs bg-cyan-600 hover:bg-cyan-500 text-white">下一步</Button>
-                  : <Button onClick={saveModal} disabled={!modalTask.name.trim()} className="h-9 gap-1 bg-emerald-600 text-white text-xs"><Save className="h-3 w-3"/>保存任务</Button>}
+                  {modalStep > 0 && <Button variant="outline" onClick={()=>setModalStep((s)=>s-1)} className="h-9 text-sm">上一步</Button>}
+                  {modalStep < 2 ? <Button onClick={()=>setModalStep((s)=>s+1)} className="h-9 text-sm bg-cyan-600 hover:bg-cyan-500 text-white">下一步</Button>
+                  : <Button onClick={saveModal} disabled={!modalTask.name.trim()} className="h-9 gap-1 bg-emerald-600 text-white text-sm"><Save className="h-3 w-3"/>保存任务</Button>}
                 </div>
               </div>
             </div>

@@ -112,9 +112,9 @@ function KPICard({ title, value, subtitle, icon: Icon, accent }: {
       <CardContent className="p-5">
         <div className="flex items-start justify-between">
           <div>
-            <p className="text-xs text-muted-foreground">{title}</p>
+            <p className="text-sm text-muted-foreground">{title}</p>
             <p className="text-2xl font-bold mt-1 text-foreground tabular-nums">{value}</p>
-            <p className="text-[10px] text-muted-foreground mt-0.5">{subtitle}</p>
+            <p className="text-xs text-muted-foreground mt-0.5">{subtitle}</p>
           </div>
           <div className={"flex h-9 w-9 items-center justify-center rounded-lg " + colors[accent]}>
             <Icon className="h-4 w-4" />
@@ -248,9 +248,9 @@ export default function CustomerCenterPanel({
             <Users className="h-6 w-6 text-purple-400" />
             客户管理中心
           </h2>
-          <p className="mt-1 text-sm text-muted-foreground">
+          <p className="mt-1 text-base text-muted-foreground">
             {shopName} · {customers.length} 位客户
-            {isDemo && <span className="ml-2 text-xs text-amber-400">(演示数据)</span>}
+            {isDemo && <span className="ml-2 text-sm text-amber-400">(演示数据)</span>}
           </p>
         </div>
         <Button size="sm" variant="outline" onClick={handleExport} className="h-9 gap-1.5">
@@ -271,40 +271,40 @@ export default function CustomerCenterPanel({
         <CardContent className="flex flex-wrap items-center gap-2 px-4 py-2.5">
           <div className="relative flex-1 min-w-[150px]">
             <Search className="absolute left-2 top-1/2 h-3 w-3 -translate-y-1/2 text-muted-foreground" />
-            <Input value={filterName} onChange={(e) => setFilterName(e.target.value)} placeholder="搜索姓名或邮箱..." className="h-8 pl-7 text-xs" />
+            <Input value={filterName} onChange={(e) => setFilterName(e.target.value)} placeholder="搜索姓名或邮箱..." className="h-9 pl-7 text-sm" />
           </div>
-          <select value={filterSpend} onChange={(e) => setFilterSpend(e.target.value)} className="h-8 rounded border border-border/40 bg-background px-2 text-xs text-foreground">
+          <select value={filterSpend} onChange={(e) => setFilterSpend(e.target.value)} className="h-9 rounded border border-border/40 bg-background px-2 text-sm text-foreground">
             <option value="all">全部消费</option>
             <option value="low">&lt; ¥500</option>
             <option value="mid">¥500 - 2,000</option>
             <option value="high">¥2,000 - 10,000</option>
             <option value="top">&gt; ¥10,000</option>
           </select>
-          <select value={filterOrders} onChange={(e) => setFilterOrders(e.target.value)} className="h-8 rounded border border-border/40 bg-background px-2 text-xs text-foreground">
+          <select value={filterOrders} onChange={(e) => setFilterOrders(e.target.value)} className="h-9 rounded border border-border/40 bg-background px-2 text-sm text-foreground">
             <option value="all">全部订单数</option>
             <option value="once">单次客户</option>
             <option value="2to5">2-5 次</option>
             <option value="5plus">5 次以上</option>
           </select>
-          <select value={filterRecency} onChange={(e) => setFilterRecency(e.target.value)} className="h-8 rounded border border-border/40 bg-background px-2 text-xs text-foreground">
+          <select value={filterRecency} onChange={(e) => setFilterRecency(e.target.value)} className="h-9 rounded border border-border/40 bg-background px-2 text-sm text-foreground">
             <option value="all">全部活跃度</option>
             <option value="7d">近 7 天购买</option>
             <option value="30d">近 30 天</option>
             <option value="90d">近 90 天</option>
             <option value="dormant">90 天以上未回购</option>
           </select>
-          <select value={filterCountry} onChange={(e) => setFilterCountry(e.target.value)} className="h-8 rounded border border-border/40 bg-background px-2 text-xs text-foreground">
+          <select value={filterCountry} onChange={(e) => setFilterCountry(e.target.value)} className="h-9 rounded border border-border/40 bg-background px-2 text-sm text-foreground">
             <option value="all">全部国家</option>
             {countries.map((c) => <option key={c} value={c}>{c}</option>)}
           </select>
-          <Input value={filterTag} onChange={(e) => setFilterTag(e.target.value)} placeholder="标签关键词..." className="h-8 w-28 text-xs" />
+          <Input value={filterTag} onChange={(e) => setFilterTag(e.target.value)} placeholder="标签关键词..." className="h-9 w-28 text-sm" />
           {(filterName || filterSpend !== "all" || filterOrders !== "all" || filterRecency !== "all" || filterCountry !== "all" || filterTag) && (
-            <Button size="sm" variant="ghost" className="h-8 text-xs text-muted-foreground"
+            <Button size="sm" variant="ghost" className="h-9 text-sm text-muted-foreground"
               onClick={() => { setFilterName(""); setFilterSpend("all"); setFilterOrders("all"); setFilterRecency("all"); setFilterCountry("all"); setFilterTag(""); }}>
               <X className="h-3 w-3" />清除
             </Button>
           )}
-          <span className="ml-auto text-xs text-muted-foreground">筛选出 {filtered.length} 位客户</span>
+          <span className="ml-auto text-sm text-muted-foreground">筛选出 {filtered.length} 位客户</span>
         </CardContent>
       </Card>
 
@@ -316,23 +316,23 @@ export default function CustomerCenterPanel({
               <thead>
                 <tr className="border-b border-border/20">
                   <th className="py-2.5 pl-4 pr-2 text-left cursor-pointer select-none" onClick={() => handleSort("name")}>
-                    <span className="flex items-center gap-1 text-[10px] font-semibold uppercase tracking-wider text-muted-foreground">客户 {sortIcon("name")}</span>
+                    <span className="flex items-center gap-1 text-xs font-semibold uppercase tracking-wider text-muted-foreground">客户 {sortIcon("name")}</span>
                   </th>
-                  <th className="py-2.5 px-2 text-left text-[10px] font-semibold uppercase tracking-wider text-muted-foreground">联系方式</th>
-                  <th className="py-2.5 px-2 text-center text-[10px] font-semibold uppercase tracking-wider text-muted-foreground">国家</th>
+                  <th className="py-2.5 px-2 text-left text-xs font-semibold uppercase tracking-wider text-muted-foreground">联系方式</th>
+                  <th className="py-2.5 px-2 text-center text-xs font-semibold uppercase tracking-wider text-muted-foreground">国家</th>
                   <th className="py-2.5 px-2 text-right cursor-pointer select-none" onClick={() => handleSort("total_spent")}>
-                    <span className="flex items-center justify-end gap-1 text-[10px] font-semibold uppercase tracking-wider text-muted-foreground">总消费 {sortIcon("total_spent")}</span>
+                    <span className="flex items-center justify-end gap-1 text-xs font-semibold uppercase tracking-wider text-muted-foreground">总消费 {sortIcon("total_spent")}</span>
                   </th>
                   <th className="py-2.5 px-2 text-center cursor-pointer select-none" onClick={() => handleSort("orders_count")}>
-                    <span className="flex items-center justify-center gap-1 text-[10px] font-semibold uppercase tracking-wider text-muted-foreground">订单数 {sortIcon("orders_count")}</span>
+                    <span className="flex items-center justify-center gap-1 text-xs font-semibold uppercase tracking-wider text-muted-foreground">订单数 {sortIcon("orders_count")}</span>
                   </th>
                   <th className="py-2.5 px-2 text-right cursor-pointer select-none" onClick={() => handleSort("avg_order")}>
-                    <span className="flex items-center justify-end gap-1 text-[10px] font-semibold uppercase tracking-wider text-muted-foreground">客单价 {sortIcon("avg_order")}</span>
+                    <span className="flex items-center justify-end gap-1 text-xs font-semibold uppercase tracking-wider text-muted-foreground">客单价 {sortIcon("avg_order")}</span>
                   </th>
                   <th className="py-2.5 px-2 text-left cursor-pointer select-none" onClick={() => handleSort("last_order")}>
-                    <span className="flex items-center gap-1 text-[10px] font-semibold uppercase tracking-wider text-muted-foreground">最近购买 {sortIcon("last_order")}</span>
+                    <span className="flex items-center gap-1 text-xs font-semibold uppercase tracking-wider text-muted-foreground">最近购买 {sortIcon("last_order")}</span>
                   </th>
-                  <th className="py-2.5 px-2 text-left text-[10px] font-semibold uppercase tracking-wider text-muted-foreground">标签</th>
+                  <th className="py-2.5 px-2 text-left text-xs font-semibold uppercase tracking-wider text-muted-foreground">标签</th>
                 </tr>
               </thead>
               <tbody>
@@ -340,23 +340,23 @@ export default function CustomerCenterPanel({
                   <tr key={c.id} className="border-b border-border/10 transition-colors hover:bg-muted/10 cursor-pointer" onClick={() => setDetailCustomer(c)}>
                     <td className="py-2.5 pl-4 pr-2">
                       <div>
-                        <p className="text-sm font-medium text-sky-400 hover:underline">{customerName(c)}</p>
+                        <p className="text-base font-medium text-sky-400 hover:underline">{customerName(c)}</p>
                         {c.state !== "enabled" && (
                           <Badge className="text-[9px] px-1 py-0 bg-red-500/15 text-red-400 mt-0.5">已禁用</Badge>
                         )}
                       </div>
                     </td>
                     <td className="py-2.5 px-2">
-                      <div className="text-xs text-muted-foreground">{c.email}</div>
-                      {c.phone && <div className="text-[10px] text-muted-foreground/60">{c.phone}</div>}
+                      <div className="text-sm text-muted-foreground">{c.email}</div>
+                      {c.phone && <div className="text-xs text-muted-foreground/60">{c.phone}</div>}
                     </td>
                     <td className="py-2.5 px-2 text-center">
-                      <Badge variant="outline" className="text-[10px] px-1.5 py-0 border-border/40">{c.default_address?.country ?? "-"}</Badge>
+                      <Badge variant="outline" className="text-xs px-1.5 py-0 border-border/40">{c.default_address?.country ?? "-"}</Badge>
                     </td>
-                    <td className="py-2.5 px-2 text-right tabular-nums text-sm font-semibold text-emerald-400">{formatCny(c.total_spent * 7.25)}</td>
-                    <td className="py-2.5 px-2 text-center text-sm text-foreground">{c.orders_count}</td>
-                    <td className="py-2.5 px-2 text-right tabular-nums text-sm text-muted-foreground">{formatCny(avgOrderValue(c) * 7.25)}</td>
-                    <td className="py-2.5 px-2 text-xs text-muted-foreground">{formatTimeAgo(c.updated_at)}</td>
+                    <td className="py-2.5 px-2 text-right tabular-nums text-base font-semibold text-emerald-400">{formatCny(c.total_spent * 7.25)}</td>
+                    <td className="py-2.5 px-2 text-center text-base text-foreground">{c.orders_count}</td>
+                    <td className="py-2.5 px-2 text-right tabular-nums text-base text-muted-foreground">{formatCny(avgOrderValue(c) * 7.25)}</td>
+                    <td className="py-2.5 px-2 text-sm text-muted-foreground">{formatTimeAgo(c.updated_at)}</td>
                     <td className="py-2.5 px-2">
                       <div className="flex flex-wrap gap-1">
                         {parseTags(c.tags).slice(0, 2).map((t) => (
@@ -372,8 +372,8 @@ export default function CustomerCenterPanel({
           ) : (
             <div className="flex flex-col items-center gap-3 py-16">
               <Users className="h-12 w-12 text-muted-foreground/25" />
-              <p className="text-sm font-medium text-muted-foreground">暂无匹配的客户</p>
-              <p className="text-xs text-muted-foreground/60">尝试调整筛选条件</p>
+              <p className="text-base font-medium text-muted-foreground">暂无匹配的客户</p>
+              <p className="text-sm text-muted-foreground/60">尝试调整筛选条件</p>
             </div>
           )}
         </CardContent>
@@ -386,37 +386,37 @@ export default function CustomerCenterPanel({
           <div className="fixed inset-y-0 right-0 z-50 w-full max-w-md bg-card border-l border-border/40 shadow-2xl overflow-y-auto">
             <div className="sticky top-0 z-10 flex items-center justify-between border-b border-border/20 bg-card/95 px-5 py-3 backdrop-blur-md">
               <div>
-                <p className="text-sm font-semibold text-foreground">{customerName(detailCustomer)}</p>
-                <p className="text-[10px] text-muted-foreground">注册于 {new Date(detailCustomer.created_at).toLocaleDateString("zh-CN")}</p>
+                <p className="text-base font-semibold text-foreground">{customerName(detailCustomer)}</p>
+                <p className="text-xs text-muted-foreground">注册于 {new Date(detailCustomer.created_at).toLocaleDateString("zh-CN")}</p>
               </div>
-              <Button size="sm" variant="ghost" onClick={() => setDetailCustomer(null)} className="h-8 w-8 p-0"><X className="h-4 w-4" /></Button>
+              <Button size="sm" variant="ghost" onClick={() => setDetailCustomer(null)} className="h-9 w-8 p-0"><X className="h-4 w-4" /></Button>
             </div>
 
             <div className="p-5 space-y-4">
               {/* Contact */}
               <Card className="border-border/40 bg-card/50">
                 <CardContent className="p-4 space-y-2">
-                  <div className="flex items-center gap-2 text-sm"><Mail className="h-3.5 w-3.5 text-muted-foreground" /><span className="text-foreground">{detailCustomer.email}</span></div>
+                  <div className="flex items-center gap-2 text-base"><Mail className="h-3.5 w-3.5 text-muted-foreground" /><span className="text-foreground">{detailCustomer.email}</span></div>
                   {detailCustomer.phone && (
-                    <div className="flex items-center gap-2 text-sm"><Phone className="h-3.5 w-3.5 text-muted-foreground" /><span className="text-foreground">{detailCustomer.phone}</span></div>
+                    <div className="flex items-center gap-2 text-base"><Phone className="h-3.5 w-3.5 text-muted-foreground" /><span className="text-foreground">{detailCustomer.phone}</span></div>
                   )}
                   <div className="grid grid-cols-3 gap-2 mt-3 pt-3 border-t border-border/10">
-                    <div className="text-center"><p className="text-lg font-bold text-emerald-400 tabular-nums">{formatCny(detailCustomer.total_spent * 7.25)}</p><p className="text-[10px] text-muted-foreground">总消费</p></div>
-                    <div className="text-center"><p className="text-lg font-bold text-foreground tabular-nums">{detailCustomer.orders_count}</p><p className="text-[10px] text-muted-foreground">订单数</p></div>
-                    <div className="text-center"><p className="text-lg font-bold text-amber-400 tabular-nums">{formatCny(avgOrderValue(detailCustomer) * 7.25)}</p><p className="text-[10px] text-muted-foreground">客单价</p></div>
+                    <div className="text-center"><p className="text-lg font-bold text-emerald-400 tabular-nums">{formatCny(detailCustomer.total_spent * 7.25)}</p><p className="text-xs text-muted-foreground">总消费</p></div>
+                    <div className="text-center"><p className="text-lg font-bold text-foreground tabular-nums">{detailCustomer.orders_count}</p><p className="text-xs text-muted-foreground">订单数</p></div>
+                    <div className="text-center"><p className="text-lg font-bold text-amber-400 tabular-nums">{formatCny(avgOrderValue(detailCustomer) * 7.25)}</p><p className="text-xs text-muted-foreground">客单价</p></div>
                   </div>
                 </CardContent>
               </Card>
 
               {/* Addresses */}
               <details className="group" open>
-                <summary className="flex items-center gap-1 text-[10px] font-semibold uppercase tracking-wider text-muted-foreground cursor-pointer mb-2">
+                <summary className="flex items-center gap-1 text-xs font-semibold uppercase tracking-wider text-muted-foreground cursor-pointer mb-2">
                   <MapPin className="h-3 w-3" />地址簿 ({detailCustomer.addresses?.length ?? 0})
                   <ChevronDown className="h-3 w-3 group-open:rotate-180 transition-transform ml-auto" />
                 </summary>
                 <div className="space-y-2">
                   {(detailCustomer.addresses ?? (detailCustomer.default_address ? [detailCustomer.default_address] : [])).map((addr, i) => (
-                    <div key={i} className="rounded-lg border border-border/20 bg-muted/10 px-3 py-2 text-xs">
+                    <div key={i} className="rounded-lg border border-border/20 bg-muted/10 px-3 py-2 text-sm">
                       {addr.default !== false && (
                         <Badge className="text-[9px] px-1 py-0 bg-emerald-500/15 text-emerald-400 mb-1">默认地址</Badge>
                       )}
@@ -427,14 +427,14 @@ export default function CustomerCenterPanel({
                     </div>
                   ))}
                   {(!detailCustomer.addresses?.length && !detailCustomer.default_address) && (
-                    <p className="text-xs text-muted-foreground/50">无地址记录</p>
+                    <p className="text-sm text-muted-foreground/50">无地址记录</p>
                   )}
                 </div>
               </details>
 
               {/* Recent Orders */}
               <details className="group" open>
-                <summary className="flex items-center gap-1 text-[10px] font-semibold uppercase tracking-wider text-muted-foreground cursor-pointer mb-2">
+                <summary className="flex items-center gap-1 text-xs font-semibold uppercase tracking-wider text-muted-foreground cursor-pointer mb-2">
                   <ShoppingBag className="h-3 w-3" />最近订单 ({(detailCustomer.recent_orders ?? []).length})
                   <ChevronDown className="h-3 w-3 group-open:rotate-180 transition-transform ml-auto" />
                 </summary>
@@ -447,11 +447,11 @@ export default function CustomerCenterPanel({
                         className="flex items-center justify-between w-full rounded-lg border border-border/20 bg-muted/10 px-3 py-2 hover:bg-muted/20 transition-colors text-left"
                       >
                         <div>
-                          <p className="text-xs font-mono text-emerald-400">{o.order_number}</p>
-                          <p className="text-[10px] text-muted-foreground">{new Date(o.created_at).toLocaleDateString("zh-CN")}</p>
+                          <p className="text-sm font-mono text-emerald-400">{o.order_number}</p>
+                          <p className="text-xs text-muted-foreground">{new Date(o.created_at).toLocaleDateString("zh-CN")}</p>
                         </div>
                         <div className="text-right">
-                          <p className="text-xs font-semibold text-foreground">{detailCustomer.currency} {o.total_price.toFixed(2)}</p>
+                          <p className="text-sm font-semibold text-foreground">{detailCustomer.currency} {o.total_price.toFixed(2)}</p>
                           <Badge className={"text-[9px] px-1 py-0 " + (FINANCIAL_MAP[o.financial_status] ?? "bg-zinc-500/15 text-zinc-400")}>
                             {o.financial_status === "paid" ? "已付款" : o.financial_status === "pending" ? "待付款" : o.financial_status === "refunded" ? "已退款" : o.financial_status}
                           </Badge>
@@ -459,14 +459,14 @@ export default function CustomerCenterPanel({
                       </button>
                     ))
                   ) : (
-                    <p className="text-xs text-muted-foreground/50">无订单记录</p>
+                    <p className="text-sm text-muted-foreground/50">无订单记录</p>
                   )}
                 </div>
               </details>
 
               {/* Tags & Note */}
               <details className="group" open>
-                <summary className="flex items-center gap-1 text-[10px] font-semibold uppercase tracking-wider text-muted-foreground cursor-pointer mb-2">
+                <summary className="flex items-center gap-1 text-xs font-semibold uppercase tracking-wider text-muted-foreground cursor-pointer mb-2">
                   <Tag className="h-3 w-3" />标签与备注
                   <ChevronDown className="h-3 w-3 group-open:rotate-180 transition-transform ml-auto" />
                 </summary>

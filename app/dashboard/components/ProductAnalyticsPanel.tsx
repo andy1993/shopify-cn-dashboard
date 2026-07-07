@@ -116,11 +116,11 @@ export default function ProductAnalyticsPanel({ isDemo, shopUrl, accessToken, sh
 
   return (
     <div className="space-y-4">
-      {toast && <div className="fixed bottom-6 left-1/2 -translate-x-1/2 z-50 rounded-lg bg-emerald-600/90 px-4 py-2 text-sm font-medium text-white shadow-2xl">{toast}</div>}
+      {toast && <div className="fixed bottom-6 left-1/2 -translate-x-1/2 z-50 rounded-lg bg-emerald-600/90 px-4 py-2 text-base font-medium text-white shadow-2xl">{toast}</div>}
 
       <div>
         <h2 className="flex items-center gap-2 text-xl font-bold text-foreground"><BarChart4 className="h-6 w-6 text-purple-400" />商品分析</h2>
-        <p className="mt-1 text-sm text-muted-foreground">{shopName} · {ranks.length} 件商品{isDemo && <span className="ml-2 text-xs text-amber-400">(演示)</span>}</p>
+        <p className="mt-1 text-base text-muted-foreground">{shopName} · {ranks.length} 件商品{isDemo && <span className="ml-2 text-sm text-amber-400">(演示)</span>}</p>
       </div>
 
       {/* KPI Cards */}
@@ -132,18 +132,18 @@ export default function ProductAnalyticsPanel({ isDemo, shopUrl, accessToken, sh
 
       {/* Toolbar */}
       <Card className="border-border/40 bg-card/60"><CardContent className="flex flex-wrap items-center gap-1.5 px-3 py-2">
-        <div className="relative flex-1 min-w-[100px]"><Search className="absolute left-2 top-1/2 h-3 w-3 -translate-y-1/2 text-muted-foreground"/><Input value={search} onChange={(e)=>setSearch(e.target.value)} placeholder="搜索..." className="h-7 pl-7 text-[10px]"/></div>
-        <select value={filterLifecycle} onChange={(e)=>setFilterLifecycle(e.target.value)} className="h-7 rounded border border-border/40 bg-background text-[10px] px-1"><option value="all">全部状态</option>{Object.entries(LIFECYCLE).map(([k,v])=><option key={k} value={k}>{v.emoji} {v.label}</option>)}</select>
-        <select value={filterType} onChange={(e)=>setFilterType(e.target.value)} className="h-7 rounded border border-border/40 bg-background text-[10px] px-1"><option value="all">品类</option>{types.map((t)=><option key={t}>{t}</option>)}</select>
-        <select value={filterVendor} onChange={(e)=>setFilterVendor(e.target.value)} className="h-7 rounded border border-border/40 bg-background text-[10px] px-1"><option value="all">供应商</option>{vendors.map((v)=><option key={v}>{v}</option>)}</select>
-        <select value={filterStatus} onChange={(e)=>setFilterStatus(e.target.value)} className="h-7 rounded border border-border/40 bg-background text-[10px] px-1"><option value="all">上架</option><option value="ACTIVE">上架</option><option value="DRAFT">下架</option></select>
-        <Button size="sm" variant="outline" onClick={exportCSV} className="h-7 text-[10px] gap-1"><Download className="h-3 w-3"/>导出</Button>
+        <div className="relative flex-1 min-w-[100px]"><Search className="absolute left-2 top-1/2 h-3 w-3 -translate-y-1/2 text-muted-foreground"/><Input value={search} onChange={(e)=>setSearch(e.target.value)} placeholder="搜索..." className="h-7 pl-7 text-sm"/></div>
+        <select value={filterLifecycle} onChange={(e)=>setFilterLifecycle(e.target.value)} className="h-7 rounded border border-border/40 bg-background text-xs px-1"><option value="all">全部状态</option>{Object.entries(LIFECYCLE).map(([k,v])=><option key={k} value={k}>{v.emoji} {v.label}</option>)}</select>
+        <select value={filterType} onChange={(e)=>setFilterType(e.target.value)} className="h-7 rounded border border-border/40 bg-background text-xs px-1"><option value="all">品类</option>{types.map((t)=><option key={t}>{t}</option>)}</select>
+        <select value={filterVendor} onChange={(e)=>setFilterVendor(e.target.value)} className="h-7 rounded border border-border/40 bg-background text-xs px-1"><option value="all">供应商</option>{vendors.map((v)=><option key={v}>{v}</option>)}</select>
+        <select value={filterStatus} onChange={(e)=>setFilterStatus(e.target.value)} className="h-7 rounded border border-border/40 bg-background text-xs px-1"><option value="all">上架</option><option value="ACTIVE">上架</option><option value="DRAFT">下架</option></select>
+        <Button size="sm" variant="outline" onClick={exportCSV} className="h-7 text-xs gap-1"><Download className="h-3 w-3"/>导出</Button>
       </CardContent></Card>
 
       {/* Compare mode */}
       {compareIds.size > 0 && (
         <Card className="border-purple-500/30 bg-purple-500/5"><CardContent className="flex items-center gap-2 py-2 px-4">
-          <span className="text-[10px] text-purple-400">对比模式 · {compareIds.size} 件商品</span>
+          <span className="text-xs text-purple-400">对比模式 · {compareIds.size} 件商品</span>
           <Button size="sm" variant="ghost" onClick={()=>setCompareIds(new Set())} className="h-6 text-[9px]">清除</Button>
         </CardContent></Card>
       )}
@@ -151,8 +151,8 @@ export default function ProductAnalyticsPanel({ isDemo, shopUrl, accessToken, sh
       {/* Ranking Table */}
       <Card className="border-border/40 bg-card/60 shadow-lg backdrop-blur-lg overflow-x-auto">
         <CardContent className="p-0">
-          <table className="w-full text-xs min-w-[700px]">
-            <thead><tr className="border-b border-border/20 text-[10px] font-semibold uppercase text-muted-foreground">
+          <table className="w-full text-sm min-w-[700px]">
+            <thead><tr className="border-b border-border/20 text-xs font-semibold uppercase text-muted-foreground">
               <th className="py-2 pl-2 text-left w-6">#</th>
               <th className="py-2 pl-2 text-left">商品</th>
               <th className="py-2 px-2 text-right cursor-pointer" onClick={()=>toggleSort("gmv")}>GMV{sortBy==="gmv"&&(sortDir==="desc"?"↓":"↑")}</th>
@@ -192,12 +192,12 @@ export default function ProductAnalyticsPanel({ isDemo, shopUrl, accessToken, sh
         <Card className="border-border/40 bg-card/60 shadow-xl border-l-2 border-l-purple-500">
           <CardContent className="p-4 space-y-3">
             <div className="flex items-center justify-between">
-              <p className="text-sm font-semibold text-foreground">{expanded.title}</p>
+              <p className="text-base font-semibold text-foreground">{expanded.title}</p>
               <Button size="sm" variant="ghost" onClick={()=>setExpandedId(null)}><X className="h-4 w-4"/></Button>
             </div>
             <div className="flex gap-1">
               {(["trend","profit","returns","orders"] as typeof detailTab[]).map((t)=>(
-                <button key={t} onClick={()=>setDetailTab(t)} className={`px-3 py-1 rounded text-[10px] font-medium ${detailTab===t?"bg-purple-500/15 text-purple-400":"text-muted-foreground"}`}>
+                <button key={t} onClick={()=>setDetailTab(t)} className={`px-3 py-1 rounded text-xs font-medium ${detailTab===t?"bg-purple-500/15 text-purple-400":"text-muted-foreground"}`}>
                   {t==="trend"?"📈 趋势":t==="profit"?"💰 利润":t==="returns"?"🔄 退货":"📋 订单"}
                 </button>
               ))}
@@ -212,7 +212,7 @@ export default function ProductAnalyticsPanel({ isDemo, shopUrl, accessToken, sh
             )}
             {detailTab === "profit" && (
               <div className="space-y-2">
-                <div className="grid grid-cols-5 gap-2 text-[10px]">
+                <div className="grid grid-cols-5 gap-2 text-xs">
                   {[{l:"GMV",v:formatCny(expanded.gmv*EXCHANGE_RATE)},{l:"采购成本",v:formatCny(expanded.gmv*COGS_RATE*EXCHANGE_RATE)},{l:"物流",v:formatCny(expanded.gmv*SHIP_RATE*EXCHANGE_RATE)},{l:"网关费",v:formatCny(expanded.gmv*GW_RATE*EXCHANGE_RATE)},{l:"纯利润",v:formatCny(expanded.profit*EXCHANGE_RATE),c:"text-emerald-400"}].map((s,i)=>(
                     <div key={i} className="bg-muted/10 rounded p-2 text-center"><p className="text-muted-foreground">{s.l}</p><p className={`font-bold ${s.c||""}`}>{s.v}</p></div>
                   ))}
@@ -223,7 +223,7 @@ export default function ProductAnalyticsPanel({ isDemo, shopUrl, accessToken, sh
               </div>
             )}
             {detailTab === "returns" && (
-              <div className="grid grid-cols-2 gap-3 text-[10px]">
+              <div className="grid grid-cols-2 gap-3 text-xs">
                 <div className="bg-muted/10 rounded p-3"><p className="text-muted-foreground">退货率</p><p className={`text-lg font-bold ${expanded.returnRate>10?"text-red-400":"text-emerald-400"}`}>{expanded.returnRate.toFixed(1)}%</p><p className="text-muted-foreground/70 mt-1">全店均值: 5.2%</p></div>
                 <div className="bg-muted/10 rounded p-2 flex items-center justify-center">
                   <ResponsiveContainer width={120} height={120}><PieChart><Pie data={[{n:"正常",v:100-expanded.returnRate},{n:"退货",v:expanded.returnRate}]} dataKey="v" nameKey="n" innerRadius={30} outerRadius={50}><Cell fill="#22c55e"/><Cell fill="#ef4444"/></Pie></PieChart></ResponsiveContainer>
@@ -231,7 +231,7 @@ export default function ProductAnalyticsPanel({ isDemo, shopUrl, accessToken, sh
               </div>
             )}
             {detailTab === "orders" && (
-              <div className="text-[10px] text-muted-foreground">该商品近 30 天订单明细（Demo）<br/>订单 #1001 · 2026-07-03 · US · 2件 · ¥599.98 · 已完成</div>
+              <div className="text-xs text-muted-foreground">该商品近 30 天订单明细（Demo）<br/>订单 #1001 · 2026-07-03 · US · 2件 · ¥599.98 · 已完成</div>
             )}
           </CardContent>
         </Card>
@@ -240,8 +240,8 @@ export default function ProductAnalyticsPanel({ isDemo, shopUrl, accessToken, sh
       {/* Compare Summary */}
       {compareIds.size >= 2 && (
         <Card className="border-purple-500/30 bg-card/60"><CardContent className="p-3">
-          <p className="text-[10px] font-semibold text-muted-foreground mb-2">对比概览</p>
-          <table className="w-full text-[10px]">
+          <p className="text-xs font-semibold text-muted-foreground mb-2">对比概览</p>
+          <table className="w-full text-xs">
             <thead><tr className="border-b border-border/20 text-muted-foreground"><th className="py-1 text-left">指标</th>{compareRanks.map((r)=><th key={r.productId} className="py-1 text-right">{r.title.slice(0,12)}</th>)}</tr></thead>
             <tbody>
               {(["gmv","qty","profitRate","returnRate"] as const).map((col)=>{

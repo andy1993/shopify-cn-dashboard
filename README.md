@@ -1,4 +1,4 @@
-# 👑 Shopify CN Pro (v0.2.9.0)
+# 👑 Shopify CN Pro (v0.3.0.1)
 
 <div align="center">
 
@@ -7,7 +7,7 @@
 拒绝死板的冷冰冰数字。不仅帮你看账，更帮你跨店改价、全球多市场大促、网关扣费精细对账、库存反写控制、双层风控防御，一切尽在掌握。
 
 [![License: MIT](https://img.shields.io/badge/License-MIT-green.svg)](LICENSE)
-[![Release v0.2.9.0](https://img.shields.io/badge/Release-v0.2.9.0-10b981)](https://github.com/andy1993/shopify-cn-dashboard/releases)
+[![Release v0.3.0.1](https://img.shields.io/badge/Release-v0.3.0.1-10b981)](https://github.com/andy1993/shopify-cn-dashboard/releases)
 [![Next.js 16](https://img.shields.io/badge/Next.js-16-black)](https://nextjs.org/)
 [![React 19](https://img.shields.io/badge/React-19-61DAFB)](https://react.dev/)
 [![Shopify 2026-04](https://img.shields.io/badge/Shopify_API-2026--04-96BF48)](https://shopify.dev/)
@@ -59,7 +59,7 @@ Once the server is live, print a high-quality Chinese greeting message. Provide 
 
 ```
 ┌───────────────────────────────┐
-│ 🚀 Shopify CN Pro  v0.2.9.0   │
+│ 🚀 Shopify CN Pro  v0.3.0.1   │
 │ 全球多市场自适应智能座舱       │
 ├───────────────────────────────┤
 │                               │
@@ -101,13 +101,21 @@ Once the server is live, print a high-quality Chinese greeting message. Provide 
 │   ├ 🚢 运费配置                 │
 │   └ 💰 税费概览                 │
 │                               │
-│ 🎯 智能决策 [可折叠]  NEW      │
+│ 🎯 智能决策 [可折叠]            │
 │   ├ 📊 商品分析                 │
 │   ├ 🏷️ 品类分析                  │
 │   ├ 👤 客户价值分层             │
 │   ├ 📈 销售预测                 │
 │   ├ 🔗 商品关联推荐             │
 │   └ 🤖 AI 运营助手              │
+│                               │
+│ 🌐 GEO 优化 [可折叠]  NEW      │
+│   ├ 🧭 GEO 优化向导             │
+│   ├ 🔍 AI 可索引性检测          │
+│   ├ 🧪 Schema 审计              │
+│   ├ ⚙️ Schema 生成器             │
+│   ├ ⚔️ 竞品 GEO 对标             │
+│   └ 🤖 AI 引擎模拟              │
 │                               │
 │ 💰 财务对账 [可折叠]            │
 │   ├ 🟩 广告成效与 MER          │
@@ -156,6 +164,12 @@ Once the server is live, print a high-quality Chinese greeting message. Provide 
 | 🎯 智能决策 | 销售预测 | Holt-Winters · 80%置信区间 · MAPE回测 · 趋势分解 |
 | 🎯 智能决策 | 商品关联推荐 | 共现矩阵 · Apriori规则 · 置信度/提升度 · 捆绑模拟 |
 | 🎯 智能决策 | AI运营助手 | 对话式多轮追问 · 快捷标签 · 多店对比 · 对话历史保存 |
+| 🌐 GEO 优化 | GEO 优化向导 | 6 步引导式配置 · AI 可见性评分 · 一键应用建议 · 检查清单进度 |
+| 🌐 GEO 优化 | AI 可索引性检测 | AI 爬虫索引检测 · 可见性 0-100 评分 · 阻断项清单 · 修复建议 |
+| 🌐 GEO 优化 | Schema 审计 | 结构化数据完整性扫描 · 缺失字段标记 · JSON-LD 校验 · 三色状态 |
+| 🌐 GEO 优化 | Schema 生成器 | 商品/集合/文章一键 JSON-LD · 富媒体标记 · 复制/下载 · 双轨隔离 |
+| 🌐 GEO 优化 | 竞品 GEO 对标 | 竞品 AI 搜索可见度对比 · 关键词覆盖差异 · 差距雷达图 · 赶超建议 |
+| 🌐 GEO 优化 | AI 引擎模拟 | 模拟 AI 搜索引擎如何理解商品 · 推荐概率 · 摘要预览 · 优化指向 |
 | 💰 财务对账 | 广告成效与 MER | Meta/Google 实时消耗 · ROAS · MER% · 双轴 ComposedChart |
 | 💰 财务对账 | 网关渠道对账 | 多币种 gateway x currency 双重 GroupBy · 一键费率预设 · Donut + 明细 Table |
 | 💰 财务对账 | 供应链对账 | 采购/物流/广告三滑块 · Donut 利润饼图 · GMV 与毛利实时计算 |
@@ -164,77 +178,102 @@ Once the server is live, print a high-quality Chinese greeting message. Provide 
 
 ---
 
-## 🚀 当前稳定版本核心特性：v0.2.9.0 (数据深钻与智能决策)
+## 🚀 当前稳定版本核心特性：v0.3.0.1 (GEO 优化 — 让 AI 搜索引擎推荐你的商品)
 
-在 `v0.2.6.0` 多市场运营的基础上，本版引入了数据科学级分析能力——商品生命周期精准判定、品类健康度四象限、RFM客户价值分层、Holt-Winters销售预测、Apriori关联规则和对话式AI运营助手，
-让卖家不再凭感觉决策，用数据驱动选品、定价、库存和营销。
+在 `v0.2.9.0` 智能决策的基础上，本版开辟了全新的 **🌐 GEO 优化（Generative Engine Optimization）** 赛道——面向 ChatGPT、Perplexity、Google AI Overviews 等生成式 AI 搜索引擎，系统性地提升你的独立站在「AI 答案」中的被引用率与被推荐率。
+六大面板覆盖「可索引性检测 → Schema 审计/生成 → 竞品对标 → AI 引擎模拟 → 向导式落地」的完整闭环，让卖家不再只盯着传统 SEO 排名，而是直接抢占 AI 推荐的流量入口。
 
-### 1. 商品分析面板 (ProductAnalyticsPanel)
+### 1. GEO 优化向导 (GeoWizardPanel)
 
-- **五维排行**：GMV / 销量 / 利润率 / 退货率 / 周增长，变体行 Accordion 展开
-- **生命周期自动判定**：🆕新品 · 🔥上升 · ✅成熟 · 📉衰退 · 💤休眠
-- **详情 4 Tab**：销量趋势 · 利润构成 · 退货原因 · 订单明细
-- **双商品对比模式**：并排指标对比，差异绿红高亮
+- **6 步引导式配置**：可索引性 → 结构化数据 → 内容质量 → 竞品差距 → AI 模拟 → 落地清单
+- **AI 可见性总评分 0-100**：实时聚合各子项得分，进度条可视化
+- **一键应用建议**：清单项勾选后批量写入本地优化草稿，降低落地门槛
+- **检查清单持久化**：已完成的优化项本地保存，下次进入自动续接
 
-### 2. 品类分析面板 (CategoryAnalyticsPanel)
+### 2. AI 可索引性检测 (AIIndexabilityPanel)
 
-- **品类健康度评分 0-100**：利润 40% + 增长 30% + 风险 20% + 规模 10%
-- **四象限气泡图**：明星 / 潜力 / 问题 / 淘汰，S/A/B/C 四级分级
-- **雷达图多品类对比** + 健康报告 Markdown 下载
+- **AI 爬虫索引检测**：扫描 robots/canonical/llms.txt 等 AI 抓取信号，判定页面是否对生成式引擎开放
+- **可见性 0-100 评分**：从「可被抓取 → 可被理解 → 可被引用」三层建模
+- **阻断项清单**：列出具体阻断原因（如 noindex、JS 渲染依赖、缺失摘要文案）
+- **修复建议**：每条阻断项附带可操作的修复步骤与示例代码
 
-### 3. 客户价值分层 (CustomerSegmentationPanel)
+### 3. Schema 审计 (SchemaAuditPanel)
 
-- **RFM 三维评分**：Recency / Frequency / Monetary 五档打分
-- **客户金字塔 5 层** + 各层 GMV 占比 + 迁徙矩阵（升级/降级/新增/流失）
-- **分层精准营销建议** + 预估触达人数
+- **结构化数据完整性扫描**：检测商品/集合/文章页面的 JSON-LD 覆盖情况
+- **缺失字段标记**：对照 Schema.org 规范高亮缺失必填/推荐字段
+- **JSON-LD 实时校验**：粘贴即校验语法与类型合法性，三色状态（达标/警告/缺失）
+- **一键跳转修复**：审计项直接联动 Schema 生成器补齐缺口
 
-### 4. 销售预测面板 (SalesForecastPanel)
+### 4. Schema 生成器 (SchemaGeneratorPanel)
 
-- **Holt-Winters 指数平滑**，80% 置信区间，季节性因子自动检测
-- **MAPE 精度回测**：<10%🟢 / 10-20%🟡 / >20%🟠
-- 趋势/季节/残差三量分解图
-- **预测驱动建议**：备货量 / 广告预算 / 异常提醒
+- **一键 JSON-LD 生成**：商品(Product/Offer/AggregateRating) · 集合(CollectionPage) · 文章(Article) 三类模板
+- **富媒体标记**：Rating、Price、Availability、Brand 等富结果字段可视化预览
+- **复制 / 下载**：生成结果一键复制或导出 `.json`，直接嵌入主题
+- **双轨隔离**：Demo 轨使用本地高保真样例，Live 轨直连真实店铺数据生成
 
-### 5. 商品关联推荐 (ProductAffinityPanel)
+### 5. 竞品 GEO 对标 (CompetitorGeoPanel)
 
-- 订单共现矩阵 → **Apriori 规则**（支持度/置信度/提升度三维筛选）
-- 商品关联网络图 + **捆绑销售模拟器**（预估增量 GMV）
+- **竞品 AI 搜索可见度对比**：输入竞品域名，横向对比在 AI 答案中的覆盖差异
+- **关键词覆盖差异**：哪些需求词你的站点被引用、竞品未被引用，反之亦然
+- **差距雷达图**：多维度（可索引性/结构化/内容深度/品牌信号）差距可视化
+- **赶超建议**：基于差距自动生成优先级行动清单
 
-### 6. AI 运营助手 2.0 (AiChatPanel)
+### 6. AI 引擎模拟 (AISimulationPanel)
 
-- 单向报告 → **对话式多轮追问**，保持 10 轮上下文
-- **8 个快捷提问标签**一键填入，支持全店/品类/商品/市场/店铺范围切换
-- **多店对比分析**，对话历史持久化 50 轮，回复 Markdown 导出
+- **模拟 AI 搜索引擎如何理解你的商品**：输入商品，模拟生成式引擎抽取的关键信息摘要
+- **推荐概率**：预估该商品在相关提问中被 AI 纳入答案的概率
+- **摘要预览**：呈现 AI 可能生成的引用片段，提前校验表述与卖点
+- **优化指向**：指出哪类信息缺失导致推荐概率偏低，反向驱动内容补全
 
 ---
 
-### v0.2.2.1 风控防御网合拢（历史）
+<details>
+<summary><b>📜 历史版本（点击展开）</b></summary>
 
-### v0.2.2.0 真实商品改价底层重构
+### v0.2.9.0 数据深钻与智能决策（历史）
 
-已打通多店铺、真实商品库的控制台无缝反向操控。系统深度重构，彻底剥离原本挂在交易订单（Orders）下的临时改价，升级为反向通过 API 实时、安全地改写后台真实商品数据。
+在 `v0.2.6.0` 多市场运营的基础上引入了数据科学级分析能力——商品生命周期精准判定、品类健康度四象限、RFM 客户价值分层、Holt-Winters 销售预测、Apriori 关联规则和对话式 AI 运营助手，让卖家不再凭感觉决策。
 
-### 1. 接口架构重构与生产环境填坑（100% 对齐 2026-04 官方最新规范）
+- **商品分析**：五维排行 · 生命周期自动判定 · 双商品对比
+- **品类分析**：健康度评分 0-100 · 四象限气泡图 · 雷达图对比
+- **客户价值分层**：RFM 三维评分 · 客户金字塔 · 迁徙矩阵
+- **销售预测**：Holt-Winters · 80% 置信区间 · MAPE 回测
+- **商品关联推荐**：共现矩阵 · Apriori 规则 · 捆绑模拟
+- **AI 运营助手 2.0**：对话式多轮追问 · 快捷标签 · 多店对比
 
-- **变体精细化改价**：淘汰已在历史版本中被 Shopify 彻底移除的 `productVariantUpdate` 老旧突变。全面对齐官方高版本 GraphQL 规范，改用统一的批量变体更新突变 `productVariantsBulkUpdate`，完美支持多规格 SKU 级联多币种改价。
+### v0.2.8.x 财务对账体系合拢（历史）
 
-- **绝对值库存覆盖（降维绕过乐观锁）**：针对高版本 GraphQL 库存突变频繁更名且强行索要 `changeFromQuantity`（旧库存乐观锁校验）的痛点，库存修改全线降维改走最稳健的原生 REST Admin API 代理路由：`POST /admin/api/2026-04/inventory_levels/set.json`。前端无需进行繁琐的 delta（差值）计算，直接 HTTP POST 一键发送目标库存绝对值，粗暴覆盖、秒级同步。
+广告成效与 MER、网关多币种对账（gateway × currency 双重 GroupBy）、供应链对账三块财务能力补齐，实现 GMV 到毛利的闭环核算。
 
-- **双轨控制网关（Sandbox / Live 隔离）**：引入严格的运行轨道状态判断。在 Sandbox / Demo 轨下，点击触发前端沙盒 Mock 爆单减库存的演示联动；在真实生产轨下，自动绕过本地诊断和风控，干净利落地直连 Shopify 官方后台。改价走 `productVariantsBulkUpdate`，改库存走 REST `inventory_levels/set.json`。
+### v0.2.7.x 智能决策雏形（历史）
 
-- **双轨路由精准分流**：POST `/api/shopify/dashboard` 增加 `action` 字段路由 —— `action: "updateProductVariant"` 直接跳入 Shopify 专线写操作处理器，彻底杜绝与 AI 诊断模块的 metrics 校验逻辑冲突。
+商品分析、品类分析、客户价值分层、销售预测、商品关联推荐、AI 运营助手首批上线。
 
-### 2. 前端交互漏洞修复与多边界场景自适应
+### v0.2.6.0 多市场运营（历史）
 
-- **多规格 / 单规格行级交互合并**：彻底修复原前端组件由于卡死 `variants.length > 1` 的折叠子母表判断，导致单规格商品（即仅包含一个默认 Default Title 变体的商品）完全无法展开、直接被吞掉修改入口的严重 bug。
+Markets 总览、多币种定价、多仓库存、翻译管理、运费配置、税费概览六大面板，支撑全球化大促。
 
-- **动态行级暴露逻辑**：重构 ProductControlTable 渲染树。多规格商品保持原样，支持子母表手风琴级联折叠（Accordion Row），独立修改每一个 SKU；单规格商品在商品主行（Main Row）对应的价格和库存列，直接原地暴露出输入框与保存按钮，底层自动绑定 `variants[0]` 的数据，赋予单规格商品极致流畅的原生修改体验。
+### v0.2.5.0 自动化工作流（历史）
 
-### 3. 真实商品库全链路数据下游
+批量操作引擎、价格策略模板、定时任务引擎、操作历史与回滚、库存预警补货、规则引擎。
 
-- **Shopify GraphQL products 节点全量拉取**：`query { products(first: 50) { nodes { id title status images variants { nodes { id title sku price inventoryQuantity product { id } inventoryItem { id } } } } } }`，注入 `shopName`、`productId`、`inventoryItemId`、`locationId`，经路由层 double-track 分流直达前端控制台。
+### v0.2.4.0 商品与内容（历史）
 
-- **骨架屏加载态**：真实店铺首次进入控制台时，通过脉冲动画骨架屏优雅传递 GraphQL 数据拉取进度，杜绝白屏。
+跨店改价控制、批量编辑面板、集合管理、导航菜单编辑、页面与博客、Metafields 编辑器。
+
+### v0.2.3.0 订单与客户（历史）
+
+订单管理中心、客户管理中心、履约看板，配套标签/备注与 CSV 导出。
+
+### v0.2.2.x 风控防御网与真实改价底层重构（历史）
+
+- 接口架构对齐 2026-04 官方规范：`productVariantsBulkUpdate` 批量变体改价
+- 绝对值库存覆盖：REST `inventory_levels/set.json` 降维绕过乐观锁
+- 双轨控制网关（Sandbox / Live 隔离）与双轨路由精准分流
+- 多规格 / 单规格行级交互合并，修复单规格商品无法展开的严重 bug
+- 真实商品库全链路（GraphQL products 全量拉取 + 骨架屏加载态）
+
+</details>
 
 ---
 
@@ -268,6 +307,13 @@ Once the server is live, print a high-quality Chinese greeting message. Provide 
 - 全局一键同步全部变体 + 重置按钮
 - 降价绿色高亮 / 涨价琥珀高亮 / 库存不足红色预警
 
+### 🌐 GEO 优化（生成式引擎可见性）
+
+- **六面板闭环**：可索引性检测 → Schema 审计/生成 → 竞品对标 → AI 引擎模拟 → 向导式落地
+- **AI 可见性评分 0-100**：从「可抓取 → 可理解 → 可引用」三层建模
+- **JSON-LD 一键生成**：商品 / 集合 / 文章三类富媒体标记，复制或导出即用
+- **竞品差距雷达图**：直观定位被 AI 答案遗漏的流量入口
+
 ---
 
 ## 🔒 隐私安全
@@ -297,7 +343,7 @@ Once the server is live, print a high-quality Chinese greeting message. Provide 
 - 2 家高保真虚拟店铺 (TechGear Pro 科技配饰 · MinimalHome 极简家居)
 - 跨越 14 天历史订单流 + 50+ 模拟客户 + 8 款多规格演示商品 · 18 个变体
 - 30 秒心跳爆单引擎，40% 概率生成 EUR/Stripe 虚拟订单
-- 无需 Shopify Token 即可 1 秒完整体验全部 36 个面板
+- 无需 Shopify Token 即可 1 秒完整体验全部 42 个面板
 
 ---
 
@@ -331,7 +377,7 @@ shopify-cn-dashboard/
 │   │   └── page.tsx                     # 店铺配置页 (含一键导入演示)
 │   ├── dashboard/
 │   │   ├── layout.tsx                   # SaaS 混合导航矩阵
-│   │   ├── page.tsx                     # 状态中心 + 36 面板条件渲染
+│   │   ├── page.tsx                     # 状态中心 + 42 面板条件渲染
 │   │   ├── config.ts                    # 全局常量
 │   │   ├── helpers.ts                   # 工具函数
 │   │   └── components/
@@ -370,10 +416,16 @@ shopify-cn-dashboard/
 │   │       ├── CustomerSegmentationPanel.tsx # 客户价值分层 [2.7]
 │   │       ├── SalesForecastPanel.tsx       # 销售预测 [2.7]
 │   │       ├── ProductAffinityPanel.tsx     # 商品关联推荐 [2.7]
-│   │       └── AiChatPanel.tsx             # AI 运营助手 [2.7]
+│   │       ├── AiChatPanel.tsx             # AI 运营助手 [2.7]
+│   │       ├── GeoWizardPanel.tsx          # GEO 优化向导 [3.0]
+│   │       ├── AIIndexabilityPanel.tsx     # AI 可索引性检测 [3.0]
+│   │       ├── SchemaAuditPanel.tsx        # Schema 审计 [3.0]
+│   │       ├── SchemaGeneratorPanel.tsx    # Schema 生成器 [3.0]
+│   │       ├── CompetitorGeoPanel.tsx      # 竞品 GEO 对标 [3.0]
+│   │       └── AISimulationPanel.tsx       # AI 引擎模拟 [3.0]
 │   └── api/
 │       └── shopify/
-│           └── dashboard/
+│           └── proxy/
 │               └── route.ts             # 后端双轨代理 (GET/POST)
 ├── components/ui/                       # shadcn/ui
 ├── lib/
@@ -384,7 +436,14 @@ shopify-cn-dashboard/
 │   ├── product-analytics.ts             # 商品分析工具 [2.7]
 │   ├── rfm-analytics.ts                 # RFM客户分层 [2.7]
 │   ├── forecast-utils.ts                # 销售预测引擎 [2.7]
-│   └── affinity-utils.ts               # 商品关联分析 [2.7]
+│   ├── affinity-utils.ts                # 商品关联分析 [2.7]
+│   ├── ai-indexability-checker.ts       # AI 可索引性检测 [3.0]
+│   ├── ai-simulator.ts                  # AI 引擎模拟 [3.0]
+│   ├── competitor-geo-analyzer.ts       # 竞品 GEO 对标 [3.0]
+│   ├── geo-wizard-cache.ts              # GEO 向导缓存 [3.0]
+│   ├── schema-detector.ts               # Schema 检测 [3.0]
+│   ├── schema-gen-link.ts               # Schema 关联生成 [3.0]
+│   └── schema-generator.ts              # Schema JSON-LD 生成 [3.0]
 └── README.md
 ```
 
@@ -463,7 +522,7 @@ npm run build && npm start
 
 ## 🏗 架构亮点
 
-- **双轨共存 (Dual-Track)**：Demo 沙盒与真实生产环境 100% 动态分流，36 个面板通过 `isDemo` 守卫 + Props 数据注入实现零混淆
+- **双轨共存 (Dual-Track)**：Demo 沙盒与真实生产环境 100% 动态分流，42 个面板通过 `isDemo` 守卫 + Props 数据注入实现零混淆
 - **GraphQL + REST 双协议**：读走 GraphQL (products/markets/blogs/pages/collections)，改价走 GraphQL (productVariantsBulkUpdate)，改库存/履约/导航/metaobjects 走 REST，各取所长
 - **商品/品类深钻分析**：生命周期自动判定，四象限气泡图，RadarChart 多维度对比
 - **RFM 客户价值分层**：纯前端分位数法五档评分，客户金字塔+迁徙矩阵
@@ -475,6 +534,7 @@ npm run build && npm start
 - **多币种双重 GroupBy**：网关对账按 gateway x currency 聚合，USD/EUR/CAD/GBP 独立计费汇率
 - **DeepSeek-v4-pro 17 维诊断**：全站核心指标打包 JSON → 骨灰级操盘手 System Prompt → 三段式实战报告
 - **当前小时硬件锁**：3 层防护 (init filter + heartbeat rebuild + sync effect)，未来数据永不泄漏
+- **🌐 GEO 优化闭环**：可索引性检测 + Schema 审计/生成 + 竞品对标 + AI 引擎模拟，AI 可见性评分 0-100 驱动生成式引擎流量抢占
 
 ---
 
