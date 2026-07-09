@@ -1,4 +1,4 @@
-# 👑 Shopify CN Pro (v0.3.0.1)
+# 👑 Shopify CN Pro (v0.3.1.0)
 
 <div align="center">
 
@@ -7,7 +7,7 @@
 拒绝死板的冷冰冰数字。不仅帮你看账，更帮你跨店改价、全球多市场大促、网关扣费精细对账、库存反写控制、双层风控防御，一切尽在掌握。
 
 [![License: MIT](https://img.shields.io/badge/License-MIT-green.svg)](LICENSE)
-[![Release v0.3.0.1](https://img.shields.io/badge/Release-v0.3.0.1-10b981)](https://github.com/andy1993/shopify-cn-dashboard/releases)
+[![Release v0.3.1.0](https://img.shields.io/badge/Release-v0.3.1.0-10b981)](https://github.com/andy1993/shopify-cn-dashboard/releases)
 [![Next.js 16](https://img.shields.io/badge/Next.js-16-black)](https://nextjs.org/)
 [![React 19](https://img.shields.io/badge/React-19-61DAFB)](https://react.dev/)
 [![Shopify 2026-04](https://img.shields.io/badge/Shopify_API-2026--04-96BF48)](https://shopify.dev/)
@@ -59,7 +59,7 @@ Once the server is live, print a high-quality Chinese greeting message. Provide 
 
 ```
 ┌───────────────────────────────┐
-│ 🚀 Shopify CN Pro  v0.3.0.1   │
+│ 🚀 Shopify CN Pro  v0.3.1.0   │
 │ 全球多市场自适应智能座舱       │
 ├───────────────────────────────┤
 │                               │
@@ -117,6 +117,12 @@ Once the server is live, print a high-quality Chinese greeting message. Provide 
 │   ├ ⚔️ 竞品 GEO 对标             │
 │   └ 🤖 AI 引擎模拟              │
 │                               │
+│ 🔍 SEO 优化 [可折叠]  NEW      │
+│   ├ 🩺 SEO 健康扫描            │
+│   ├ 📊 Search Console          │
+│   ├ 🔑 关键词研究              │
+│   └ 📈 GA4 流量               │
+│                               │
 │ 💰 财务对账 [可折叠]            │
 │   ├ 🟩 广告成效与 MER          │
 │   ├ 💳 网关渠道对账            │
@@ -170,6 +176,10 @@ Once the server is live, print a high-quality Chinese greeting message. Provide 
 | 🌐 GEO 优化 | Schema 生成器 | 商品/集合/文章一键 JSON-LD · 富媒体标记 · 复制/下载 · 双轨隔离 |
 | 🌐 GEO 优化 | 竞品 GEO 对标 | 竞品 AI 搜索可见度对比 · 关键词覆盖差异 · 差距雷达图 · 赶超建议 |
 | 🌐 GEO 优化 | AI 引擎模拟 | 模拟 AI 搜索引擎如何理解商品 · 推荐概率 · 摘要预览 · 优化指向 |
+| 🔍 SEO 优化 | SEO 健康扫描 | 12 项检测扫描 · 严重/警告/建议三级 · 重复标题/描述检测 · 修复建议 · 报告导出 |
+| 🔍 SEO 优化 | Search Console | Google GSC API 全接入 · 搜索词分析 · 点击/曝光/CTR/排名 · 高曝光低点击发现 |
+| 🔍 SEO 优化 | 关键词研究 | 机会关键词发现 · 关键词覆盖检查 · 竞争度估算 · 种子列表管理 · 关联商品 |
+| 🔍 SEO 优化 | GA4 流量 | Google Analytics 4 接入 · 流量趋势 · 来源分布 · 用户行为 · 页面分析 · 商品页匹配 |
 | 💰 财务对账 | 广告成效与 MER | Meta/Google 实时消耗 · ROAS · MER% · 双轴 ComposedChart |
 | 💰 财务对账 | 网关渠道对账 | 多币种 gateway x currency 双重 GroupBy · 一键费率预设 · Donut + 明细 Table |
 | 💰 财务对账 | 供应链对账 | 采购/物流/广告三滑块 · Donut 利润饼图 · GMV 与毛利实时计算 |
@@ -178,47 +188,78 @@ Once the server is live, print a high-quality Chinese greeting message. Provide 
 
 ---
 
-## 🚀 当前稳定版本核心特性：v0.3.0.1 (GEO 优化 — 让 AI 搜索引擎推荐你的商品)
+## 🚀 当前稳定版本核心特性：v0.3.1.0 (SEO 优化 — 让搜索排名靠前)
 
-在 `v0.2.9.0` 智能决策的基础上，本版开辟了全新的 **🌐 GEO 优化（Generative Engine Optimization）** 赛道——面向 ChatGPT、Perplexity、Google AI Overviews 等生成式 AI 搜索引擎，系统性地提升你的独立站在「AI 答案」中的被引用率与被推荐率。
-六大面板覆盖「可索引性检测 → Schema 审计/生成 → 竞品对标 → AI 引擎模拟 → 向导式落地」的完整闭环，让卖家不再只盯着传统 SEO 排名，而是直接抢占 AI 推荐的流量入口。
+在 `v0.3.0.1` GEO 优化的基础上，本版补齐传统搜索流量引擎——**🔍 SEO 优化** 赛道，覆盖 SEO 健康扫描、Google Search Console 集成、关键词研究与 Google Analytics 4 四大面板。
+更关键的是：GEO 与 SEO 形成「双螺旋」——你为 AI 搜索引擎打磨的 Schema 与 AI 友好内容，同样会反哺传统搜索排名；而扎实的传统 SEO 基建，又让 AI 更容易理解并推荐你的商品。一次优化，两份流量。
 
-### 1. GEO 优化向导 (GeoWizardPanel)
+### 1. SEO 健康扫描面板 (SEOHealthPanel)
+
+- **3 级严重度 12 项检测**：严重 / 警告 / 建议 三组分组呈现
+- **重复标题/描述检测 · 标题长度 · Meta Desc 缺失 · Alt 文本 · URL 规范 · 内链 · 品牌词** 逐项扫描
+- **扫描范围可选**：逐商品修复清单，配 [✏️ 编辑] / [📸 添加 Alt] / [🚫 忽略] 操作按钮
+- **SEO 健康分 0-100** · 一键导出 Markdown 报告
+
+### 2. Google Search Console 集成 (SearchConsolePanel)
+
+- **粘贴 GSC Service Account JSON** · 自动获取搜索分析数据
+- **搜索词分析表**：曝光 / 点击 / CTR / 平均排名 / 趋势，每列可排序
+- **关键词详情**：逐日趋势图 · 落地页 Top5 · 设备分布 · 国家分布
+- **机会发现**：高曝光低点击 · 高点击低排名 · 品牌词
+- **排名告警**：核心词排名下降超 5 位 → 红色 Badge 横幅
+- **Service Account 密钥仅存 localStorage** · 后端 JWT 签名代理 · 不持久化
+
+### 3. 关键词研究面板 (KeywordResearchPanel)
+
+- **4 Tab 分析**：机会关键词 · 覆盖检查 · 关键词→商品匹配 · 竞争度估算
+- **种子词列表管理** · 预置 4 组行业关键词 · 搜索历史
+- **关键词高亮原文 / 未适配标注** · 优先度排序 · 导出 CSV
+
+### 4. Google Analytics 4 集成 (AnalyticsPanel)
+
+- **GA4 Data API v1beta 全接入** · 共享 GSC JWT 签名模块
+- **4 Tab**：流量趋势 · 流量来源 · 用户行为 · 页面分析
+- **页面分析自动匹配 Shopify 商品** · 商品页 / 集合页 / 博客页筛选
+- **数据缓存 6 小时** · 导入已配置的 GSC 凭证
+
+> 🌐 以下为 **v0.3.0.1 GEO 优化** 能力，本次 SEO 优化将与之「双螺旋」放大 👇
+
+### 5. GEO 优化向导 (GeoWizardPanel)
 
 - **6 步引导式配置**：可索引性 → 结构化数据 → 内容质量 → 竞品差距 → AI 模拟 → 落地清单
 - **AI 可见性总评分 0-100**：实时聚合各子项得分，进度条可视化
 - **一键应用建议**：清单项勾选后批量写入本地优化草稿，降低落地门槛
 - **检查清单持久化**：已完成的优化项本地保存，下次进入自动续接
 
-### 2. AI 可索引性检测 (AIIndexabilityPanel)
+### 6. AI 可索引性检测 (AIIndexabilityPanel)
 
 - **AI 爬虫索引检测**：扫描 robots/canonical/llms.txt 等 AI 抓取信号，判定页面是否对生成式引擎开放
 - **可见性 0-100 评分**：从「可被抓取 → 可被理解 → 可被引用」三层建模
 - **阻断项清单**：列出具体阻断原因（如 noindex、JS 渲染依赖、缺失摘要文案）
 - **修复建议**：每条阻断项附带可操作的修复步骤与示例代码
 
-### 3. Schema 审计 (SchemaAuditPanel)
+### 7. Schema 审计 (SchemaAuditPanel)
 
 - **结构化数据完整性扫描**：检测商品/集合/文章页面的 JSON-LD 覆盖情况
 - **缺失字段标记**：对照 Schema.org 规范高亮缺失必填/推荐字段
 - **JSON-LD 实时校验**：粘贴即校验语法与类型合法性，三色状态（达标/警告/缺失）
 - **一键跳转修复**：审计项直接联动 Schema 生成器补齐缺口
 
-### 4. Schema 生成器 (SchemaGeneratorPanel)
+### 8. Schema 生成器 (SchemaGeneratorPanel)
 
 - **一键 JSON-LD 生成**：商品(Product/Offer/AggregateRating) · 集合(CollectionPage) · 文章(Article) 三类模板
 - **富媒体标记**：Rating、Price、Availability、Brand 等富结果字段可视化预览
 - **复制 / 下载**：生成结果一键复制或导出 `.json`，直接嵌入主题
 - **双轨隔离**：Demo 轨使用本地高保真样例，Live 轨直连真实店铺数据生成
 
-### 5. 竞品 GEO 对标 (CompetitorGeoPanel)
+### 9. 竞品 GEO 对标 (CompetitorGeoPanel)
 
 - **竞品 AI 搜索可见度对比**：输入竞品域名，横向对比在 AI 答案中的覆盖差异
 - **关键词覆盖差异**：哪些需求词你的站点被引用、竞品未被引用，反之亦然
 - **差距雷达图**：多维度（可索引性/结构化/内容深度/品牌信号）差距可视化
 - **赶超建议**：基于差距自动生成优先级行动清单
 
-### 6. AI 引擎模拟 (AISimulationPanel)
+### 10. AI 引擎模拟 (AISimulationPanel)
 
 - **模拟 AI 搜索引擎如何理解你的商品**：输入商品，模拟生成式引擎抽取的关键信息摘要
 - **推荐概率**：预估该商品在相关提问中被 AI 纳入答案的概率
@@ -229,6 +270,12 @@ Once the server is live, print a high-quality Chinese greeting message. Provide 
 
 <details>
 <summary><b>📜 历史版本（点击展开）</b></summary>
+
+### v0.3.1.0 — SEO 优化
+SEO 健康扫描 / Google Search Console 集成 / 关键词研究 / Google Analytics 4
+
+### v0.3.0.1 — GEO 优化（上版本）
+GEO 优化向导 / AI 可索引性检测 / Schema 审计 / Schema 生成器 / 竞品 GEO 对标 / AI 引擎模拟
 
 ### v0.2.9.0 数据深钻与智能决策（历史）
 
@@ -314,6 +361,13 @@ Markets 总览、多币种定价、多仓库存、翻译管理、运费配置、
 - **JSON-LD 一键生成**：商品 / 集合 / 文章三类富媒体标记，复制或导出即用
 - **竞品差距雷达图**：直观定位被 AI 答案遗漏的流量入口
 
+### 🔍 SEO 优化（传统搜索流量引擎）
+
+- **四面板闭环**：SEO 健康扫描 → Search Console → 关键词研究 → GA4 流量
+- **12 项 SEO 检测**：严重/警告/建议三级，重复标题/描述/Alt 文本一键修复
+- **GSC 全接入**：搜索词曝光/点击/CTR/排名，高曝光低点击机会发现
+- **GA4 流量分析**：流量趋势/来源/用户行为/页面分析，自动匹配 Shopify 商品
+
 ---
 
 ## 🔒 隐私安全
@@ -343,7 +397,7 @@ Markets 总览、多币种定价、多仓库存、翻译管理、运费配置、
 - 2 家高保真虚拟店铺 (TechGear Pro 科技配饰 · MinimalHome 极简家居)
 - 跨越 14 天历史订单流 + 50+ 模拟客户 + 8 款多规格演示商品 · 18 个变体
 - 30 秒心跳爆单引擎，40% 概率生成 EUR/Stripe 虚拟订单
-- 无需 Shopify Token 即可 1 秒完整体验全部 42 个面板
+- 无需 Shopify Token 即可 1 秒完整体验全部 49 个面板
 
 ---
 
@@ -377,7 +431,7 @@ shopify-cn-dashboard/
 │   │   └── page.tsx                     # 店铺配置页 (含一键导入演示)
 │   ├── dashboard/
 │   │   ├── layout.tsx                   # SaaS 混合导航矩阵
-│   │   ├── page.tsx                     # 状态中心 + 42 面板条件渲染
+│   │   ├── page.tsx                     # 状态中心 + 49 面板条件渲染
 │   │   ├── config.ts                    # 全局常量
 │   │   ├── helpers.ts                   # 工具函数
 │   │   └── components/
@@ -422,11 +476,21 @@ shopify-cn-dashboard/
 │   │       ├── SchemaAuditPanel.tsx        # Schema 审计 [3.0]
 │   │       ├── SchemaGeneratorPanel.tsx    # Schema 生成器 [3.0]
 │   │       ├── CompetitorGeoPanel.tsx      # 竞品 GEO 对标 [3.0]
-│   │       └── AISimulationPanel.tsx       # AI 引擎模拟 [3.0]
+│   │       ├── AISimulationPanel.tsx       # AI 引擎模拟 [3.0]
+│   │       ├── SEOHealthPanel.tsx          # SEO 健康扫描 [3.1]
+│   │       ├── SearchConsolePanel.tsx      # Google Search Console [3.1]
+│   │       ├── KeywordResearchPanel.tsx    # 关键词研究 [3.1]
+│   │       └── AnalyticsPanel.tsx          # Google Analytics 4 [3.1]
 │   └── api/
-│       └── shopify/
-│           └── proxy/
-│               └── route.ts             # 后端双轨代理 (GET/POST)
+│       ├── shopify/
+│       │   └── proxy/
+│       │       └── route.ts             # 后端双轨代理 (GET/POST)
+│       └── google/
+│           ├── auth.ts                  # GSC/GA4 JWT 签名代理
+│           ├── searchconsole/
+│           │   └── route.ts             # Google Search Console API 代理 [3.1]
+│           └── analytics/
+│               └── route.ts             # Google Analytics 4 API 代理 [3.1]
 ├── components/ui/                       # shadcn/ui
 ├── lib/
 │   ├── utils.ts
@@ -443,7 +507,10 @@ shopify-cn-dashboard/
 │   ├── geo-wizard-cache.ts              # GEO 向导缓存 [3.0]
 │   ├── schema-detector.ts               # Schema 检测 [3.0]
 │   ├── schema-gen-link.ts               # Schema 关联生成 [3.0]
-│   └── schema-generator.ts              # Schema JSON-LD 生成 [3.0]
+│   ├── schema-generator.ts              # Schema JSON-LD 生成 [3.0]
+│   ├── seo-scanner.ts                   # SEO 健康扫描 [3.1]
+│   ├── keyword-research.ts              # 关键词研究 [3.1]
+│   └── ga4-utils.ts                     # GA4 数据工具 [3.1]
 └── README.md
 ```
 
@@ -522,7 +589,7 @@ npm run build && npm start
 
 ## 🏗 架构亮点
 
-- **双轨共存 (Dual-Track)**：Demo 沙盒与真实生产环境 100% 动态分流，42 个面板通过 `isDemo` 守卫 + Props 数据注入实现零混淆
+- **双轨共存 (Dual-Track)**：Demo 沙盒与真实生产环境 100% 动态分流，49 个面板通过 `isDemo` 守卫 + Props 数据注入实现零混淆
 - **GraphQL + REST 双协议**：读走 GraphQL (products/markets/blogs/pages/collections)，改价走 GraphQL (productVariantsBulkUpdate)，改库存/履约/导航/metaobjects 走 REST，各取所长
 - **商品/品类深钻分析**：生命周期自动判定，四象限气泡图，RadarChart 多维度对比
 - **RFM 客户价值分层**：纯前端分位数法五档评分，客户金字塔+迁徙矩阵

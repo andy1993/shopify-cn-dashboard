@@ -1,6 +1,6 @@
 "use client";
 
-import { createContext, useContext, useState, useCallback } from "react";
+import { createContext, useContext, useState, useCallback, useEffect } from "react";
 import { useRouter, usePathname } from "next/navigation";
 import {
   LayoutDashboard,
@@ -45,12 +45,14 @@ import {
   GitCompare,
   Sparkles,
   Compass,
+  Search,
+  Key,
 } from "lucide-react";
 import { cn } from "@/lib/utils";
 
 // ─── Context ───────────────────────────────────────────
 
-export type MenuKey = "overview" | "ai" | "finance" | "risk" | "trend" | "aggregator" | "gateway" | "funnel" | "ad" | "product-control" | "batch-op" | "bulk-edit" | "scheduled-tasks" | "rule-engine" | "orders" | "customers" | "fulfillment" | "collections" | "navigation" | "content-pages" | "metafields" | "operation-history" | "inventory-alert" | "markets" | "multi-currency" | "multi-location" | "translations" | "shipping-rates" | "tax-overview" | "product-analytics" | "category-analytics" | "customer-segmentation" | "sales-forecast" | "product-affinity" | "schema-audit" | "schema-generator" | "ai-indexability" | "competitor-geo" | "ai-simulation" | "geo-wizard";
+export type MenuKey = "overview" | "ai" | "finance" | "risk" | "trend" | "aggregator" | "gateway" | "funnel" | "ad" | "product-control" | "batch-op" | "bulk-edit" | "scheduled-tasks" | "rule-engine" | "orders" | "customers" | "fulfillment" | "collections" | "navigation" | "content-pages" | "metafields" | "operation-history" | "inventory-alert" | "markets" | "multi-currency" | "multi-location" | "translations" | "shipping-rates" | "tax-overview" | "product-analytics" | "category-analytics" | "customer-segmentation" | "sales-forecast" | "product-affinity" | "schema-audit" | "schema-generator" | "ai-indexability" | "competitor-geo" | "ai-simulation" | "geo-wizard" | "seo-health" | "search-console" | "keyword-research" | "analytics";
 
 interface DashboardContextValue {
   activeMenu: MenuKey;
@@ -133,6 +135,17 @@ const NAV_CATEGORIES: NavCategory[] = [
     ],
   },
   {
+    id: "seo-center",
+    label: "🔍 SEO 优化",
+    icon: Search,
+    items: [
+      { id: "seo-health", label: "SEO 健康扫描", icon: Search },
+      { id: "search-console", label: "Search Console", icon: BarChart4 },
+      { id: "keyword-research", label: "关键词研究", icon: Key },
+      { id: "analytics", label: "流量分析", icon: TrendingUp },
+    ],
+  },
+  {
     id: "finance-center",
     label: "💰 财务对账",
     icon: DollarSign,
@@ -188,22 +201,42 @@ export default function DashboardLayout({
   const router = useRouter();
   const [activeMenu, setActiveMenu] = useState<MenuKey>("overview");
   const [expandedCategories, setExpandedCategories] = useState<Set<string>>(
-    new Set(["data-center", "order-customer", "product-content", "geo-center", "finance-center", "markets-center", "risk-center", "intelligence-center"]),
+    new Set([]),
   );
   const [soonMsg, setSoonMsg] = useState<string | null>(null);
 
+  useEffect(() => {
+    // 当前激活的菜单项所属的分类自动展开
+    if (!activeMenu) return;
+    for (const cat of NAV_CATEGORIES) {
+      if (cat.items.some((i) => i.id === activeMenu)) {
+        setExpandedCategories((prev) => {
+          if (prev.has(cat.id)) return prev; // 已展开不重复设置
+          const next = new Set<string>();
+          next.add(cat.id);
+          return next;
+        });
+        break;
+      }
+    }
+  }, [activeMenu]);
+
   const toggleCategory = (id: string) => {
     setExpandedCategories((prev) => {
-      const next = new Set(prev);
-      const wasExpanded = next.has(id);
-      if (wasExpanded) next.delete(id);
-      else {
-        next.add(id);
-        // GEO 分类默认入口：展开时若当前不在该分类内，跳转到向导面板
-        if (id === "geo-center" && !NAV_CATEGORIES.find((c) => c.id === "geo-center")?.items.some((i) => i.id === activeMenu)) {
-          const first = NAV_CATEGORIES.find((c) => c.id === "geo-center")?.items[0];
-          if (first) setActiveMenu(first.id as MenuKey);
-        }
+      const wasExpanded = prev.has(id);
+      // 如果该分类已展开 → 收缩（什么都不做就是删除）
+      if (wasExpanded) {
+        const next = new Set(prev);
+        next.delete(id);
+        return next;
+      }
+      // 如果该分类未展开 → 只展开这一个，其余全部收缩（手风琴模式）
+      const next = new Set<string>();
+      next.add(id);
+      // GEO 分类默认入口：展开时若当前不在该分类内，跳转到向导面板
+      if (id === "geo-center" && !NAV_CATEGORIES.find((c) => c.id === "geo-center")?.items.some((i) => i.id === activeMenu)) {
+        const first = NAV_CATEGORIES.find((c) => c.id === "geo-center")?.items[0];
+        if (first) setActiveMenu(first.id as MenuKey);
       }
       return next;
     });
@@ -233,7 +266,7 @@ export default function DashboardLayout({
                 Shopify CN Pro
               </p>
               <p className="text-xs font-medium text-zinc-500">
-                v0.3.0.1 · MVP 3.0
+                v0.3.1.0 · MVP 3.1
               </p>
             </div>
           </div>
@@ -295,52 +328,59 @@ export default function DashboardLayout({
                     </button>
 
                     {/* Sub-items */}
-                    {isExpanded && (
-                      <ul className="mt-1 space-y-0.5 pl-1">
-                        {cat.items.map((item) => {
-                          const isActive = activeMenu === item.id;
-                          const Icon = item.icon;
+                    <div
+                      className={cn(
+                        "grid transition-all duration-300 ease-in-out",
+                        isExpanded ? "grid-rows-[1fr] opacity-100" : "grid-rows-[0fr] opacity-0",
+                      )}
+                    >
+                      <div className="overflow-hidden">
+                        <ul className="mt-1 space-y-0.5 pl-1">
+                          {cat.items.map((item) => {
+                            const isActive = activeMenu === item.id;
+                            const Icon = item.icon;
 
-                          return (
-                            <li key={item.id}>
-                              <button
-                                onClick={() => handleMenuClick(item.id, item.soon)}
-                                className={cn(
-                                  "flex w-full items-center gap-2.5 rounded-lg px-3 py-2 text-base font-medium transition-all",
-                                  item.soon
-                                    ? "text-zinc-600 hover:bg-zinc-800/40 hover:text-zinc-400"
-                                    : isActive
-                                      ? "bg-emerald-500/10 text-emerald-400"
-                                      : "text-zinc-500 hover:bg-zinc-800/60 hover:text-zinc-300",
-                                )}
-                              >
-                                <Icon
+                            return (
+                              <li key={item.id}>
+                                <button
+                                  onClick={() => handleMenuClick(item.id, item.soon)}
                                   className={cn(
-                                    "h-3.5 w-3.5 shrink-0",
+                                    "flex w-full items-center gap-2.5 rounded-lg px-3 py-2 text-base font-medium transition-all",
                                     item.soon
-                                      ? "text-zinc-700"
+                                      ? "text-zinc-600 hover:bg-zinc-800/40 hover:text-zinc-400"
                                       : isActive
-                                        ? "text-emerald-400"
-                                        : "text-zinc-600",
+                                        ? "bg-emerald-500/10 text-emerald-400"
+                                        : "text-zinc-500 hover:bg-zinc-800/60 hover:text-zinc-300",
                                   )}
-                                />
-                                <span className="flex-1 text-left">
-                                  {item.label}
-                                </span>
-                                {item.soon && (
-                                  <span className="text-xs font-semibold text-amber-500/60">
-                                    即将开放
+                                >
+                                  <Icon
+                                    className={cn(
+                                      "h-3.5 w-3.5 shrink-0",
+                                      item.soon
+                                        ? "text-zinc-700"
+                                        : isActive
+                                          ? "text-emerald-400"
+                                          : "text-zinc-600",
+                                    )}
+                                  />
+                                  <span className="flex-1 text-left">
+                                    {item.label}
                                   </span>
-                                )}
-                                {!item.soon && isActive && (
-                                  <div className="h-1.5 w-1.5 rounded-full bg-emerald-400" />
-                                )}
-                              </button>
-                            </li>
-                          );
-                        })}
-                      </ul>
-                    )}
+                                  {item.soon && (
+                                    <span className="text-xs font-semibold text-amber-500/60">
+                                      即将开放
+                                    </span>
+                                  )}
+                                  {!item.soon && isActive && (
+                                    <div className="h-1.5 w-1.5 rounded-full bg-emerald-400" />
+                                  )}
+                                </button>
+                              </li>
+                            );
+                          })}
+                        </ul>
+                      </div>
+                    </div>
                   </div>
                 );
               })}

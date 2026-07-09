@@ -162,6 +162,23 @@ export default function ProductControlPanel({
     })));
   }, [isDemo, products, fullProducts]);
 
+  /* ── 跨面板编辑请求（SEO 面板等通过 pc_edit_request 定位商品与 Tab） ── */
+  const [pcPendingEdit, setPcPendingEdit] = useState<{ productId: number; tab: "basic" | "seo" | "images" } | null>(null);
+
+  useEffect(() => {
+    const handleRequest = () => {
+      try {
+        const raw = localStorage.getItem("pc_edit_request");
+        if (raw) {
+          setPcPendingEdit(JSON.parse(raw));
+          localStorage.removeItem("pc_edit_request");
+        }
+      } catch { /* ignore */ }
+    };
+    window.addEventListener("pc-edit-request", handleRequest);
+    return () => window.removeEventListener("pc-edit-request", handleRequest);
+  }, []);
+
   /* ── Toggle Expand ─────────────────────────────────── */
   const toggleExpand = (productId: number) => {
     setCatalog((prev) => prev.map((p) => p.id === productId ? { ...p, expanded: !p.expanded } : p));
@@ -271,6 +288,21 @@ export default function ProductControlPanel({
       variantCosts: Object.fromEntries(product.variants.map((v) => [v.variantId, v.costItem ?? 0])),
     });
   };
+
+  /* ── 跨面板编辑请求处理（SEO 面板等通过 pc_edit_request 定位商品与 Tab） ── */
+  useEffect(() => {
+    if (!pcPendingEdit) return;
+    const product = catalog.find((p) => p.id === pcPendingEdit.productId);
+    if (product) {
+      openEdit(product);
+      setEditTab(pcPendingEdit.tab);
+      const tabLabel = pcPendingEdit.tab === "seo" ? "SEO" : pcPendingEdit.tab === "images" ? "图片" : "基础";
+      showToast(`已定位到「${product.title}」的${tabLabel}编辑`);
+    } else {
+      showToast("未找到对应商品（演示数据集不匹配，请在真实店铺模式下使用）");
+    }
+    setPcPendingEdit(null);
+  }, [pcPendingEdit, catalog, openEdit]);
 
   /* ── Save Edit ─────────────────────────────────────── */
   const saveEdit = async () => {

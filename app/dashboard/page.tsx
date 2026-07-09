@@ -666,6 +666,83 @@ const GeoWizardPanel = dynamic(function () { return import("./components/GeoWiza
   },
 });
 
+const SEOHealthPanel = dynamic(function () { return import("./components/SEOHealthPanel"); }, {
+  loading: function () {
+    return (
+      <div className="space-y-4 animate-pulse">
+        <div className="h-9 w-48 rounded-lg bg-zinc-800" />
+        <div className="flex gap-2">
+          <div className="h-7 w-40 rounded-lg bg-zinc-800" />
+          <div className="h-7 w-24 rounded-lg bg-zinc-800" />
+          <div className="h-7 w-24 rounded-lg bg-zinc-800" />
+        </div>
+        <div className="grid grid-cols-4 gap-4">
+          <div className="h-24 rounded-xl bg-zinc-800" />
+          <div className="h-24 rounded-xl bg-zinc-800" />
+          <div className="h-24 rounded-xl bg-zinc-800" />
+          <div className="h-24 rounded-xl bg-zinc-800" />
+        </div>
+        <div className="h-64 rounded-xl bg-zinc-800" />
+      </div>
+    );
+  },
+});
+
+const SearchConsolePanel = dynamic(function () { return import("./components/SearchConsolePanel"); }, {
+  loading: function () {
+    return (
+      <div className="space-y-4 animate-pulse">
+        <div className="h-9 w-64 rounded-lg bg-zinc-800" />
+        <div className="flex gap-2">
+          <div className="h-9 w-36 rounded-lg bg-zinc-800" />
+          <div className="h-9 w-32 rounded-lg bg-zinc-800" />
+          <div className="h-9 w-32 rounded-lg bg-zinc-800" />
+        </div>
+        <div className="rounded-xl border border-zinc-800 bg-zinc-900 p-4">
+          <div className="h-64 rounded-lg bg-zinc-800" />
+        </div>
+      </div>
+    );
+  },
+});
+
+const KeywordResearchPanel = dynamic(function () { return import("./components/KeywordResearchPanel"); }, {
+  loading: function () {
+    return (
+      <div className="space-y-4 animate-pulse">
+        <div className="h-9 w-72 rounded-lg bg-zinc-800" />
+        <div className="h-9 w-64 rounded-lg bg-zinc-800" />
+        <div className="rounded-xl border border-zinc-800 bg-zinc-900 p-4">
+          <div className="h-72 rounded-lg bg-zinc-800" />
+        </div>
+      </div>
+    );
+  },
+});
+
+const AnalyticsPanel = dynamic(function () { return import("./components/AnalyticsPanel"); }, {
+  loading: function () {
+    return (
+      <div className="space-y-4 animate-pulse">
+        <div className="h-9 w-56 rounded-lg bg-zinc-800" />
+        <div className="flex gap-2">
+          <div className="h-9 w-32 rounded-lg bg-zinc-800" />
+          <div className="h-9 w-32 rounded-lg bg-zinc-800" />
+          <div className="h-9 w-32 rounded-lg bg-zinc-800" />
+          <div className="h-9 w-32 rounded-lg bg-zinc-800" />
+        </div>
+        <div className="grid grid-cols-4 gap-4">
+          <div className="h-24 rounded-xl bg-zinc-800" />
+          <div className="h-24 rounded-xl bg-zinc-800" />
+          <div className="h-24 rounded-xl bg-zinc-800" />
+          <div className="h-24 rounded-xl bg-zinc-800" />
+        </div>
+        <div className="h-72 rounded-xl bg-zinc-800" />
+      </div>
+    );
+  },
+});
+
 
 // ─── Types ────────────────────────────────────────────
 
@@ -883,9 +960,9 @@ export default function DashboardPage() {
     var store = currentStore;
     if (!store || store.isDemo) return;
     var menu = activeMenu;
-    if (["product-control", "bulk-edit", "batch-op", "inventory-alert", "schema-audit", "schema-generator", "ai-indexability", "competitor-geo", "ai-simulation", "geo-wizard"].indexOf(menu) !== -1) { loadProductCatalog(store); }
+    if (["product-control", "bulk-edit", "batch-op", "inventory-alert", "schema-audit", "schema-generator", "ai-indexability", "competitor-geo", "ai-simulation", "geo-wizard", "seo-health", "keyword-research", "analytics"].indexOf(menu) !== -1) { loadProductCatalog(store); }
     if (["customers", "customer-segmentation"].indexOf(menu) !== -1) { loadCustomerData(store); }
-    if (["collections", "navigation", "content-pages", "metafields", "schema-audit", "schema-generator", "ai-indexability", "competitor-geo", "ai-simulation", "geo-wizard"].indexOf(menu) !== -1) { loadContentData(store); }
+    if (["collections", "navigation", "content-pages", "metafields", "schema-audit", "schema-generator", "ai-indexability", "competitor-geo", "ai-simulation", "geo-wizard", "seo-health", "keyword-research", "analytics"].indexOf(menu) !== -1) { loadContentData(store); }
     if (["markets", "multi-currency", "multi-location", "translations", "shipping-rates", "tax-overview"].indexOf(menu) !== -1) { loadMarketData(store); }
   }, [activeMenu, currentStore, loadProductCatalog, loadCustomerData, loadContentData, loadMarketData]);
 
@@ -1474,6 +1551,49 @@ export default function DashboardPage() {
           pages={data.pages as any}
           blogs={data.blogs as any}
           setActiveMenu={(m) => setActiveMenu(m as MenuKey)}
+        />
+      )}
+      {activeMenu === "seo-health" && (
+        <SEOHealthPanel
+          isDemo={!!currentStore?.isDemo}
+          shopUrl={currentStore?.shopUrl || ""}
+          accessToken={currentStore?.accessToken || ""}
+          shopName={data.shopName}
+          domain={data.domain}
+          fullProducts={data.fullProducts as any}
+          pages={data.pages as any}
+          blogs={data.blogs as any}
+          collections={data.collections as any}
+        />
+      )}
+      {activeMenu === "search-console" && (
+        <SearchConsolePanel
+          isDemo={!!currentStore?.isDemo}
+          shopUrl={currentStore?.shopUrl || ""}
+          shopName={data.shopName}
+          orders={data.orders as any}
+        />
+      )}
+
+      {activeMenu === "keyword-research" && (
+        <KeywordResearchPanel
+          isDemo={!!currentStore?.isDemo}
+          shopUrl={currentStore?.shopUrl || ""}
+          shopName={data.shopName}
+          fullProducts={data.fullProducts as any}
+          collections={data.collections as any}
+        />
+      )}
+
+      {activeMenu === "analytics" && (
+        <AnalyticsPanel
+          isDemo={!!currentStore?.isDemo}
+          shopUrl={currentStore?.shopUrl || ""}
+          shopName={data.shopName}
+          fullProducts={data.fullProducts as any}
+          collections={data.collections as any}
+          pages={data.pages as any}
+          blogs={data.blogs as any}
         />
       )}
     </div>
