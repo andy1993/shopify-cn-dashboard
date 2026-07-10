@@ -888,8 +888,70 @@ function mapCountryToCode(name: string): string {
 // ═══════════════════════════════════════════════════════
 
 async function fetchShippingRates(shopUrl: string, accessToken: string): Promise<DashboardSuccess["shippingData"]> {
-  // Returning empty placeholder — real shipping rate parsing requires domain-specific logic
-  return { rates: [], carriers: [], warehouseZones: [] };
+  try {
+    const headers = { "X-Shopify-Access-Token": accessToken, "Content-Type": "application/json" };
+    const GQL_URL = "https://" + shopUrl + "/admin/api/2026-04/graphql.json";
+
+    // 拉取 delivery profiles（含运费规则）
+    const dpQuery = "{ deliveryProfiles(first: 10) { nodes { name profileItems(first: 5) { nodes { variantCount } } } } }";
+    const dpRes = await fetch(GQL_URL, {
+      method: "POST",
+      headers,
+      body: JSON.stringify({ query: dpQuery }),
+      signal: AbortSignal.timeout(15000),
+    });
+
+    // 拉取 markets 以获取已激活国家的运费关联
+    const marketsQuery = "{ markets(first: 20) { nodes { id name enabled regions(first: 10) { nodes { name } } primaryLanguage { isoCode } } } }";
+    const marketsRes = await fetch(GQL_URL, {
+      method: "POST",
+      headers,
+      body: JSON.stringify({ query: marketsQuery }),
+      signal: AbortSignal.timeout(15000),
+    });
+
+    // 如果 GraphQL 拉取失败，返回空占位
+    if (!dpRes.ok && !marketsRes.ok) {
+      console.warn("[shopify/dashboard] shipping rates fetch failed (both endpoints)");
+      return { rates: [], carriers: [], warehouseZones: [] };
+    }
+
+    const dpData = dpRes.ok ? await dpRes.json() as any : { data: { deliveryProfiles: { nodes: [] } } };
+    const marketsData = marketsRes.ok ? await marketsRes.json() as any : { data: { markets: { nodes: [] } } };
+
+    // 从 markets 数据构建 rates 数组
+    const marketNodes = marketsData.data?.markets?.nodes || [];
+    const rates = marketNodes.map((m: any) => {
+      const regionNames: string[] = (m.regions?.nodes || []).map((r: any) => r.name);
+      const countryName = regionNames[0] || m.name || "Unknown";
+      const countryCode = countryName.slice(0, 2).toUpperCase();
+      return {
+        countryCode: countryCode,
+        countryName: countryName,
+        currency: "USD",
+        freeThreshold: null,
+        standard: null,
+        express: null,
+        localPickup: false,
+      };
+    });
+
+    // 从 deliveryProfiles 构建 warehouseZones 数组
+    const dpNodes = dpData.data?.deliveryProfiles?.nodes || [];
+    const warehouseZones = dpNodes.map((dp: any) => ({
+      warehouseName: dp.name || "Default",
+      countryCode: "US",
+      rules: [] as Array<{ type: string; label: string; price: number; currency: string }>,
+    }));
+
+    // carriers 由于 Shopify REST/GraphQL 不直接提供 carrier transit times，返回空数组
+    const carriers: Array<{ name: string; countryTimes: Record<string, string> }> = [];
+
+    return { rates, carriers, warehouseZones };
+  } catch (err) {
+    console.error("[shopify/dashboard] fetchShippingRates failed:", (err as Error).message);
+    return { rates: [], carriers: [], warehouseZones: [] };
+  }
 }
 
 // ═══════════════════════════════════════════════════════
@@ -911,11 +973,57 @@ async function fetchTaxConfiguration(shopUrl: string, accessToken: string): Prom
       ti = td.data.shop.taxesIncluded === true;
       ts2 = td.data.shop.taxShipping === true;
     }
-    var result: any = {}; result.shopLevel = {}; result.shopLevel.taxesIncluded = ti; result.shopLevel.taxShipping = ts2;
+    var result: any = {};
+    result.shopLevel = { taxesIncluded: ti, taxShipping: ts2 };
+
+    // 从已拉取的市场数据构建 markets 税务数组
+    var taxMarkets: any[] = [];
+    try {
+      var mq = "{ markets(first: 20) { nodes { id name enabled regions(first: 10) { nodes { name } } } } }";
+      var mr = await fetch("https://" + shopUrl + "/admin/api/2026-04/graphql.json", {
+        method: "POST",
+        headers: { "X-Shopify-Access-Token": accessToken, "Content-Type": "application/json" },
+        body: JSON.stringify({ query: mq }),
+        signal: AbortSignal.timeout(10000),
+      });
+      if (mr.ok) {
+        var md: any = await mr.json();
+        var marketNodes = md.data?.markets?.nodes || [];
+        taxMarkets = marketNodes.map(function (m: any) {
+          var regionNames = (m.regions?.nodes || []).map(function (r: any) { return r.name; });
+          var countryName = regionNames[0] || m.name || "Unknown";
+          var countryCode = countryName.slice(0, 2).toUpperCase();
+          // 基础风险判断：如果是欧盟国家且税未配置，标记为中风险
+          var risks: Array<{ level: "high" | "medium"; message: string }> = [];
+          var euCountries = ["DE", "FR", "IT", "ES", "NL", "BE", "AT", "PL", "SE", "DK", "FI", "PT", "IE", "GR", "CZ", "RO", "HU", "BG", "HR", "SK", "LT", "SI", "LV", "EE", "CY", "LU", "MT"];
+          if (euCountries.indexOf(countryCode) !== -1 && !ti) {
+            risks.push({ level: "medium", message: "欧盟国家建议配置 IOSS 并启用含税定价" });
+          }
+          return {
+            marketId: m.id,
+            countryCode: countryCode,
+            countryName: countryName,
+            taxConfigured: m.enabled === true,
+            taxRate: null,
+            reducedRate: null,
+            taxIncluded: ti,
+            vatId: null,
+            risks: risks,
+            importTaxCollected: false,
+            shippingTaxed: ts2,
+          };
+        });
+      }
+    } catch (err2) {
+      console.warn("[shopify/dashboard] tax markets sub-fetch failed:", (err2 as Error).message);
+    }
+    result.markets = taxMarkets;
     return result;
   } catch (err) {
     console.error("[shopify/dashboard] fetchTaxConfiguration failed:", (err as Error).message);
-    var emptyResult: any = {}; emptyResult.shopLevel = { taxesIncluded: false, taxShipping: false };
+    var emptyResult: any = {};
+    emptyResult.shopLevel = { taxesIncluded: false, taxShipping: false };
+    emptyResult.markets = [];
     return emptyResult;
   }
 }
@@ -1209,7 +1317,7 @@ async function handleGetDashboard(shopUrl: string, accessToken: string) {
     var demoResponse: any = {
       success: true, shopName: demoStore.shopName, domain: demoStore.domain,
       currency: demoStore.currency || "USD", exchangeRate: exchangeRate,
-      gmv: demoGmv, orderCount: demoOrders.length, conversionRate: 0,
+      gmv: demoGmv, orderCount: demoOrders.length, conversionRate: 0,  // 注：Shopify REST 不提供访客数据，需 Analytics API 获取
       charts: demoCharts, products: demoStore.products,
       orders: demoCompactOrders, holidaysData: [],
       topCountries: ["US", "JP", "GB", "DE", "FR"],
@@ -1296,7 +1404,7 @@ async function handleGetDashboard(shopUrl: string, accessToken: string) {
       exchangeRate: exchangeRate,
       gmv: gmv,
       orderCount: orderCount,
-      conversionRate: 0,
+      conversionRate: 0,  // 注：Shopify REST 不提供访客数据，需 Analytics API 获取
       charts: charts,
       products: productStats,
       orders: compactOrders,

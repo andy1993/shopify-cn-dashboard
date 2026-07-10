@@ -19,6 +19,8 @@ import {
   Repeat,
   Zap,
   ShoppingBag,
+  ShoppingCart,
+  Target,
   Users,
   Truck,
   FolderTree,
@@ -43,6 +45,7 @@ import {
   Code2,
   Wand,
   GitCompare,
+  GitBranch,
   Sparkles,
   Compass,
   Search,
@@ -52,7 +55,7 @@ import { cn } from "@/lib/utils";
 
 // ─── Context ───────────────────────────────────────────
 
-export type MenuKey = "overview" | "ai" | "finance" | "risk" | "trend" | "aggregator" | "gateway" | "funnel" | "ad" | "product-control" | "batch-op" | "bulk-edit" | "scheduled-tasks" | "rule-engine" | "orders" | "customers" | "fulfillment" | "collections" | "navigation" | "content-pages" | "metafields" | "operation-history" | "inventory-alert" | "markets" | "multi-currency" | "multi-location" | "translations" | "shipping-rates" | "tax-overview" | "product-analytics" | "category-analytics" | "customer-segmentation" | "sales-forecast" | "product-affinity" | "schema-audit" | "schema-generator" | "ai-indexability" | "competitor-geo" | "ai-simulation" | "geo-wizard" | "seo-health" | "search-console" | "keyword-research" | "analytics";
+export type MenuKey = "overview" | "ai" | "finance" | "risk" | "trend" | "aggregator" | "gateway" | "funnel" | "ad" | "product-control" | "bulk-edit" | "batch-op" | "scheduled-tasks" | "rule-engine" | "orders" | "customers" | "fulfillment" | "collections" | "navigation" | "content-pages" | "metafields" | "operation-history" | "inventory-alert" | "markets" | "multi-currency" | "multi-location" | "translations" | "shipping-rates" | "tax-overview" | "product-analytics" | "category-analytics" | "customer-segmentation" | "sales-forecast" | "product-affinity" | "schema-audit" | "schema-generator" | "ai-indexability" | "competitor-geo" | "ai-simulation" | "geo-wizard" | "seo-health" | "search-console" | "keyword-research" | "analytics" | "landing-page" | "product-conversion" | "ab-testing";
 
 interface DashboardContextValue {
   activeMenu: MenuKey;
@@ -187,6 +190,9 @@ const NAV_CATEGORIES: NavCategory[] = [
       { id: "customer-segmentation", label: "客户分层 RFM", icon: Users2 },
       { id: "sales-forecast", label: "销售预测", icon: TrendingUp },
       { id: "product-affinity", label: "商品关联分析", icon: Link },
+      { id: "landing-page", label: "着陆页分析", icon: Target },
+      { id: "product-conversion", label: "商品转化分析", icon: ShoppingCart },
+      { id: "ab-testing", label: "A/B 测试", icon: GitBranch },
     ],
   },
 ];
@@ -266,7 +272,7 @@ export default function DashboardLayout({
                 Shopify CN Pro
               </p>
               <p className="text-xs font-medium text-zinc-500">
-                v0.3.1.0 · MVP 3.1
+                v0.3.2.1 · MVP 3.2.1
               </p>
             </div>
           </div>

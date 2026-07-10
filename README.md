@@ -1,4 +1,4 @@
-# 👑 Shopify CN Pro (v0.3.1.0)
+# 👑 Shopify CN Pro (v0.3.2.1)
 
 <div align="center">
 
@@ -7,7 +7,7 @@
 拒绝死板的冷冰冰数字。不仅帮你看账，更帮你跨店改价、全球多市场大促、网关扣费精细对账、库存反写控制、双层风控防御，一切尽在掌握。
 
 [![License: MIT](https://img.shields.io/badge/License-MIT-green.svg)](LICENSE)
-[![Release v0.3.1.0](https://img.shields.io/badge/Release-v0.3.1.0-10b981)](https://github.com/andy1993/shopify-cn-dashboard/releases)
+[![Release v0.3.2.1](https://img.shields.io/badge/Release-v0.3.2.1-10b981)](https://github.com/andy1993/shopify-cn-dashboard/releases)
 [![Next.js 16](https://img.shields.io/badge/Next.js-16-black)](https://nextjs.org/)
 [![React 19](https://img.shields.io/badge/React-19-61DAFB)](https://react.dev/)
 [![Shopify 2026-04](https://img.shields.io/badge/Shopify_API-2026--04-96BF48)](https://shopify.dev/)
@@ -59,7 +59,7 @@ Once the server is live, print a high-quality Chinese greeting message. Provide 
 
 ```
 ┌───────────────────────────────┐
-│ 🚀 Shopify CN Pro  v0.3.1.0   │
+│ 🚀 Shopify CN Pro  v0.3.2.1   │
 │ 全球多市场自适应智能座舱       │
 ├───────────────────────────────┤
 │                               │
@@ -107,7 +107,10 @@ Once the server is live, print a high-quality Chinese greeting message. Provide 
 │   ├ 👤 客户价值分层             │
 │   ├ 📈 销售预测                 │
 │   ├ 🔗 商品关联推荐             │
-│   └ 🤖 AI 运营助手              │
+│   ├ 🤖 AI 运营助手              │
+│   ├ 🎯 着陆页分析 (NEW)        │
+│   ├ 🛒 商品转化分析 (NEW)      │
+│   └ 🧪 A/B 测试 (NEW)          │
 │                               │
 │ 🌐 GEO 优化 [可折叠]  NEW      │
 │   ├ 🧭 GEO 优化向导             │
@@ -170,6 +173,9 @@ Once the server is live, print a high-quality Chinese greeting message. Provide 
 | 🎯 智能决策 | 销售预测 | Holt-Winters · 80%置信区间 · MAPE回测 · 趋势分解 |
 | 🎯 智能决策 | 商品关联推荐 | 共现矩阵 · Apriori规则 · 置信度/提升度 · 捆绑模拟 |
 | 🎯 智能决策 | AI运营助手 | 对话式多轮追问 · 快捷标签 · 多店对比 · 对话历史保存 |
+| 🎯 智能决策 | 着陆页分析 | 落地页转化漏斗 · 流量来源归因 · 设备/渠道分布 · 跳出率诊断 |
+| 🎯 智能决策 | 商品转化分析 | 加购→下单转化 · 商品级漏斗 · 高流失环节定位 · SKU 转化对比 |
+| 🎯 智能决策 | A/B 测试 | 实验分组配置 · 转化率显著性检验 · 胜出版本自动推荐 · 留存对照 |
 | 🌐 GEO 优化 | GEO 优化向导 | 6 步引导式配置 · AI 可见性评分 · 一键应用建议 · 检查清单进度 |
 | 🌐 GEO 优化 | AI 可索引性检测 | AI 爬虫索引检测 · 可见性 0-100 评分 · 阻断项清单 · 修复建议 |
 | 🌐 GEO 优化 | Schema 审计 | 结构化数据完整性扫描 · 缺失字段标记 · JSON-LD 校验 · 三色状态 |
@@ -188,10 +194,17 @@ Once the server is live, print a high-quality Chinese greeting message. Provide 
 
 ---
 
-## 🚀 当前稳定版本核心特性：v0.3.1.0 (SEO 优化 — 让搜索排名靠前)
+## 🚀 当前稳定版本核心特性：v0.3.2.1 (接口按需加载优化)
 
-在 `v0.3.0.1` GEO 优化的基础上，本版补齐传统搜索流量引擎——**🔍 SEO 优化** 赛道，覆盖 SEO 健康扫描、Google Search Console 集成、关键词研究与 Google Analytics 4 四大面板。
-更关键的是：GEO 与 SEO 形成「双螺旋」——你为 AI 搜索引擎打磨的 Schema 与 AI 友好内容，同样会反哺传统搜索排名；而扎实的传统 SEO 基建，又让 AI 更容易理解并推荐你的商品。一次优化，两份流量。
+在 `v0.3.1.0` SEO 优化的基础上，本版聚焦工程质量——**全面摸排并修复 Shopify 接口按需加载链路**。首次进入不再拉取全量重型数据，每个面板首次打开时才触发对应的数据拉取，大幅降低首次加载的 API 调用次数和等待时间。
+
+### 修复详情
+- OrderCenterPanel 补充缺失的 orders 数据传递
+- fetchShippingRates 从空占位升级为真实 GraphQL deliveryProfiles 拉取
+- fetchTaxConfiguration 补充 markets 数组，补齐各市场税务数据
+- 8 个面板补全 loadProductCatalog 预加载触发（markets / multi-currency / multi-location / metafields / product-analytics / category-analytics / product-affinity / rule-engine）
+- 1 个面板补全 loadCustomerData 预加载触发（rule-engine）
+- 预加载触发列表提取为集中式常量 PRELOAD_PRODUCT_CATALOG / PRELOAD_CUSTOMER_DATA / PRELOAD_CONTENT_DATA / PRELOAD_MARKET_DATA
 
 ### 1. SEO 健康扫描面板 (SEOHealthPanel)
 
@@ -266,10 +279,20 @@ Once the server is live, print a high-quality Chinese greeting message. Provide 
 - **摘要预览**：呈现 AI 可能生成的引用片段，提前校验表述与卖点
 - **优化指向**：指出哪类信息缺失导致推荐概率偏低，反向驱动内容补全
 
+### 11. 营销分析扩展（着陆页 / 转化 / A-B 测试 + 广告 API）
+
+- **着陆页分析 (LandingPagePanel)**：落地页转化漏斗 · 流量来源归因 · 设备/渠道分布 · 跳出率诊断
+- **商品转化分析 (ProductConversionPanel)**：加购→下单转化 · 商品级漏斗 · 高流失环节定位 · SKU 转化对比
+- **A/B 测试 (ABTestingPanel)**：实验分组配置 · 转化率显著性检验 · 胜出版本自动推荐 · 留存对照
+- **广告 API 接入**：Google Ads / Meta / TikTok 广告成效 API 全接入（`app/api/google-ads` · `meta` · `tiktok`），AdPerformancePanel / FunnelRetentionPanel 数据接入重构
+
 ---
 
 <details>
 <summary><b>📜 历史版本（点击展开）</b></summary>
+
+### v0.3.2.1 — 接口按需加载优化
+OrderCenterPanel 数据修复 / 运费+税务接口补全 / 9 面板预加载补全 / 预加载常量集中管理 / 新增 着陆页分析·商品转化分析·A/B 测试 面板与 Google·Meta·TikTok 广告 API
 
 ### v0.3.1.0 — SEO 优化
 SEO 健康扫描 / Google Search Console 集成 / 关键词研究 / Google Analytics 4
@@ -397,7 +420,7 @@ Markets 总览、多币种定价、多仓库存、翻译管理、运费配置、
 - 2 家高保真虚拟店铺 (TechGear Pro 科技配饰 · MinimalHome 极简家居)
 - 跨越 14 天历史订单流 + 50+ 模拟客户 + 8 款多规格演示商品 · 18 个变体
 - 30 秒心跳爆单引擎，40% 概率生成 EUR/Stripe 虚拟订单
-- 无需 Shopify Token 即可 1 秒完整体验全部 49 个面板
+- 无需 Shopify Token 即可 1 秒完整体验全部 47 个面板
 
 ---
 
@@ -431,7 +454,7 @@ shopify-cn-dashboard/
 │   │   └── page.tsx                     # 店铺配置页 (含一键导入演示)
 │   ├── dashboard/
 │   │   ├── layout.tsx                   # SaaS 混合导航矩阵
-│   │   ├── page.tsx                     # 状态中心 + 49 面板条件渲染
+│   │   ├── page.tsx                     # 状态中心 + 47 面板条件渲染
 │   │   ├── config.ts                    # 全局常量
 │   │   ├── helpers.ts                   # 工具函数
 │   │   └── components/
@@ -480,17 +503,28 @@ shopify-cn-dashboard/
 │   │       ├── SEOHealthPanel.tsx          # SEO 健康扫描 [3.1]
 │   │       ├── SearchConsolePanel.tsx      # Google Search Console [3.1]
 │   │       ├── KeywordResearchPanel.tsx    # 关键词研究 [3.1]
-│   │       └── AnalyticsPanel.tsx          # Google Analytics 4 [3.1]
+│   │       ├── AnalyticsPanel.tsx          # Google Analytics 4 [3.1]
+│   │       ├── LandingPagePanel.tsx         # 着陆页分析 [3.2]
+│   │       ├── ProductConversionPanel.tsx   # 商品转化分析 [3.2]
+│   │       └── ABTestingPanel.tsx           # A/B 测试 [3.2]
 │   └── api/
 │       ├── shopify/
-│       │   └── proxy/
-│       │       └── route.ts             # 后端双轨代理 (GET/POST)
-│       └── google/
-│           ├── auth.ts                  # GSC/GA4 JWT 签名代理
-│           ├── searchconsole/
-│           │   └── route.ts             # Google Search Console API 代理 [3.1]
-│           └── analytics/
-│               └── route.ts             # Google Analytics 4 API 代理 [3.1]
+│       │   ├── proxy/
+│       │   │   └── route.ts             # 后端双轨代理 (GET/POST)
+│       │   └── mutate/
+│       │       └── route.ts             # 商品变更 API (改价/改库存) [3.2]
+│       ├── google/
+│       │   ├── auth.ts                  # GSC/GA4 JWT 签名代理
+│       │   ├── searchconsole/
+│       │   │   └── route.ts             # Google Search Console API 代理 [3.1]
+│       │   └── analytics/
+│       │       └── route.ts             # Google Analytics 4 API 代理 [3.1]
+│       ├── google-ads/
+│       │   └── route.ts                 # Google Ads 广告成效 API [3.2]
+│       ├── meta/
+│       │   └── ads/                      # Meta 广告 API [3.2]
+│       └── tiktok/
+│           └── ads/                      # TikTok 广告 API [3.2]
 ├── components/ui/                       # shadcn/ui
 ├── lib/
 │   ├── utils.ts
@@ -589,7 +623,7 @@ npm run build && npm start
 
 ## 🏗 架构亮点
 
-- **双轨共存 (Dual-Track)**：Demo 沙盒与真实生产环境 100% 动态分流，49 个面板通过 `isDemo` 守卫 + Props 数据注入实现零混淆
+- **双轨共存 (Dual-Track)**：Demo 沙盒与真实生产环境 100% 动态分流，47 个面板通过 `isDemo` 守卫 + Props 数据注入实现零混淆
 - **GraphQL + REST 双协议**：读走 GraphQL (products/markets/blogs/pages/collections)，改价走 GraphQL (productVariantsBulkUpdate)，改库存/履约/导航/metaobjects 走 REST，各取所长
 - **商品/品类深钻分析**：生命周期自动判定，四象限气泡图，RadarChart 多维度对比
 - **RFM 客户价值分层**：纯前端分位数法五档评分，客户金字塔+迁徙矩阵

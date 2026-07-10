@@ -743,6 +743,59 @@ const AnalyticsPanel = dynamic(function () { return import("./components/Analyti
   },
 });
 
+const LandingPagePanel = dynamic(function () { return import("./components/LandingPagePanel"); }, {
+  loading: function () {
+    return (
+      <div className="space-y-4 animate-pulse">
+        <div className="h-9 w-48 rounded-lg bg-zinc-800" />
+        <div className="grid grid-cols-4 gap-4">
+          <div className="h-24 rounded-xl bg-zinc-800" />
+          <div className="h-24 rounded-xl bg-zinc-800" />
+          <div className="h-24 rounded-xl bg-zinc-800" />
+          <div className="h-24 rounded-xl bg-zinc-800" />
+        </div>
+        <div className="h-72 rounded-xl bg-zinc-800" />
+      </div>
+    );
+  },
+});
+
+const ProductConversionPanel = dynamic(function () { return import("./components/ProductConversionPanel"); }, {
+  loading: function () {
+    return (
+      <div className="space-y-4 animate-pulse">
+        <div className="h-9 w-48 rounded-lg bg-zinc-800" />
+        <div className="grid grid-cols-4 gap-4">
+          <div className="h-24 rounded-xl bg-zinc-800" />
+          <div className="h-24 rounded-xl bg-zinc-800" />
+          <div className="h-24 rounded-xl bg-zinc-800" />
+          <div className="h-24 rounded-xl bg-zinc-800" />
+        </div>
+        <div className="h-72 rounded-xl bg-zinc-800" />
+      </div>
+    );
+  },
+});
+
+const ABTestingPanel = dynamic(function () { return import("./components/ABTestingPanel"); }, {
+  loading: function () {
+    return (
+      <div className="space-y-4 animate-pulse">
+        <div className="h-9 w-40 rounded-lg bg-zinc-800" />
+        <div className="flex gap-2">
+          <div className="h-8 w-28 rounded-lg bg-zinc-800" />
+          <div className="h-8 w-28 rounded-lg bg-zinc-800" />
+        </div>
+        <div className="grid grid-cols-2 gap-4">
+          <div className="h-40 rounded-xl bg-zinc-800" />
+          <div className="h-40 rounded-xl bg-zinc-800" />
+        </div>
+        <div className="h-32 rounded-xl bg-zinc-800" />
+      </div>
+    );
+  },
+});
+
 
 // ─── Types ────────────────────────────────────────────
 
@@ -955,15 +1008,38 @@ export default function DashboardPage() {
 
   useEffect(() => { if (currentStore) fetchData(currentStore); }, [currentStore, fetchData]);
 
+  // ── 集中式预加载 key（P2-1：覆盖 P1-1 8 个面板 + P1-2 rule-engine）──
+  const PRELOAD_PRODUCT_CATALOG: MenuKey[] = [
+    "product-control", "bulk-edit", "batch-op", "inventory-alert",
+    "schema-audit", "schema-generator", "ai-indexability", "competitor-geo",
+    "ai-simulation", "geo-wizard", "seo-health", "keyword-research",
+    "analytics", "landing-page", "product-conversion", "ab-testing",
+    "markets", "multi-currency", "multi-location", "metafields",
+    "product-analytics", "category-analytics", "product-affinity", "rule-engine",
+  ];
+  const PRELOAD_CUSTOMER_DATA: MenuKey[] = [
+    "customers", "customer-segmentation", "rule-engine",
+  ];
+  const PRELOAD_CONTENT_DATA: MenuKey[] = [
+    "collections", "navigation", "content-pages", "metafields",
+    "schema-audit", "schema-generator", "ai-indexability", "competitor-geo",
+    "ai-simulation", "geo-wizard", "seo-health", "keyword-research",
+    "analytics", "landing-page",
+  ];
+  const PRELOAD_MARKET_DATA: MenuKey[] = [
+    "markets", "multi-currency", "multi-location", "translations",
+    "shipping-rates", "tax-overview",
+  ];
+
   // Preload on-demand data when user navigates to relevant panels
   useEffect(function () {
     var store = currentStore;
     if (!store || store.isDemo) return;
     var menu = activeMenu;
-    if (["product-control", "bulk-edit", "batch-op", "inventory-alert", "schema-audit", "schema-generator", "ai-indexability", "competitor-geo", "ai-simulation", "geo-wizard", "seo-health", "keyword-research", "analytics"].indexOf(menu) !== -1) { loadProductCatalog(store); }
-    if (["customers", "customer-segmentation"].indexOf(menu) !== -1) { loadCustomerData(store); }
-    if (["collections", "navigation", "content-pages", "metafields", "schema-audit", "schema-generator", "ai-indexability", "competitor-geo", "ai-simulation", "geo-wizard", "seo-health", "keyword-research", "analytics"].indexOf(menu) !== -1) { loadContentData(store); }
-    if (["markets", "multi-currency", "multi-location", "translations", "shipping-rates", "tax-overview"].indexOf(menu) !== -1) { loadMarketData(store); }
+    if (PRELOAD_PRODUCT_CATALOG.includes(menu)) { loadProductCatalog(store); }
+    if (PRELOAD_CUSTOMER_DATA.includes(menu)) { loadCustomerData(store); }
+    if (PRELOAD_CONTENT_DATA.includes(menu)) { loadContentData(store); }
+    if (PRELOAD_MARKET_DATA.includes(menu)) { loadMarketData(store); }
   }, [activeMenu, currentStore, loadProductCatalog, loadCustomerData, loadContentData, loadMarketData]);
 
   // Reset diagnosis on store switch
@@ -1259,6 +1335,7 @@ export default function DashboardPage() {
           shopName={data.shopName}
           shopUrl={currentStore?.shopUrl || ""}
           accessToken={currentStore?.accessToken || ""}
+          orders={data.orders as any[]}
         />
       )}
       {activeMenu === "customers" && (
@@ -1594,6 +1671,33 @@ export default function DashboardPage() {
           collections={data.collections as any}
           pages={data.pages as any}
           blogs={data.blogs as any}
+        />
+      )}
+
+      {activeMenu === "landing-page" && (
+        <LandingPagePanel
+          isDemo={!!currentStore?.isDemo}
+          shopName={data.shopName}
+          fullProducts={data.fullProducts as any}
+          collections={data.collections as any}
+        />
+      )}
+
+      {activeMenu === "product-conversion" && (
+        <ProductConversionPanel
+          isDemo={!!currentStore?.isDemo}
+          shopName={data.shopName}
+          fullProducts={data.fullProducts as any}
+        />
+      )}
+
+      {activeMenu === "ab-testing" && (
+        <ABTestingPanel
+          isDemo={!!currentStore?.isDemo}
+          shopName={data.shopName}
+          fullProducts={data.fullProducts as any}
+          shopUrl={currentStore?.shopUrl || ""}
+          accessToken={currentStore?.accessToken || ""}
         />
       )}
     </div>
