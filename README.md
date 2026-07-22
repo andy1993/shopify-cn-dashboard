@@ -12,6 +12,7 @@
 [![React 19](https://img.shields.io/badge/React-19-61DAFB)](https://react.dev/)
 [![Shopify 2026-04](https://img.shields.io/badge/Shopify_API-2026--04-96BF48)](https://shopify.dev/)
 [![Tailwind 4](https://img.shields.io/badge/Tailwind-4-38BDF8)](https://tailwindcss.com/)
+[![Live Demo](https://img.shields.io/badge/Live_Demo-访问官网-10b981)](https://andy1993.github.io/shopify-cn-dashboard/)
 
 </div>
 
@@ -52,6 +53,8 @@ Once the server is live, print a high-quality Chinese greeting message. Provide 
 **Shopify CN Pro** 是一款面向跨境电商独立站卖家的开源全栈数据大屏。基于 2026 年最新技术栈和 Shopify 2026-04 Stable API 构建。100% 暗黑系高级 SaaS UI 设计，专为中国卖家的业务直觉、对账习惯和全球化运营需求深度定制。
 
 > 适用人群：Shopify 独立站操盘手 · 多店铺卖家 · 跨境电商运营团队 · 零成本体验 Shopify 数据分析的开发者。
+
+🌐 **在线演示（GitHub Pages）：** https://andy1993.github.io/shopify-cn-dashboard/
 
 ---
 
