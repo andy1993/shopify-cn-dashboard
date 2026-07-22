@@ -1,0 +1,1522 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <link rel="preconnect" href="https://unpkg.com" />
+  <script src="https://cdn.jsdelivr.net/npm/@tailwindcss/browser@4"></script>
+  <script src="https://unpkg.com/@fortawesome/fontawesome-free@6.7.2/js/all.min.js"></script>
+  <script src="https://unpkg.com/lucide@latest"></script>
+  <style>
+    * {
+      scrollbar-width: none;
+      scrollbar-color: rgba(0, 0, 0, 0.2) transparent;
+    }
+  </style>
+</head>
+
+<body class="bg-[#06060b] text-white font-sans antialiased overflow-x-hidden">
+<style>
+  * { scrollbar-width: none; scrollbar-color: rgba(0, 0, 0, 0.2) transparent; }
+</style>
+
+<style type="text/tailwindcss">
+@theme {
+  --color-primary: #10b981;
+  --color-primary-dark: #059669;
+  --color-accent: #34d399;
+  --color-surface: rgba(16, 185, 129, 0.03);
+  --color-border: rgba(16, 185, 129, 0.15);
+  --color-glow: rgba(16, 185, 129, 0.4);
+}
+@keyframes float { 0%, 100% { transform: translateY(0px); } 50% { transform: translateY(-10px); } }
+@keyframes pulse-glow { 0%, 100% { opacity: 0.4; transform: scale(1); } 50% { opacity: 0.7; transform: scale(1.05); } }
+@keyframes marquee { 0% { transform: translateX(0); } 100% { transform: translateX(-50%); } }
+@keyframes grid-move { 0% { transform: translateY(0); } 100% { transform: translateY(40px); } }
+</style>
+
+<style>
+  body { font-family: 'Inter', sans-serif; }
+  section, footer { opacity: 1; visibility: visible; }
+  body.gsap-ready .anim-target { }
+  .glow-btn { box-shadow: 0 0 20px rgba(16,185,129,0.3), 0 0 60px rgba(16,185,129,0.1); }
+  .glass-card { background: rgba(16,185,129,0.02); border: 1px solid rgba(16,185,129,0.12); backdrop-filter: blur(12px); }
+  .grid-bg { background-image: linear-gradient(rgba(16,185,129,0.03) 1px, transparent 1px), linear-gradient(90deg, rgba(16,185,129,0.03) 1px, transparent 1px); background-size: 60px 60px; animation: grid-move 8s linear infinite; }
+  .marquee-track { animation: marquee 30s linear infinite; }
+  .marquee-track:hover { animation-play-state: paused; }
+  .counter-num { font-variant-numeric: tabular-nums; }
+  .hero-glow { background: radial-gradient(ellipse 600px 400px at 50% 30%, rgba(16,185,129,0.12), transparent 70%); }
+  .code-block { background: rgba(10,10,15,0.8); border: 1px solid rgba(16,185,129,0.15); font-family: 'SF Mono','Fira Code',monospace; }
+  .screenshot-tab { color: rgba(255,255,255,0.35); background: transparent; border-bottom: 2px solid transparent; cursor: pointer; }
+  .screenshot-tab:hover { color: rgba(255,255,255,0.6); }
+  .screenshot-tab.active-tab { color: #10b981; background: rgba(16,185,129,0.08); border-bottom: 2px solid #10b981; }
+  .heartbeat-badge { animation: heartbeat-pulse 2s ease-in-out infinite; }
+  @keyframes heartbeat-pulse { 0%,100% { box-shadow: 0 0 0 0 rgba(16,185,129,0.3); } 50% { box-shadow: 0 0 12px 4px rgba(16,185,129,0.15); } }
+  @media (max-width: 768px) { .screenshot-card { transform: none !important; } }
+  .split-line { overflow: hidden; display: block; }
+  .split-char { display: inline-block; will-change: transform, opacity; }
+  .split-word { display: inline-block; will-change: transform, opacity; }
+  .magnetic-btn { will-change: transform; }
+  .tilt-card { will-change: transform; transform-style: preserve-3d; }
+  html { scroll-behavior: smooth; }
+  .gpu-accelerate { will-change: transform, opacity; backface-visibility: hidden; }
+  .section-divider { height: 1px; background: linear-gradient(90deg, transparent, rgba(16,185,129,0.3), transparent); opacity: 0; }
+  .hero-loading-overlay { position: fixed; inset: 0; background: #06060b; z-index: 9999; pointer-events: none; }
+</style>
+
+<link rel="stylesheet" href="https://fonts.googleapis.cn/css2?family=Inter:wght@300;400;500;600;700;800;900&display=swap">
+
+<!-- Hero loading overlay -->
+<div class="hero-loading-overlay" id="hero-overlay"></div>
+
+<!-- Navigation -->
+<nav id="main-nav" class="fixed top-0 left-0 right-0 z-50 border-b border-white/5 bg-[#06060b]/80 backdrop-blur-xl">
+  <div class="max-w-7xl mx-auto px-6 h-16 flex items-center justify-between">
+    <div class="flex items-center gap-3">
+      <div class="w-8 h-8 rounded-lg bg-primary/20 border border-primary/30 flex items-center justify-center">
+        <i data-lucide="activity" class="w-4 h-4 text-primary"></i>
+      </div>
+      <span class="font-bold text-lg tracking-tight">Shopify CN Pro</span>
+      <span class="text-xs text-white/30 font-mono ml-1">v0.3.2.1</span>
+    </div>
+    <div class="hidden md:flex items-center gap-8 text-sm text-white/50">
+      <a href="#features" class="hover:text-primary transition-colors">功能</a>
+      <a href="#modules" class="hover:text-primary transition-colors">模块</a>
+      <a href="#metrics" class="hover:text-primary transition-colors">数据</a>
+      <a href="#quickstart" class="hover:text-primary transition-colors">快速开始</a>
+    </div>
+    <a href="https://github.com/andy1993/shopify-cn-dashboard" target="_blank" class="flex items-center gap-2 text-sm text-white/50 hover:text-primary transition-colors">
+      <i class="fa-brands fa-github text-lg"></i>
+      <span class="hidden sm:inline">GitHub</span>
+    </a>
+  </div>
+</nav>
+
+<!-- Hero Section -->
+<section class="hero-section relative min-h-screen flex flex-col items-center justify-center px-6 pt-16 overflow-hidden">
+  <!-- Background effects -->
+  <div class="hero-grid-bg absolute inset-0 grid-bg opacity-0"></div>
+  <div class="hero-glow-bg absolute inset-0 hero-glow"></div>
+  <div class="hero-big-glow absolute top-1/4 left-1/2 -translate-x-1/2 w-[800px] h-[800px] rounded-full bg-primary/[0.03] blur-[100px] animate-[pulse-glow_6s_ease-in-out_infinite]"></div>
+  
+  <!-- Floating particles -->
+  <div class="absolute top-20 left-[10%] w-1 h-1 rounded-full bg-primary/40 animate-[float_4s_ease-in-out_infinite]"></div>
+  <div class="absolute top-40 right-[15%] w-1.5 h-1.5 rounded-full bg-primary/30 animate-[float_5s_ease-in-out_infinite_1s]"></div>
+  <div class="absolute bottom-40 left-[20%] w-1 h-1 rounded-full bg-primary/50 animate-[float_3.5s_ease-in-out_infinite_0.5s]"></div>
+  <div class="absolute top-60 right-[25%] w-0.5 h-0.5 rounded-full bg-accent/40 animate-[float_6s_ease-in-out_infinite_2s]"></div>
+  
+  <!-- Cursor follow glow -->
+  <div id="hero-cursor-glow" class="absolute w-[600px] h-[600px] rounded-full pointer-events-none opacity-0" style="background: radial-gradient(circle, rgba(16,185,129,0.2) 0%, rgba(16,185,129,0.08) 40%, transparent 70%); transform: translate(-50%, -50%);"></div>
+  
+  <div class="relative z-10 max-w-5xl mx-auto text-center">
+    <div class="hero-content">
+      <!-- Badge -->
+      <div class="hero-badge inline-flex items-center gap-2 px-4 py-1.5 rounded-full border border-primary/20 bg-primary/5 text-primary text-xs font-medium mb-8">
+        <span class="w-1.5 h-1.5 rounded-full bg-primary animate-pulse"></span>
+        MIT 开源 · 免费商用 · 零门槛体验
+      </div>
+      
+      <!-- Main title -->
+      <h1 class="hero-title text-4xl sm:text-5xl md:text-6xl lg:text-7xl font-black leading-[1.1] tracking-tight mb-6">
+        <span class="split-line hero-title-line1 block text-white/90">专为国内独立站卖家定制的</span>
+        <span class="split-line hero-title-line2 block bg-gradient-to-r from-primary via-accent to-primary bg-clip-text text-transparent mt-2">全球化多市场数据智能座舱</span>
+      </h1>
+      
+      <!-- Subtitle -->
+      <p class="hero-subtitle max-w-3xl mx-auto text-base sm:text-lg text-white/40 leading-relaxed mb-10">
+        拒绝死板的冷冰冰数字。不仅帮你看账，更帮你跨店改价、全球多市场大促、网关扣费精细对账、库存反写控制、双层风控防御，一切尽在掌握。
+      </p>
+      
+      <!-- CTA Buttons -->
+      <div class="hero-cta flex flex-col sm:flex-row items-center justify-center gap-4 mb-16">
+        <a href="#quickstart" class="glow-btn magnetic-btn px-8 py-3.5 rounded-xl bg-primary text-black font-semibold text-sm flex items-center gap-2 hover:bg-accent">
+          <i data-lucide="zap" class="w-4 h-4"></i>
+          免费开始使用
+        </a>
+        <a href="https://github.com/andy1993/shopify-cn-dashboard" target="_blank" class="magnetic-btn px-8 py-3.5 rounded-xl border border-white/10 text-white/70 font-medium text-sm flex items-center gap-2 hover:border-primary/40 hover:text-primary transition-all">
+          <i class="fa-brands fa-github"></i>
+          查看 GitHub
+        </a>
+      </div>
+    </div>
+    
+    <!-- Stats bar -->
+    <div class="hero-stats grid grid-cols-2 md:grid-cols-4 gap-4 max-w-3xl mx-auto">
+      <div class="glass-card tilt-card rounded-xl px-4 py-3 text-center">
+        <div class="text-xl font-bold text-primary">47</div>
+        <div class="text-xs text-white/30 mt-0.5">功能面板</div>
+      </div>
+      <div class="glass-card tilt-card rounded-xl px-4 py-3 text-center">
+        <div class="text-xl font-bold text-primary">0 门槛</div>
+        <div class="text-xs text-white/30 mt-0.5">沙盒体验</div>
+      </div>
+      <div class="glass-card tilt-card rounded-xl px-4 py-3 text-center">
+        <div class="text-xl font-bold text-primary">2026-04</div>
+        <div class="text-xs text-white/30 mt-0.5">Shopify API</div>
+      </div>
+      <div class="glass-card tilt-card rounded-xl px-4 py-3 text-center">
+        <div class="text-xl font-bold text-primary">MIT</div>
+        <div class="text-xs text-white/30 mt-0.5">开源协议</div>
+      </div>
+    </div>
+  </div>
+  
+  <!-- Scroll indicator -->
+  <div class="hero-scroll-indicator absolute bottom-8 left-1/2 -translate-x-1/2 flex flex-col items-center gap-2 text-white/20">
+    <span class="text-xs">向下滚动</span>
+    <i data-lucide="chevron-down" class="w-4 h-4 animate-bounce"></i>
+  </div>
+</section>
+
+<!-- Section Divider -->
+<div class="section-divider max-w-4xl mx-auto"></div>
+
+<!-- Core Features Section -->
+<section id="features" class="relative py-32 px-6">
+  <div class="max-w-7xl mx-auto">
+    <!-- Section header -->
+    <div class="features-header text-center mb-16">
+      <span class="text-xs text-primary font-mono uppercase tracking-widest">Core Features</span>
+      <h2 class="text-3xl sm:text-4xl font-bold mt-4 mb-4">六大核心能力</h2>
+      <p class="text-white/30 max-w-xl mx-auto">覆盖数据监控、智能诊断、财务对账、SEO 优化、价格控制、风险防御全链路</p>
+    </div>
+    
+    <!-- Feature cards -->
+    <div class="grid md:grid-cols-2 lg:grid-cols-3 gap-5 feature-cards">
+      <!-- Card 1 -->
+      <div class="glass-card tilt-card rounded-2xl p-6 group gpu-accelerate">
+        <div class="w-12 h-12 rounded-xl bg-primary/10 border border-primary/20 flex items-center justify-center mb-5 group-hover:bg-primary/20 transition-colors">
+          <i data-lucide="activity" class="w-6 h-6 text-primary"></i>
+        </div>
+        <h3 class="text-lg font-bold mb-2">实时核心看板</h3>
+        <p class="text-sm text-white/40 leading-relaxed">30s 心跳爆单流，硬件锁折线图，永无未来数据泄露。全维度实时监控，毫秒级数据刷新。</p>
+      </div>
+      
+      <!-- Card 2 -->
+      <div class="glass-card tilt-card rounded-2xl p-6 group gpu-accelerate">
+        <div class="w-12 h-12 rounded-xl bg-primary/10 border border-primary/20 flex items-center justify-center mb-5 group-hover:bg-primary/20 transition-colors">
+          <i data-lucide="brain" class="w-6 h-6 text-primary"></i>
+        </div>
+        <h3 class="text-lg font-bold mb-2">AI 智能诊断</h3>
+        <p class="text-sm text-white/40 leading-relaxed">DeepSeek-v4-pro 接入，17 维核心指标深度分析，生成骨灰级操盘手诊断报告。</p>
+      </div>
+      
+      <!-- Card 3 -->
+      <div class="glass-card tilt-card rounded-2xl p-6 group gpu-accelerate">
+        <div class="w-12 h-12 rounded-xl bg-primary/10 border border-primary/20 flex items-center justify-center mb-5 group-hover:bg-primary/20 transition-colors">
+          <i data-lucide="banknote" class="w-6 h-6 text-primary"></i>
+        </div>
+        <h3 class="text-lg font-bold mb-2">网关多币种对账</h3>
+        <p class="text-sm text-white/40 leading-relaxed">USD/EUR/CAD/GBP 独立费率精算，Stripe/PayPal 一键预设，网关扣费分毫必究。</p>
+      </div>
+      
+      <!-- Card 4 -->
+      <div class="glass-card tilt-card rounded-2xl p-6 group gpu-accelerate">
+        <div class="w-12 h-12 rounded-xl bg-primary/10 border border-primary/20 flex items-center justify-center mb-5 group-hover:bg-primary/20 transition-colors">
+          <i data-lucide="globe" class="w-6 h-6 text-primary"></i>
+        </div>
+        <h3 class="text-lg font-bold mb-2">GEO + SEO 双引擎</h3>
+        <p class="text-sm text-white/40 leading-relaxed">AI 可见性评分 0-100，GSC/GA4 全接入，Schema 标记一键生成，全球流量精准收割。</p>
+      </div>
+      
+      <!-- Card 5 -->
+      <div class="glass-card tilt-card rounded-2xl p-6 group gpu-accelerate">
+        <div class="w-12 h-12 rounded-xl bg-primary/10 border border-primary/20 flex items-center justify-center mb-5 group-hover:bg-primary/20 transition-colors">
+          <i data-lucide="tags" class="w-6 h-6 text-primary"></i>
+        </div>
+        <h3 class="text-lg font-bold mb-2">跨店改价控制</h3>
+        <p class="text-sm text-white/40 leading-relaxed">多店多规格 SKU 独立修改，降价/涨价高亮提示，价格策略一屏掌控。</p>
+      </div>
+      
+      <!-- Card 6 -->
+      <div class="glass-card tilt-card rounded-2xl p-6 group gpu-accelerate">
+        <div class="w-12 h-12 rounded-xl bg-primary/10 border border-primary/20 flex items-center justify-center mb-5 group-hover:bg-primary/20 transition-colors">
+          <i data-lucide="shield-check" class="w-6 h-6 text-primary"></i>
+        </div>
+        <h3 class="text-lg font-bold mb-2">双层风控防御</h3>
+        <p class="text-sm text-white/40 leading-relaxed">AI 风险诊断 + 账户风控雷达，退款率三色预警，风险扼杀在萌芽。</p>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- Section Divider -->
+<div class="section-divider max-w-4xl mx-auto"></div>
+
+<!-- Product Screenshot Section -->
+<section id="screenshots" class="relative py-32 px-6 overflow-hidden">
+  <div class="absolute inset-0 bg-gradient-to-b from-primary/[0.01] via-primary/[0.03] to-primary/[0.01]"></div>
+  <div class="relative max-w-6xl mx-auto">
+    <!-- Section header -->
+    <div class="text-center mb-14">
+      <span class="text-xs text-primary font-mono uppercase tracking-widest">Product Screenshots</span>
+      <h2 class="text-3xl sm:text-4xl font-bold mt-4 mb-3">产品截图</h2>
+      <p class="text-xl text-white/60 font-medium mb-2">真实大屏，所见即所得</p>
+      <p class="text-sm text-white/30 max-w-xl mx-auto">无需部署，一键导入演示数据，即刻体验所有 47 个面板</p>
+    </div>
+
+    <!-- Browser Window Card with 3D tilt -->
+    <div class="screenshot-card-wrapper" style="perspective: 1200px;">
+      <div class="screenshot-card relative rounded-2xl overflow-hidden border border-primary/20 gpu-accelerate" style="transform: rotateX(4deg) rotateY(-2deg); transform-style: preserve-3d; box-shadow: 0 0 60px rgba(16,185,129,0.12), 0 0 120px rgba(16,185,129,0.05), 0 20px 60px rgba(0,0,0,0.5);">
+        <!-- macOS title bar -->
+        <div class="flex items-center gap-2 px-4 py-3 bg-[#0d0d14] border-b border-white/5">
+          <span class="w-3 h-3 rounded-full bg-[#ff5f56]"></span>
+          <span class="w-3 h-3 rounded-full bg-[#ffbd2e]"></span>
+          <span class="w-3 h-3 rounded-full bg-[#27c93f]"></span>
+          <span class="ml-4 text-xs text-white/25 font-mono">Shopify CN Pro — Dashboard</span>
+        </div>
+
+        <!-- Tab Navigation -->
+        <div class="flex items-center gap-1 px-4 pt-3 bg-[#0a0a12]">
+          <button class="screenshot-tab active-tab px-4 py-2 rounded-t-lg text-xs font-medium transition-all" data-tab="tab1">
+            <i data-lucide="bar-chart-3" class="w-3.5 h-3.5 inline-block mr-1 align-middle"></i>
+            核心实时看板
+          </button>
+          <button class="screenshot-tab px-4 py-2 rounded-t-lg text-xs font-medium transition-all" data-tab="tab2">
+            <i data-lucide="brain" class="w-3.5 h-3.5 inline-block mr-1 align-middle"></i>
+            AI 智能诊断
+          </button>
+          <button class="screenshot-tab px-4 py-2 rounded-t-lg text-xs font-medium transition-all" data-tab="tab3">
+            <i data-lucide="globe" class="w-3.5 h-3.5 inline-block mr-1 align-middle"></i>
+            多市场运营
+          </button>
+        </div>
+
+        <!-- Tab Content Area -->
+        <div class="bg-[#0a0a12] p-5 min-h-[420px] relative overflow-hidden">
+
+          <!-- Tab 1: 核心实时看板 -->
+          <div class="tab-panel tab-panel-active" id="tab1">
+            <!-- KPI Cards -->
+            <div class="grid grid-cols-2 lg:grid-cols-4 gap-3 mb-5">
+              <div class="bg-[#111118] rounded-xl p-3.5 border border-white/5">
+                <div class="text-[10px] text-white/30 mb-1">今日 GMV</div>
+                <div class="text-lg font-bold text-white/90">$12,480</div>
+                <div class="text-[10px] text-primary mt-0.5">↑ 23.5%</div>
+              </div>
+              <div class="bg-[#111118] rounded-xl p-3.5 border border-white/5">
+                <div class="text-[10px] text-white/30 mb-1">订单数</div>
+                <div class="text-lg font-bold text-white/90">38</div>
+                <div class="text-[10px] text-primary mt-0.5">↑ 12.1%</div>
+              </div>
+              <div class="bg-[#111118] rounded-xl p-3.5 border border-white/5">
+                <div class="text-[10px] text-white/30 mb-1">转化率</div>
+                <div class="text-lg font-bold text-white/90">3.2%</div>
+                <div class="text-[10px] text-[#f59e0b] mt-0.5">→ 持平</div>
+              </div>
+              <div class="bg-[#111118] rounded-xl p-3.5 border border-white/5">
+                <div class="text-[10px] text-white/30 mb-1">平均客单价</div>
+                <div class="text-lg font-bold text-white/90">$328</div>
+                <div class="text-[10px] text-primary mt-0.5">↑ 8.7%</div>
+              </div>
+            </div>
+
+            <!-- Chart Area -->
+            <div class="bg-[#111118] rounded-xl p-4 border border-white/5 mb-4">
+              <div class="flex items-center justify-between mb-3">
+                <span class="text-[11px] text-white/40 font-medium">24h GMV 趋势</span>
+                <span class="text-[10px] text-white/20">实时更新</span>
+              </div>
+              <svg viewBox="0 0 600 120" class="w-full h-auto" preserveAspectRatio="none">
+                <line x1="0" y1="30" x2="600" y2="30" stroke="rgba(255,255,255,0.03)" stroke-width="1"/>
+                <line x1="0" y1="60" x2="600" y2="60" stroke="rgba(255,255,255,0.03)" stroke-width="1"/>
+                <line x1="0" y1="90" x2="600" y2="90" stroke="rgba(255,255,255,0.03)" stroke-width="1"/>
+                <path d="M0,100 C25,95 50,85 75,80 C100,75 125,70 150,55 C175,40 200,50 225,45 C250,40 275,55 300,50 C325,45 350,35 375,30 C400,25 425,35 450,28 C475,20 500,25 525,18 C550,12 575,15 600,10 L600,120 L0,120 Z" fill="url(#areaGrad)" />
+                <path d="M0,100 C25,95 50,85 75,80 C100,75 125,70 150,55 C175,40 200,50 225,45 C250,40 275,55 300,50 C325,45 350,35 375,30 C400,25 425,35 450,28 C475,20 500,25 525,18 C550,12 575,15 600,10" fill="none" stroke="#10b981" stroke-width="2" stroke-linecap="round"/>
+                <circle cx="600" cy="10" r="4" fill="#10b981"/>
+                <circle cx="600" cy="10" r="7" fill="rgba(16,185,129,0.3)"/>
+                <defs>
+                  <linearGradient id="areaGrad" x1="0" y1="0" x2="0" y2="1">
+                    <stop offset="0%" stop-color="rgba(16,185,129,0.2)"/>
+                    <stop offset="100%" stop-color="rgba(16,185,129,0)"/>
+                  </linearGradient>
+                </defs>
+              </svg>
+            </div>
+
+            <!-- Orders Table + Badge -->
+            <div class="flex items-start gap-4">
+              <div class="flex-1 bg-[#111118] rounded-xl p-3 border border-white/5">
+                <div class="text-[11px] text-white/40 font-medium mb-2">最新订单</div>
+                <table class="w-full text-[10px]">
+                  <thead>
+                    <tr class="text-white/25 border-b border-white/5">
+                      <th class="text-left py-1.5 font-medium">订单号</th>
+                      <th class="text-left py-1.5 font-medium">客户</th>
+                      <th class="text-right py-1.5 font-medium">金额</th>
+                      <th class="text-right py-1.5 font-medium">状态</th>
+                    </tr>
+                  </thead>
+                  <tbody class="text-white/50">
+                    <tr class="border-b border-white/[0.03]">
+                      <td class="py-1.5 font-mono">#10482</td>
+                      <td class="py-1.5">Sarah M.</td>
+                      <td class="py-1.5 text-right">$428.00</td>
+                      <td class="py-1.5 text-right"><span class="px-1.5 py-0.5 rounded bg-primary/10 text-primary text-[9px]">已付款</span></td>
+                    </tr>
+                    <tr class="border-b border-white/[0.03]">
+                      <td class="py-1.5 font-mono">#10481</td>
+                      <td class="py-1.5">James L.</td>
+                      <td class="py-1.5 text-right">$189.50</td>
+                      <td class="py-1.5 text-right"><span class="px-1.5 py-0.5 rounded bg-[#f59e0b]/10 text-[#f59e0b] text-[9px]">发货中</span></td>
+                    </tr>
+                    <tr>
+                      <td class="py-1.5 font-mono">#10480</td>
+                      <td class="py-1.5">Emily K.</td>
+                      <td class="py-1.5 text-right">$312.00</td>
+                      <td class="py-1.5 text-right"><span class="px-1.5 py-0.5 rounded bg-primary/10 text-primary text-[9px]">已付款</span></td>
+                    </tr>
+                  </tbody>
+                </table>
+              </div>
+              <div class="flex items-center gap-1.5 px-3 py-1.5 rounded-full bg-primary/10 border border-primary/20 heartbeat-badge">
+                <span class="w-2 h-2 rounded-full bg-primary animate-pulse"></span>
+                <span class="text-[10px] text-primary font-medium whitespace-nowrap">30s 心跳</span>
+              </div>
+            </div>
+          </div>
+
+          <!-- Tab 2: AI 智能诊断 -->
+          <div class="tab-panel" id="tab2" style="visibility: hidden; opacity: 0; position: absolute; top: 20px; left: 20px; right: 20px;">
+            <div class="grid grid-cols-1 lg:grid-cols-2 gap-5">
+              <div class="bg-[#111118] rounded-xl p-5 border border-white/5 flex flex-col items-center justify-center">
+                <div class="text-[11px] text-white/40 font-medium mb-4 self-start">17 维核心指标评估</div>
+                <svg viewBox="0 0 300 300" class="w-full max-w-[240px] h-auto">
+                  <polygon points="150,40 237,70 262,150 237,230 150,260 63,230 38,150 63,70" fill="none" stroke="rgba(255,255,255,0.05)" stroke-width="1"/>
+                  <polygon points="150,65 216,87 235,150 216,213 150,235 84,213 65,150 84,87" fill="none" stroke="rgba(255,255,255,0.04)" stroke-width="1"/>
+                  <polygon points="150,90 195,105 208,150 195,195 150,210 105,195 92,150 105,105" fill="none" stroke="rgba(255,255,255,0.03)" stroke-width="1"/>
+                  <polygon points="150,55 225,80 250,140 220,215 155,245 75,220 50,145 80,78" fill="rgba(16,185,129,0.15)" stroke="#10b981" stroke-width="1.5"/>
+                  <circle cx="150" cy="150" r="3" fill="#10b981"/>
+                  <text x="150" y="30" text-anchor="middle" fill="rgba(255,255,255,0.3)" font-size="8">转化率</text>
+                  <text x="250" y="65" text-anchor="start" fill="rgba(255,255,255,0.3)" font-size="8">流量</text>
+                  <text x="272" y="153" text-anchor="start" fill="rgba(255,255,255,0.3)" font-size="8">留存</text>
+                  <text x="245" y="240" text-anchor="start" fill="rgba(255,255,255,0.3)" font-size="8">客单价</text>
+                  <text x="150" y="280" text-anchor="middle" fill="rgba(255,255,255,0.3)" font-size="8">SEO</text>
+                  <text x="40" y="240" text-anchor="end" fill="rgba(255,255,255,0.3)" font-size="8">复购</text>
+                  <text x="28" y="153" text-anchor="end" fill="rgba(255,255,255,0.3)" font-size="8">ROI</text>
+                  <text x="50" y="65" text-anchor="end" fill="rgba(255,255,255,0.3)" font-size="8">增长</text>
+                </svg>
+              </div>
+              <div class="bg-[#111118] rounded-xl p-5 border border-white/5 flex flex-col">
+                <div class="flex items-center justify-between mb-4">
+                  <span class="text-[11px] text-white/40 font-medium">AI 诊断报告</span>
+                  <span class="px-2 py-0.5 rounded bg-primary/10 text-primary text-[9px] font-medium">DeepSeek</span>
+                </div>
+                <div class="space-y-3 flex-1">
+                  <div class="p-3 rounded-lg bg-[#0a0a12] border border-white/[0.03]">
+                    <div class="flex items-center gap-2 mb-1.5">
+                      <span class="text-primary text-sm">↑</span>
+                      <span class="text-[10px] text-white/50 font-medium">ROI 持续攀升</span>
+                    </div>
+                    <p class="text-[10px] text-white/30 leading-relaxed">广告投放 ROAS 达 4.2，建议追加美区 Facebook 预算 15%，预计月增收 $8,400。</p>
+                  </div>
+                  <div class="p-3 rounded-lg bg-[#0a0a12] border border-white/[0.03]">
+                    <div class="flex items-center gap-2 mb-1.5">
+                      <span class="text-[#ef4444] text-sm">↓</span>
+                      <span class="text-[10px] text-white/50 font-medium">退款率偏高预警</span>
+                    </div>
+                    <p class="text-[10px] text-white/30 leading-relaxed">近 7 日退款率升至 3.8%，核心品类为电子配件。建议检查 SKU-2847 描述准确性。</p>
+                  </div>
+                  <div class="p-3 rounded-lg bg-[#0a0a12] border border-white/[0.03]">
+                    <div class="flex items-center gap-2 mb-1.5">
+                      <span class="text-[#f59e0b] text-sm">→</span>
+                      <span class="text-[10px] text-white/50 font-medium">流量结构稳定</span>
+                    </div>
+                    <p class="text-[10px] text-white/30 leading-relaxed">自然流量占比 42%，付费流量 CPC 保持 $0.82，建议维持当前 SEO 策略不变。</p>
+                  </div>
+                </div>
+                <div class="mt-4 pt-3 border-t border-white/5 flex items-center gap-2">
+                  <div class="w-4 h-4 rounded bg-primary/20 flex items-center justify-center">
+                    <i data-lucide="sparkles" class="w-2.5 h-2.5 text-primary"></i>
+                  </div>
+                  <span class="text-[9px] text-white/25">Powered by DeepSeek-v4-pro · 17 维深度分析</span>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <!-- Tab 3: 多市场运营 -->
+          <div class="tab-panel" id="tab3" style="visibility: hidden; opacity: 0; position: absolute; top: 20px; left: 20px; right: 20px;">
+            <div class="grid grid-cols-2 lg:grid-cols-4 gap-3 mb-5">
+              <div class="bg-[#111118] rounded-xl p-3.5 border border-white/5">
+                <div class="text-lg mb-1">&#x1F1FA;&#x1F1F8;</div>
+                <div class="text-[11px] text-white/70 font-medium">美国</div>
+                <div class="text-[10px] text-white/30 mt-1">USD · $1.00</div>
+                <div class="text-[10px] text-primary mt-0.5">GMV $8,240</div>
+              </div>
+              <div class="bg-[#111118] rounded-xl p-3.5 border border-white/5">
+                <div class="text-lg mb-1">&#x1F1EC;&#x1F1E7;</div>
+                <div class="text-[11px] text-white/70 font-medium">英国</div>
+                <div class="text-[10px] text-white/30 mt-1">GBP · &#163;0.79</div>
+                <div class="text-[10px] text-primary mt-0.5">GMV &#163;2,180</div>
+              </div>
+              <div class="bg-[#111118] rounded-xl p-3.5 border border-white/5">
+                <div class="text-lg mb-1">&#x1F1E9;&#x1F1EA;</div>
+                <div class="text-[11px] text-white/70 font-medium">德国</div>
+                <div class="text-[10px] text-white/30 mt-1">EUR · &#8364;0.92</div>
+                <div class="text-[10px] text-primary mt-0.5">GMV &#8364;1,560</div>
+              </div>
+              <div class="bg-[#111118] rounded-xl p-3.5 border border-white/5">
+                <div class="text-lg mb-1">&#x1F1EF;&#x1F1F5;</div>
+                <div class="text-[11px] text-white/70 font-medium">日本</div>
+                <div class="text-[10px] text-white/30 mt-1">JPY · &#165;156.8</div>
+                <div class="text-[10px] text-primary mt-0.5">GMV &#165;284,000</div>
+              </div>
+            </div>
+            <div class="bg-[#111118] rounded-xl p-4 border border-white/5">
+              <div class="text-[11px] text-white/40 font-medium mb-3">多币种汇率调整表</div>
+              <table class="w-full text-[10px]">
+                <thead>
+                  <tr class="text-white/25 border-b border-white/5">
+                    <th class="text-left py-2 font-medium">市场</th>
+                    <th class="text-left py-2 font-medium">货币</th>
+                    <th class="text-right py-2 font-medium">汇率</th>
+                    <th class="text-right py-2 font-medium">调整幅度</th>
+                  </tr>
+                </thead>
+                <tbody class="text-white/50">
+                  <tr class="border-b border-white/[0.03] bg-primary/[0.03]">
+                    <td class="py-2">&#x1F1FA;&#x1F1F8; 美国</td>
+                    <td class="py-2 font-mono">USD</td>
+                    <td class="py-2 text-right font-mono">1.0000</td>
+                    <td class="py-2 text-right text-primary font-medium">基准</td>
+                  </tr>
+                  <tr class="border-b border-white/[0.03]">
+                    <td class="py-2">&#x1F1EC;&#x1F1E7; 英国</td>
+                    <td class="py-2 font-mono">GBP</td>
+                    <td class="py-2 text-right font-mono">0.7912</td>
+                    <td class="py-2 text-right text-primary">↑ +0.3%</td>
+                  </tr>
+                  <tr>
+                    <td class="py-2">&#x1F1E9;&#x1F1EA; 德国</td>
+                    <td class="py-2 font-mono">EUR</td>
+                    <td class="py-2 text-right font-mono">0.9215</td>
+                    <td class="py-2 text-right text-[#ef4444]">↓ -0.1%</td>
+                  </tr>
+                </tbody>
+              </table>
+            </div>
+          </div>
+
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- Section Divider -->
+<div class="section-divider max-w-4xl mx-auto"></div>
+
+<!-- Navigation Matrix Section -->
+<section id="modules" class="relative py-32 px-6">
+  <div class="absolute inset-0 bg-gradient-to-b from-transparent via-primary/[0.02] to-transparent"></div>
+  <div class="relative max-w-7xl mx-auto">
+    <div class="text-center mb-16">
+      <span class="text-xs text-primary font-mono uppercase tracking-widest">Product Modules</span>
+      <h2 class="text-3xl sm:text-4xl font-bold mt-4 mb-4">8 大模块 · 47 个面板</h2>
+      <p class="text-white/30 max-w-xl mx-auto">SaaS 混合导航矩阵，覆盖跨境电商全链路运营场景</p>
+    </div>
+    
+    <div class="grid sm:grid-cols-2 lg:grid-cols-4 gap-4 module-cards">
+      <div class="glass-card tilt-card rounded-2xl p-5 gpu-accelerate">
+        <div class="flex items-center gap-3 mb-4">
+          <div class="w-9 h-9 rounded-lg bg-primary/10 flex items-center justify-center">
+            <i data-lucide="database" class="w-4 h-4 text-primary"></i>
+          </div>
+          <h4 class="font-semibold text-sm">数据中心</h4>
+        </div>
+        <ul class="space-y-1.5 text-xs text-white/35">
+          <li class="flex items-center gap-2"><span class="w-1 h-1 rounded-full bg-primary/50"></span>实时看板</li>
+          <li class="flex items-center gap-2"><span class="w-1 h-1 rounded-full bg-primary/50"></span>趋势分析</li>
+          <li class="flex items-center gap-2"><span class="w-1 h-1 rounded-full bg-primary/50"></span>流量报告</li>
+          <li class="flex items-center gap-2"><span class="w-1 h-1 rounded-full bg-primary/50"></span>转化漏斗</li>
+        </ul>
+      </div>
+      <div class="glass-card tilt-card rounded-2xl p-5 gpu-accelerate">
+        <div class="flex items-center gap-3 mb-4">
+          <div class="w-9 h-9 rounded-lg bg-primary/10 flex items-center justify-center">
+            <i data-lucide="shopping-cart" class="w-4 h-4 text-primary"></i>
+          </div>
+          <h4 class="font-semibold text-sm">订单与客户</h4>
+        </div>
+        <ul class="space-y-1.5 text-xs text-white/35">
+          <li class="flex items-center gap-2"><span class="w-1 h-1 rounded-full bg-primary/50"></span>订单管理</li>
+          <li class="flex items-center gap-2"><span class="w-1 h-1 rounded-full bg-primary/50"></span>客户画像</li>
+          <li class="flex items-center gap-2"><span class="w-1 h-1 rounded-full bg-primary/50"></span>复购分析</li>
+          <li class="flex items-center gap-2"><span class="w-1 h-1 rounded-full bg-primary/50"></span>弃单挽回</li>
+        </ul>
+      </div>
+      <div class="glass-card tilt-card rounded-2xl p-5 gpu-accelerate">
+        <div class="flex items-center gap-3 mb-4">
+          <div class="w-9 h-9 rounded-lg bg-primary/10 flex items-center justify-center">
+            <i data-lucide="package" class="w-4 h-4 text-primary"></i>
+          </div>
+          <h4 class="font-semibold text-sm">商品与内容</h4>
+        </div>
+        <ul class="space-y-1.5 text-xs text-white/35">
+          <li class="flex items-center gap-2"><span class="w-1 h-1 rounded-full bg-primary/50"></span>商品库</li>
+          <li class="flex items-center gap-2"><span class="w-1 h-1 rounded-full bg-primary/50"></span>库存管理</li>
+          <li class="flex items-center gap-2"><span class="w-1 h-1 rounded-full bg-primary/50"></span>内容编辑</li>
+          <li class="flex items-center gap-2"><span class="w-1 h-1 rounded-full bg-primary/50"></span>批量操作</li>
+        </ul>
+      </div>
+      <div class="glass-card tilt-card rounded-2xl p-5 gpu-accelerate">
+        <div class="flex items-center gap-3 mb-4">
+          <div class="w-9 h-9 rounded-lg bg-primary/10 flex items-center justify-center">
+            <i data-lucide="workflow" class="w-4 h-4 text-primary"></i>
+          </div>
+          <h4 class="font-semibold text-sm">自动化工作流</h4>
+        </div>
+        <ul class="space-y-1.5 text-xs text-white/35">
+          <li class="flex items-center gap-2"><span class="w-1 h-1 rounded-full bg-primary/50"></span>规则引擎</li>
+          <li class="flex items-center gap-2"><span class="w-1 h-1 rounded-full bg-primary/50"></span>定时任务</li>
+          <li class="flex items-center gap-2"><span class="w-1 h-1 rounded-full bg-primary/50"></span>Webhook</li>
+          <li class="flex items-center gap-2"><span class="w-1 h-1 rounded-full bg-primary/50"></span>邮件通知</li>
+        </ul>
+      </div>
+      <div class="glass-card tilt-card rounded-2xl p-5 gpu-accelerate">
+        <div class="flex items-center gap-3 mb-4">
+          <div class="w-9 h-9 rounded-lg bg-primary/10 flex items-center justify-center">
+            <i data-lucide="map" class="w-4 h-4 text-primary"></i>
+          </div>
+          <h4 class="font-semibold text-sm">多市场运营</h4>
+        </div>
+        <ul class="space-y-1.5 text-xs text-white/35">
+          <li class="flex items-center gap-2"><span class="w-1 h-1 rounded-full bg-primary/50"></span>市场配置</li>
+          <li class="flex items-center gap-2"><span class="w-1 h-1 rounded-full bg-primary/50"></span>多语种管理</li>
+          <li class="flex items-center gap-2"><span class="w-1 h-1 rounded-full bg-primary/50"></span>区域定价</li>
+          <li class="flex items-center gap-2"><span class="w-1 h-1 rounded-full bg-primary/50"></span>物流映射</li>
+        </ul>
+      </div>
+      <div class="glass-card tilt-card rounded-2xl p-5 gpu-accelerate">
+        <div class="flex items-center gap-3 mb-4">
+          <div class="w-9 h-9 rounded-lg bg-primary/10 flex items-center justify-center">
+            <i data-lucide="sparkles" class="w-4 h-4 text-primary"></i>
+          </div>
+          <h4 class="font-semibold text-sm">智能决策</h4>
+        </div>
+        <ul class="space-y-1.5 text-xs text-white/35">
+          <li class="flex items-center gap-2"><span class="w-1 h-1 rounded-full bg-primary/50"></span>AI 诊断</li>
+          <li class="flex items-center gap-2"><span class="w-1 h-1 rounded-full bg-primary/50"></span>预测模型</li>
+          <li class="flex items-center gap-2"><span class="w-1 h-1 rounded-full bg-primary/50"></span>竞品监控</li>
+          <li class="flex items-center gap-2"><span class="w-1 h-1 rounded-full bg-primary/50"></span>策略推荐</li>
+        </ul>
+      </div>
+      <div class="glass-card tilt-card rounded-2xl p-5 gpu-accelerate">
+        <div class="flex items-center gap-3 mb-4">
+          <div class="w-9 h-9 rounded-lg bg-primary/10 flex items-center justify-center">
+            <i data-lucide="search" class="w-4 h-4 text-primary"></i>
+          </div>
+          <h4 class="font-semibold text-sm">GEO + SEO</h4>
+        </div>
+        <ul class="space-y-1.5 text-xs text-white/35">
+          <li class="flex items-center gap-2"><span class="w-1 h-1 rounded-full bg-primary/50"></span>可见性评分</li>
+          <li class="flex items-center gap-2"><span class="w-1 h-1 rounded-full bg-primary/50"></span>关键词追踪</li>
+          <li class="flex items-center gap-2"><span class="w-1 h-1 rounded-full bg-primary/50"></span>Schema 生成</li>
+          <li class="flex items-center gap-2"><span class="w-1 h-1 rounded-full bg-primary/50"></span>GSC/GA4</li>
+        </ul>
+      </div>
+      <div class="glass-card tilt-card rounded-2xl p-5 gpu-accelerate">
+        <div class="flex items-center gap-3 mb-4">
+          <div class="w-9 h-9 rounded-lg bg-primary/10 flex items-center justify-center">
+            <i data-lucide="shield" class="w-4 h-4 text-primary"></i>
+          </div>
+          <h4 class="font-semibold text-sm">财务 + 风控</h4>
+        </div>
+        <ul class="space-y-1.5 text-xs text-white/35">
+          <li class="flex items-center gap-2"><span class="w-1 h-1 rounded-full bg-primary/50"></span>多币种对账</li>
+          <li class="flex items-center gap-2"><span class="w-1 h-1 rounded-full bg-primary/50"></span>利润计算</li>
+          <li class="flex items-center gap-2"><span class="w-1 h-1 rounded-full bg-primary/50"></span>风控雷达</li>
+          <li class="flex items-center gap-2"><span class="w-1 h-1 rounded-full bg-primary/50"></span>退款预警</li>
+        </ul>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- Section Divider -->
+<div class="section-divider max-w-4xl mx-auto"></div>
+
+<!-- Metrics Counter Section -->
+<section id="metrics" class="relative py-32 px-6">
+  <div class="absolute inset-0 bg-gradient-to-r from-transparent via-primary/[0.02] to-transparent"></div>
+  <div class="relative max-w-6xl mx-auto">
+    <div class="text-center mb-16">
+      <span class="text-xs text-primary font-mono uppercase tracking-widest">Key Metrics</span>
+      <h2 class="text-3xl sm:text-4xl font-bold mt-4">核心数据亮点</h2>
+    </div>
+    
+    <div class="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-6 gap-4 counter-section">
+      <div class="glass-card rounded-2xl p-6 text-center gpu-accelerate">
+        <div class="text-3xl sm:text-4xl font-black text-primary counter-num" data-target="47">0</div>
+        <div class="text-xs text-white/30 mt-2">功能面板</div>
+      </div>
+      <div class="glass-card rounded-2xl p-6 text-center gpu-accelerate">
+        <div class="text-3xl sm:text-4xl font-black text-primary counter-num" data-target="30" data-suffix="s">0</div>
+        <div class="text-xs text-white/30 mt-2">心跳刷新</div>
+      </div>
+      <div class="glass-card rounded-2xl p-6 text-center gpu-accelerate">
+        <div class="text-3xl sm:text-4xl font-black text-primary counter-num" data-target="17">0</div>
+        <div class="text-xs text-white/30 mt-2">AI 诊断维度</div>
+      </div>
+      <div class="glass-card rounded-2xl p-6 text-center gpu-accelerate">
+        <div class="text-3xl sm:text-4xl font-black text-primary counter-num" data-target="100" data-suffix="%">0</div>
+        <div class="text-xs text-white/30 mt-2">开源可审计</div>
+      </div>
+      <div class="glass-card rounded-2xl p-6 text-center gpu-accelerate">
+        <div class="text-3xl sm:text-4xl font-black text-primary counter-num" data-target="0" data-is-zero="true">0</div>
+        <div class="text-xs text-white/30 mt-2">服务器 · 数据库</div>
+      </div>
+      <div class="glass-card rounded-2xl p-6 text-center gpu-accelerate">
+        <div class="text-3xl sm:text-4xl font-black text-primary counter-num" data-target="249">0</div>
+        <div class="text-xs text-white/30 mt-2">国家/地区覆盖</div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- Tech Stack Marquee -->
+<section class="py-20 px-6 overflow-hidden border-y border-white/5">
+  <div class="text-center mb-10">
+    <span class="text-xs text-primary font-mono uppercase tracking-widest">Tech Stack</span>
+    <h2 class="text-2xl font-bold mt-3">技术栈</h2>
+  </div>
+  
+  <div class="relative overflow-hidden">
+    <div class="absolute left-0 top-0 bottom-0 w-32 bg-gradient-to-r from-[#06060b] to-transparent z-10"></div>
+    <div class="absolute right-0 top-0 bottom-0 w-32 bg-gradient-to-l from-[#06060b] to-transparent z-10"></div>
+    
+    <div class="flex marquee-track whitespace-nowrap">
+      <div class="flex gap-4 mr-4">
+        <span class="inline-flex items-center gap-2 px-5 py-2.5 rounded-full border border-white/10 bg-white/[0.02] text-sm text-white/60 font-medium"><i data-lucide="triangle" class="w-4 h-4 text-primary"></i> Next.js 16</span>
+        <span class="inline-flex items-center gap-2 px-5 py-2.5 rounded-full border border-white/10 bg-white/[0.02] text-sm text-white/60 font-medium"><i data-lucide="atom" class="w-4 h-4 text-primary"></i> React 19</span>
+        <span class="inline-flex items-center gap-2 px-5 py-2.5 rounded-full border border-white/10 bg-white/[0.02] text-sm text-white/60 font-medium"><i data-lucide="file-code" class="w-4 h-4 text-primary"></i> TypeScript</span>
+        <span class="inline-flex items-center gap-2 px-5 py-2.5 rounded-full border border-white/10 bg-white/[0.02] text-sm text-white/60 font-medium"><i data-lucide="wind" class="w-4 h-4 text-primary"></i> Tailwind CSS 4</span>
+        <span class="inline-flex items-center gap-2 px-5 py-2.5 rounded-full border border-white/10 bg-white/[0.02] text-sm text-white/60 font-medium"><i data-lucide="bar-chart-3" class="w-4 h-4 text-primary"></i> Recharts</span>
+        <span class="inline-flex items-center gap-2 px-5 py-2.5 rounded-full border border-white/10 bg-white/[0.02] text-sm text-white/60 font-medium"><i data-lucide="shopping-bag" class="w-4 h-4 text-primary"></i> Shopify 2026-04</span>
+        <span class="inline-flex items-center gap-2 px-5 py-2.5 rounded-full border border-white/10 bg-white/[0.02] text-sm text-white/60 font-medium"><i data-lucide="brain" class="w-4 h-4 text-primary"></i> DeepSeek-v4-pro</span>
+        <span class="inline-flex items-center gap-2 px-5 py-2.5 rounded-full border border-white/10 bg-white/[0.02] text-sm text-white/60 font-medium"><i data-lucide="scale" class="w-4 h-4 text-primary"></i> MIT License</span>
+      </div>
+      <div class="flex gap-4 mr-4">
+        <span class="inline-flex items-center gap-2 px-5 py-2.5 rounded-full border border-white/10 bg-white/[0.02] text-sm text-white/60 font-medium"><i data-lucide="triangle" class="w-4 h-4 text-primary"></i> Next.js 16</span>
+        <span class="inline-flex items-center gap-2 px-5 py-2.5 rounded-full border border-white/10 bg-white/[0.02] text-sm text-white/60 font-medium"><i data-lucide="atom" class="w-4 h-4 text-primary"></i> React 19</span>
+        <span class="inline-flex items-center gap-2 px-5 py-2.5 rounded-full border border-white/10 bg-white/[0.02] text-sm text-white/60 font-medium"><i data-lucide="file-code" class="w-4 h-4 text-primary"></i> TypeScript</span>
+        <span class="inline-flex items-center gap-2 px-5 py-2.5 rounded-full border border-white/10 bg-white/[0.02] text-sm text-white/60 font-medium"><i data-lucide="wind" class="w-4 h-4 text-primary"></i> Tailwind CSS 4</span>
+        <span class="inline-flex items-center gap-2 px-5 py-2.5 rounded-full border border-white/10 bg-white/[0.02] text-sm text-white/60 font-medium"><i data-lucide="bar-chart-3" class="w-4 h-4 text-primary"></i> Recharts</span>
+        <span class="inline-flex items-center gap-2 px-5 py-2.5 rounded-full border border-white/10 bg-white/[0.02] text-sm text-white/60 font-medium"><i data-lucide="shopping-bag" class="w-4 h-4 text-primary"></i> Shopify 2026-04</span>
+        <span class="inline-flex items-center gap-2 px-5 py-2.5 rounded-full border border-white/10 bg-white/[0.02] text-sm text-white/60 font-medium"><i data-lucide="brain" class="w-4 h-4 text-primary"></i> DeepSeek-v4-pro</span>
+        <span class="inline-flex items-center gap-2 px-5 py-2.5 rounded-full border border-white/10 bg-white/[0.02] text-sm text-white/60 font-medium"><i data-lucide="scale" class="w-4 h-4 text-primary"></i> MIT License</span>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- Section Divider -->
+<div class="section-divider max-w-4xl mx-auto"></div>
+
+<!-- Quick Start Section -->
+<section id="quickstart" class="relative py-32 px-6">
+  <div class="max-w-3xl mx-auto">
+    <div class="text-center mb-16">
+      <span class="text-xs text-primary font-mono uppercase tracking-widest">Quick Start</span>
+      <h2 class="text-3xl sm:text-4xl font-bold mt-4 mb-4">3 步开始</h2>
+      <p class="text-white/30">从 clone 到运行，只需 60 秒</p>
+    </div>
+    
+    <div class="space-y-4 quickstart-steps">
+      <div class="glass-card rounded-2xl p-6 gpu-accelerate">
+        <div class="flex items-center gap-3 mb-4">
+          <span class="w-7 h-7 rounded-lg bg-primary/20 text-primary text-xs font-bold flex items-center justify-center">1</span>
+          <span class="text-sm font-medium text-white/60">克隆仓库</span>
+        </div>
+        <div class="code-block rounded-xl p-4 text-sm overflow-x-auto">
+          <code class="text-primary/80 code-typewriter">$ git clone https://github.com/andy1993/shopify-cn-dashboard.git</code>
+        </div>
+      </div>
+      
+      <div class="glass-card rounded-2xl p-6 gpu-accelerate">
+        <div class="flex items-center gap-3 mb-4">
+          <span class="w-7 h-7 rounded-lg bg-primary/20 text-primary text-xs font-bold flex items-center justify-center">2</span>
+          <span class="text-sm font-medium text-white/60">安装依赖</span>
+        </div>
+        <div class="code-block rounded-xl p-4 text-sm overflow-x-auto">
+          <code class="text-primary/80 code-typewriter">$ cd shopify-cn-dashboard && npm install</code>
+        </div>
+      </div>
+      
+      <div class="glass-card rounded-2xl p-6 gpu-accelerate">
+        <div class="flex items-center gap-3 mb-4">
+          <span class="w-7 h-7 rounded-lg bg-primary/20 text-primary text-xs font-bold flex items-center justify-center">3</span>
+          <span class="text-sm font-medium text-white/60">启动开发服务器</span>
+        </div>
+        <div class="code-block rounded-xl p-4 text-sm overflow-x-auto">
+          <code class="text-primary/80 code-typewriter">$ npm run dev</code>
+          <br>
+          <code class="text-white/30"># &#x2192; 访问 http://localhost:3000/config &#x2192; 一键导入演示数据</code>
+        </div>
+      </div>
+    </div>
+    
+    <div class="text-center mt-10">
+      <a href="https://github.com/andy1993/shopify-cn-dashboard" target="_blank" rel="noopener" class="glow-btn magnetic-btn inline-flex items-center gap-2 px-8 py-3.5 rounded-xl bg-primary text-black font-semibold text-sm hover:bg-accent">
+        <i data-lucide="rocket" class="w-4 h-4"></i>
+        立即体验
+      </a>
+    </div>
+  </div>
+</section>
+
+<!-- Section Divider -->
+<div class="section-divider max-w-4xl mx-auto"></div>
+
+<!-- FAQ Section -->
+<section id="faq" class="relative py-24 px-6">
+  <div class="max-w-4xl mx-auto">
+    <div class="faq-header mb-14">
+      <span class="inline-block font-mono text-xs uppercase tracking-widest text-primary mb-4 px-3 py-1 rounded-full border border-primary/20 bg-primary/5">FAQ</span>
+      <h2 class="text-3xl md:text-4xl font-bold text-white/95 mb-3">常见问题</h2>
+      <p class="text-base text-white/40">关于 Shopify CN Pro 你想知道的一切</p>
+    </div>
+
+    <div class="faq-list flex flex-col gap-3">
+      <div class="faq-item glass-card rounded-xl border border-white/[0.06] hover:border-primary/30 transition-colors cursor-pointer" data-faq="0">
+        <div class="faq-question flex items-center justify-between px-6 py-5">
+          <span class="font-semibold text-white/90 text-[15px]">这是完全免费的吗？</span>
+          <span class="faq-icon w-6 h-6 flex items-center justify-center text-primary/70">
+            <svg width="14" height="14" viewBox="0 0 14 14" fill="none"><line x1="7" y1="0" x2="7" y2="14" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/><line x1="0" y1="7" x2="14" y2="7" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/></svg>
+          </span>
+        </div>
+        <div class="faq-answer overflow-hidden h-0">
+          <div class="px-6 pb-5 border-l-2 border-primary ml-6">
+            <p class="text-sm text-white/50 leading-relaxed">是的，Shopify CN Pro 以 MIT 协议完全开源，永久免费商用。你可以自由 fork、部署、修改，无任何订阅费用或隐藏收费。</p>
+          </div>
+        </div>
+      </div>
+
+      <div class="faq-item glass-card rounded-xl border border-white/[0.06] hover:border-primary/30 transition-colors cursor-pointer" data-faq="1">
+        <div class="faq-question flex items-center justify-between px-6 py-5">
+          <span class="font-semibold text-white/90 text-[15px]">我没有 Shopify 店铺，能体验吗？</span>
+          <span class="faq-icon w-6 h-6 flex items-center justify-center text-primary/70">
+            <svg width="14" height="14" viewBox="0 0 14 14" fill="none"><line x1="7" y1="0" x2="7" y2="14" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/><line x1="0" y1="7" x2="14" y2="7" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/></svg>
+          </span>
+        </div>
+        <div class="faq-answer overflow-hidden h-0">
+          <div class="px-6 pb-5 border-l-2 border-primary ml-6">
+            <p class="text-sm text-white/50 leading-relaxed">完全可以。系统内置「一键导入演示数据」功能，包含 2 家高保真虚拟店铺、14 天历史订单、50+ 模拟客户，无需 Shopify Token 即可完整体验全部 47 个面板。</p>
+          </div>
+        </div>
+      </div>
+
+      <div class="faq-item glass-card rounded-xl border border-white/[0.06] hover:border-primary/30 transition-colors cursor-pointer" data-faq="2">
+        <div class="faq-question flex items-center justify-between px-6 py-5">
+          <span class="font-semibold text-white/90 text-[15px]">我的店铺 Token 安全吗？</span>
+          <span class="faq-icon w-6 h-6 flex items-center justify-center text-primary/70">
+            <svg width="14" height="14" viewBox="0 0 14 14" fill="none"><line x1="7" y1="0" x2="7" y2="14" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/><line x1="0" y1="7" x2="14" y2="7" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/></svg>
+          </span>
+        </div>
+        <div class="faq-answer overflow-hidden h-0">
+          <div class="px-6 pb-5 border-l-2 border-primary ml-6">
+            <p class="text-sm text-white/50 leading-relaxed">你的 Admin API Token 仅保存在浏览器本地 LocalStorage，不会上传至任何第三方服务器。系统通过 Next.js API Route 在服务端安全代理所有 Shopify 请求，后端无数据库、无持久化存储。</p>
+          </div>
+        </div>
+      </div>
+
+      <div class="faq-item glass-card rounded-xl border border-white/[0.06] hover:border-primary/30 transition-colors cursor-pointer" data-faq="3">
+        <div class="faq-question flex items-center justify-between px-6 py-5">
+          <span class="font-semibold text-white/90 text-[15px]">AI 智能诊断需要额外付费吗？</span>
+          <span class="faq-icon w-6 h-6 flex items-center justify-center text-primary/70">
+            <svg width="14" height="14" viewBox="0 0 14 14" fill="none"><line x1="7" y1="0" x2="7" y2="14" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/><line x1="0" y1="7" x2="14" y2="7" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/></svg>
+          </span>
+        </div>
+        <div class="faq-answer overflow-hidden h-0">
+          <div class="px-6 pb-5 border-l-2 border-primary ml-6">
+            <p class="text-sm text-white/50 leading-relaxed">AI 诊断功能需要你提供自己的 DeepSeek API Key（费用极低，通常每次诊断不超过几分钱）。若没有 Key，系统会自动优雅降级到高保真本地预设报告，不影响其他所有功能正常使用。</p>
+          </div>
+        </div>
+      </div>
+
+      <div class="faq-item glass-card rounded-xl border border-white/[0.06] hover:border-primary/30 transition-colors cursor-pointer" data-faq="4">
+        <div class="faq-question flex items-center justify-between px-6 py-5">
+          <span class="font-semibold text-white/90 text-[15px]">支持多店铺管理吗？</span>
+          <span class="faq-icon w-6 h-6 flex items-center justify-center text-primary/70">
+            <svg width="14" height="14" viewBox="0 0 14 14" fill="none"><line x1="7" y1="0" x2="7" y2="14" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/><line x1="0" y1="7" x2="14" y2="7" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/></svg>
+          </span>
+        </div>
+        <div class="faq-answer overflow-hidden h-0">
+          <div class="px-6 pb-5 border-l-2 border-primary ml-6">
+            <p class="text-sm text-white/50 leading-relaxed">支持。你可以在配置页添加多个 Shopify 店铺，「全店聚合大盘」面板会用 Promise.all 并发拉取所有店铺数据并做横向对比分析。</p>
+          </div>
+        </div>
+      </div>
+
+      <div class="faq-item glass-card rounded-xl border border-white/[0.06] hover:border-primary/30 transition-colors cursor-pointer" data-faq="5">
+        <div class="faq-question flex items-center justify-between px-6 py-5">
+          <span class="font-semibold text-white/90 text-[15px]">如何部署到生产环境？</span>
+          <span class="faq-icon w-6 h-6 flex items-center justify-center text-primary/70">
+            <svg width="14" height="14" viewBox="0 0 14 14" fill="none"><line x1="7" y1="0" x2="7" y2="14" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/><line x1="0" y1="7" x2="14" y2="7" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/></svg>
+          </span>
+        </div>
+        <div class="faq-answer overflow-hidden h-0">
+          <div class="px-6 pb-5 border-l-2 border-primary ml-6">
+            <p class="text-sm text-white/50 leading-relaxed">执行 <code class="text-primary/80 bg-primary/5 px-1.5 py-0.5 rounded text-xs">npm run build && npm start</code> 即可。系统基于 Next.js 16，可一键部署到 Vercel、Railway、自有 VPS 等任意 Node.js 环境，无需数据库或额外中间件。</p>
+          </div>
+        </div>
+      </div>
+
+      <div class="faq-item glass-card rounded-xl border border-white/[0.06] hover:border-primary/30 transition-colors cursor-pointer" data-faq="6">
+        <div class="faq-question flex items-center justify-between px-6 py-5">
+          <span class="font-semibold text-white/90 text-[15px]">支持哪些 Shopify API 版本？</span>
+          <span class="faq-icon w-6 h-6 flex items-center justify-center text-primary/70">
+            <svg width="14" height="14" viewBox="0 0 14 14" fill="none"><line x1="7" y1="0" x2="7" y2="14" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/><line x1="0" y1="7" x2="14" y2="7" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/></svg>
+          </span>
+        </div>
+        <div class="faq-answer overflow-hidden h-0">
+          <div class="px-6 pb-5 border-l-2 border-primary ml-6">
+            <p class="text-sm text-white/50 leading-relaxed">当前基于 Shopify 2026-04 Stable API，同时覆盖 REST Admin API（订单/库存/履约）与 GraphQL Admin API（商品/Markets/变体改价）双协议，确保与最新 Shopify 后台保持同步。</p>
+          </div>
+        </div>
+      </div>
+
+      <div class="faq-item glass-card rounded-xl border border-white/[0.06] hover:border-primary/30 transition-colors cursor-pointer" data-faq="7">
+        <div class="faq-question flex items-center justify-between px-6 py-5">
+          <span class="font-semibold text-white/90 text-[15px]">我可以在开源协议范围内商业化使用吗？</span>
+          <span class="faq-icon w-6 h-6 flex items-center justify-center text-primary/70">
+            <svg width="14" height="14" viewBox="0 0 14 14" fill="none"><line x1="7" y1="0" x2="7" y2="14" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/><line x1="0" y1="7" x2="14" y2="7" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/></svg>
+          </span>
+        </div>
+        <div class="faq-answer overflow-hidden h-0">
+          <div class="px-6 pb-5 border-l-2 border-primary ml-6">
+            <p class="text-sm text-white/50 leading-relaxed">可以。MIT License 允许你将本项目用于任何商业用途，包括为客户部署、二次开发销售等，唯一要求是保留原始 MIT 版权声明。</p>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- Section Divider -->
+<div class="section-divider max-w-4xl mx-auto"></div>
+
+<!-- Bottom CTA Section -->
+<section id="cta-bottom" class="relative py-32 px-6 border-t border-primary/10 overflow-hidden">
+  <div class="cta-glow absolute inset-0 pointer-events-none" style="background: radial-gradient(ellipse 800px 500px at 50% 50%, rgba(16,185,129,0.08), transparent 70%);"></div>
+  
+  <div class="absolute top-[15%] left-[12%] w-1 h-1 rounded-full bg-primary/30 animate-[float_4.5s_ease-in-out_infinite]"></div>
+  <div class="absolute top-[25%] right-[18%] w-0.5 h-0.5 rounded-full bg-primary/40 animate-[float_5.5s_ease-in-out_infinite_0.8s]"></div>
+  <div class="absolute bottom-[20%] left-[22%] w-1 h-1 rounded-full bg-primary/20 animate-[float_3.8s_ease-in-out_infinite_1.2s]"></div>
+  <div class="absolute top-[60%] right-[10%] w-0.5 h-0.5 rounded-full bg-primary/35 animate-[float_6s_ease-in-out_infinite_2s]"></div>
+  <div class="absolute bottom-[30%] right-[30%] w-1 h-1 rounded-full bg-primary/25 animate-[float_4s_ease-in-out_infinite_0.5s]"></div>
+  <div class="absolute top-[40%] left-[8%] w-0.5 h-0.5 rounded-full bg-primary/40 animate-[float_5s_ease-in-out_infinite_1.5s]"></div>
+
+  <div class="relative z-10 max-w-3xl mx-auto text-center">
+    <h2 class="cta-title text-4xl sm:text-5xl font-black leading-tight text-white/95">
+      准备好掌控你的全球独立站了吗？
+    </h2>
+    <p class="cta-subtitle text-white/40 text-lg mt-4 max-w-xl mx-auto">
+      零门槛上手，47 个面板一键体验，无需 Shopify Token，MIT 开源永久免费。
+    </p>
+
+    <div class="cta-buttons mt-10 flex gap-4 justify-center flex-wrap">
+      <a href="#quickstart" class="glow-btn magnetic-btn cta-primary-btn px-8 py-3.5 rounded-xl bg-primary text-black font-semibold text-sm flex items-center gap-2 hover:bg-accent">
+        <i data-lucide="zap" class="w-4 h-4"></i>
+        立即免费体验
+      </a>
+      <a href="https://github.com/andy1993/shopify-cn-dashboard" target="_blank" class="magnetic-btn px-8 py-3.5 rounded-xl border border-white/10 text-white/70 font-medium text-sm flex items-center gap-2 hover:border-primary/40 hover:text-primary transition-all">
+        <i class="fa-brands fa-github"></i>
+        查看 GitHub 源码
+      </a>
+    </div>
+
+    <div class="cta-badges mt-8 flex gap-6 justify-center flex-wrap">
+      <span class="flex items-center gap-1.5 text-xs text-white/30">
+        <i data-lucide="check-circle" class="w-3.5 h-3.5 text-primary/60"></i>
+        MIT 开源协议
+      </span>
+      <span class="flex items-center gap-1.5 text-xs text-white/30">
+        <i data-lucide="check-circle" class="w-3.5 h-3.5 text-primary/60"></i>
+        无需信用卡
+      </span>
+      <span class="flex items-center gap-1.5 text-xs text-white/30">
+        <i data-lucide="check-circle" class="w-3.5 h-3.5 text-primary/60"></i>
+        Token 本地存储
+      </span>
+      <span class="flex items-center gap-1.5 text-xs text-white/30">
+        <i data-lucide="check-circle" class="w-3.5 h-3.5 text-primary/60"></i>
+        Shopify 2026-04 API
+      </span>
+    </div>
+  </div>
+</section>
+
+<!-- Footer -->
+<footer class="border-t border-white/5 py-16 px-6">
+  <div class="max-w-5xl mx-auto text-center">
+    <div class="flex items-center justify-center gap-3 mb-4">
+      <div class="w-8 h-8 rounded-lg bg-primary/20 border border-primary/30 flex items-center justify-center">
+        <i data-lucide="activity" class="w-4 h-4 text-primary"></i>
+      </div>
+      <span class="font-bold text-lg">Shopify CN Pro</span>
+    </div>
+    <p class="text-sm text-white/30 max-w-lg mx-auto mb-6">
+      专为国内独立站卖家定制的全球化、多市场自适应高级暗黑系全宽数据智能座舱
+    </p>
+    <div class="flex items-center justify-center gap-4 mb-8">
+      <a href="https://github.com/andy1993/shopify-cn-dashboard" target="_blank" class="inline-flex items-center gap-2 px-4 py-2 rounded-lg border border-white/10 text-white/50 text-sm hover:border-primary/30 hover:text-primary transition-all">
+        <i class="fa-brands fa-github"></i>
+        GitHub
+      </a>
+      <span class="px-3 py-1 rounded-full bg-primary/10 text-primary text-xs font-medium">MIT License</span>
+    </div>
+    <p class="text-sm text-white/20">Made with &#x1F49A; for Shopify sellers worldwide.</p>
+  </div>
+</footer>
+
+<!-- GSAP CDN -->
+<script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.5/gsap.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.5/ScrollTrigger.min.js"></script>
+
+<script>
+// ============================================================
+// AWWWARDS-LEVEL ANIMATION SYSTEM
+// Shopify CN Pro - Immersive Motion Design
+// ============================================================
+
+(function() {
+  'use strict';
+
+  // Safety: if GSAP fails to load, page remains visible
+  if (typeof gsap === 'undefined') return;
+
+  gsap.registerPlugin(ScrollTrigger);
+  document.body.classList.add('gsap-ready');
+
+  // ============================================================
+  // UTILITY: Text Splitting (hand-written SplitText alternative)
+  // ============================================================
+  function splitTextIntoChars(element) {
+    const text = element.textContent;
+    element.textContent = '';
+    element.setAttribute('aria-label', text);
+    const chars = [];
+    for (let i = 0; i < text.length; i++) {
+      const span = document.createElement('span');
+      span.className = 'split-char';
+      span.textContent = text[i] === ' ' ? '\u00A0' : text[i];
+      span.setAttribute('aria-hidden', 'true');
+      element.appendChild(span);
+      chars.push(span);
+    }
+    return chars;
+  }
+
+  function splitTextIntoWords(element) {
+    const text = element.textContent;
+    const words = text.split(/(\s+)/);
+    element.textContent = '';
+    element.setAttribute('aria-label', text);
+    const wordSpans = [];
+    words.forEach(word => {
+      if (word.trim() === '') {
+        element.appendChild(document.createTextNode(' '));
+      } else {
+        const span = document.createElement('span');
+        span.className = 'split-word';
+        span.textContent = word;
+        span.setAttribute('aria-hidden', 'true');
+        element.appendChild(span);
+        wordSpans.push(span);
+      }
+    });
+    return wordSpans;
+  }
+
+  // ============================================================
+  // RESPONSIVE: gsap.matchMedia
+  // ============================================================
+  const mm = gsap.matchMedia();
+
+  // ============================================================
+  // HERO: Cinematic Opening Sequence
+  // ============================================================
+  const heroOverlay = document.getElementById('hero-overlay');
+  const heroSection = document.querySelector('.hero-section');
+  const gridBg = heroSection.querySelector('.hero-grid-bg');
+  const heroGlowBg = heroSection.querySelector('.hero-glow-bg');
+  const heroBigGlow = heroSection.querySelector('.hero-big-glow');
+  const heroBadge = heroSection.querySelector('.hero-badge');
+  const heroTitleLine1 = heroSection.querySelector('.hero-title-line1');
+  const heroTitleLine2 = heroSection.querySelector('.hero-title-line2');
+  const heroSubtitle = heroSection.querySelector('.hero-subtitle');
+  const heroCTA = heroSection.querySelector('.hero-cta');
+  const heroStats = heroSection.querySelectorAll('.hero-stats .glass-card');
+  const heroScrollIndicator = heroSection.querySelector('.hero-scroll-indicator');
+
+  // Split title chars
+  const line1Chars = splitTextIntoChars(heroTitleLine1);
+  const line2Chars = splitTextIntoChars(heroTitleLine2);
+  const subtitleWords = splitTextIntoWords(heroSubtitle);
+
+  // Hero Timeline
+  const heroTL = gsap.timeline({ delay: 0.1 });
+
+  // 1. Black overlay fade out
+  heroTL.to(heroOverlay, { opacity: 0, duration: 0.3, ease: 'none', onComplete: () => heroOverlay.style.display = 'none' }, 0);
+
+  // 2. Grid background clipPath expand
+  gsap.set(gridBg, { clipPath: 'inset(50% 50% 50% 50%)', opacity: 0.5 });
+  heroTL.to(gridBg, { clipPath: 'inset(0% 0% 0% 0%)', duration: 1.8, ease: 'power4.inOut' }, 0.3);
+
+  // 3. Glow breathing
+  gsap.set(heroBigGlow, { scale: 0, opacity: 0, filter: 'blur(80px)' });
+  heroTL.to(heroBigGlow, { scale: 1, opacity: 1, filter: 'blur(100px)', duration: 2.5, ease: 'power2.out' }, 0.4);
+
+  gsap.set(heroGlowBg, { opacity: 0 });
+  heroTL.to(heroGlowBg, { opacity: 1, duration: 2, ease: 'power2.out' }, 0.5);
+
+  // 4. Title Line 1 - chars from bottom with rotateX
+  gsap.set(line1Chars, { y: '100%', opacity: 0, rotateX: -80 });
+  heroTL.to(line1Chars, {
+    y: '0%', opacity: 1, rotateX: 0,
+    duration: 1.2, ease: 'power4.out',
+    stagger: 0.03
+  }, 1.2);
+
+  // 5. Title Line 2 - chars with scale
+  gsap.set(line2Chars, { y: '100%', opacity: 0, rotateX: -80, scale: 0.8 });
+  heroTL.to(line2Chars, {
+    y: '0%', opacity: 1, rotateX: 0, scale: 1,
+    duration: 1.2, ease: 'power4.out',
+    stagger: 0.03
+  }, 1.4);
+
+  // 6. Subtitle - word by word
+  gsap.set(subtitleWords, { y: 20, opacity: 0 });
+  heroTL.to(subtitleWords, {
+    y: 0, opacity: 1,
+    duration: 0.6, ease: 'power3.out',
+    stagger: 0.02
+  }, 2.2);
+
+  // 7. CTA buttons - elastic
+  gsap.set(heroCTA, { scale: 0.8, opacity: 0, y: 30 });
+  heroTL.to(heroCTA, { scale: 1, opacity: 1, y: 0, duration: 1.2, ease: 'elastic.out(1, 0.5)' }, 2.6);
+
+  // 8. Stats cards - flip up
+  gsap.set(heroStats, { y: 60, rotateX: -15, opacity: 0 });
+  heroTL.to(heroStats, {
+    y: 0, rotateX: 0, opacity: 1,
+    duration: 0.8, ease: 'power3.out',
+    stagger: 0.08
+  }, 3.0);
+
+  // 9. Badge - pop
+  gsap.set(heroBadge, { scale: 0, opacity: 0 });
+  heroTL.to(heroBadge, { scale: 1, opacity: 1, duration: 0.8, ease: 'back.out(2.5)' }, 3.4);
+
+  // 10. Scroll indicator
+  gsap.set(heroScrollIndicator, { opacity: 0 });
+  heroTL.to(heroScrollIndicator, { opacity: 1, duration: 1, ease: 'power2.out' }, 3.8);
+
+  // ============================================================
+  // CURSOR GLOW (enhanced: 600px, more vivid)
+  // ============================================================
+  const cursorGlow = document.getElementById('hero-cursor-glow');
+  heroSection.addEventListener('mouseenter', () => gsap.to(cursorGlow, { opacity: 1, duration: 0.3 }));
+  heroSection.addEventListener('mouseleave', () => gsap.to(cursorGlow, { opacity: 0, duration: 0.3 }));
+  heroSection.addEventListener('mousemove', (e) => {
+    const rect = heroSection.getBoundingClientRect();
+    gsap.to(cursorGlow, { x: e.clientX - rect.left, y: e.clientY - rect.top, duration: 0.3, ease: 'power2.out' });
+  });
+
+  // ============================================================
+  // NAVBAR: scroll morph
+  // ============================================================
+  const nav = document.getElementById('main-nav');
+  ScrollTrigger.create({
+    start: 100,
+    onUpdate: (self) => {
+      if (self.direction === 1 && self.scroll() > 100) {
+        gsap.to(nav, { backgroundColor: 'rgba(6,6,11,1)', borderBottomColor: 'rgba(16,185,129,0.1)', duration: 0.4 });
+      } else if (self.scroll() <= 100) {
+        gsap.to(nav, { backgroundColor: 'rgba(6,6,11,0.8)', borderBottomColor: 'rgba(255,255,255,0.05)', duration: 0.4 });
+      }
+    }
+  });
+
+  // ============================================================
+  // SECTION DIVIDERS: scrub opacity
+  // ============================================================
+  document.querySelectorAll('.section-divider').forEach(divider => {
+    gsap.to(divider, {
+      opacity: 0.6,
+      scrollTrigger: {
+        trigger: divider,
+        start: 'top 90%',
+        end: 'top 50%',
+        scrub: 1,
+        invalidateOnRefresh: true
+      }
+    });
+    gsap.to(divider, {
+      opacity: 0,
+      scrollTrigger: {
+        trigger: divider,
+        start: 'top 40%',
+        end: 'top 10%',
+        scrub: 1,
+        invalidateOnRefresh: true
+      }
+    });
+  });
+
+  // ============================================================
+  // DESKTOP-ONLY ANIMATIONS
+  // ============================================================
+  mm.add("(min-width: 1024px)", () => {
+
+    // --- FEATURES SECTION: scrub parallax + batch entrance ---
+    const featuresSection = document.getElementById('features');
+    const featuresHeader = featuresSection.querySelector('.features-header');
+
+    // Background header parallax (moves slower)
+    gsap.to(featuresHeader, {
+      y: -40,
+      scrollTrigger: {
+        trigger: featuresSection,
+        start: 'top bottom',
+        end: 'bottom top',
+        scrub: 1,
+        invalidateOnRefresh: true
+      }
+    });
+
+    // Feature cards batch
+    ScrollTrigger.batch('.feature-cards .glass-card', {
+      onEnter: (elements) => {
+        gsap.from(elements, {
+          y: 80, opacity: 0, scale: 0.9, rotateY: -5,
+          duration: 1, ease: 'power3.out',
+          stagger: 0.08
+        });
+      },
+      start: 'top 85%',
+      once: true
+    });
+
+    // Feature card hover (GSAP controlled)
+    document.querySelectorAll('.feature-cards .glass-card').forEach(card => {
+      card.addEventListener('mouseenter', () => {
+        gsap.to(card, { scale: 1.03, y: -8, boxShadow: '0 0 50px rgba(16,185,129,0.15), inset 0 1px 0 rgba(16,185,129,0.15)', duration: 0.4, ease: 'power2.out' });
+      });
+      card.addEventListener('mouseleave', () => {
+        gsap.to(card, { scale: 1, y: 0, boxShadow: 'none', duration: 0.4, ease: 'power2.out' });
+      });
+    });
+
+    // --- SCREENSHOT SECTION: 3D perspective scrub ---
+    const screenshotCard = document.querySelector('.screenshot-card');
+    if (screenshotCard) {
+      gsap.fromTo(screenshotCard, 
+        { rotateX: 12, rotateY: -3 },
+        {
+          rotateX: 0, rotateY: 0,
+          scrollTrigger: {
+            trigger: '.screenshot-card-wrapper',
+            start: 'top 90%',
+            end: 'top 30%',
+            scrub: true,
+            invalidateOnRefresh: true
+          }
+        }
+      );
+    }
+
+    // --- COUNTER SECTION: scrub-driven numbers flying in ---
+    const counterCards = document.querySelectorAll('.counter-section .glass-card');
+    counterCards.forEach((card, i) => {
+      gsap.from(card, {
+        y: 100, opacity: 0, scale: 2,
+        scrollTrigger: {
+          trigger: '.counter-section',
+          start: 'top 80%',
+          end: 'top 40%',
+          scrub: 1,
+          invalidateOnRefresh: true
+        }
+      });
+    });
+
+    // --- MODULE CARDS: wave entrance (top-left to bottom-right) ---
+    ScrollTrigger.batch('.module-cards .glass-card', {
+      onEnter: (elements) => {
+        gsap.from(elements, {
+          y: 50, opacity: 0, scale: 0.85,
+          duration: 0.8, ease: 'power3.out',
+          stagger: { from: 'start', each: 0.05 }
+        });
+      },
+      start: 'top 85%',
+      once: true
+    });
+
+    // --- QUICKSTART: horizontal reveal with typewriter ---
+    const qsSteps = document.querySelectorAll('.quickstart-steps .glass-card');
+    qsSteps.forEach((step, i) => {
+      gsap.from(step, {
+        x: -60, opacity: 0, rotateY: 5,
+        scrollTrigger: {
+          trigger: step,
+          start: 'top 85%',
+          end: 'top 60%',
+          scrub: 1,
+          invalidateOnRefresh: true
+        }
+      });
+    });
+
+    // --- FAQ: slide from left with skew ---
+    gsap.from('.faq-header', {
+      scrollTrigger: { trigger: '#faq', start: 'top 80%', toggleActions: 'play none none none' },
+      y: 30, opacity: 0, duration: 0.7, ease: 'power2.out'
+    });
+
+    ScrollTrigger.batch('.faq-item', {
+      onEnter: (elements) => {
+        gsap.from(elements, {
+          x: -40, opacity: 0, skewX: -2,
+          duration: 0.7, ease: 'power3.out',
+          stagger: 0.06
+        });
+      },
+      start: 'top 90%',
+      once: true
+    });
+
+    // --- BOTTOM CTA: scale + blur ---
+    const ctaSection = document.querySelector('#cta-bottom');
+    if (ctaSection) {
+      const ctaGlow = ctaSection.querySelector('.cta-glow');
+      const ctaTitle = ctaSection.querySelector('.cta-title');
+      const ctaSubtitle = ctaSection.querySelector('.cta-subtitle');
+      const ctaButtons = ctaSection.querySelector('.cta-buttons');
+      const ctaBadges = ctaSection.querySelectorAll('.cta-badges > span');
+
+      gsap.fromTo(ctaTitle, { scale: 0.7 }, {
+        scale: 1,
+        scrollTrigger: { trigger: ctaSection, start: 'top 80%', end: 'top 30%', scrub: 1, invalidateOnRefresh: true }
+      });
+
+      gsap.fromTo(ctaGlow, { scale: 0.3 }, {
+        scale: 1.5,
+        scrollTrigger: { trigger: ctaSection, start: 'top 90%', end: 'top 20%', scrub: 1, invalidateOnRefresh: true }
+      });
+
+      gsap.from(ctaSubtitle, {
+        y: 30, opacity: 0,
+        scrollTrigger: { trigger: ctaSection, start: 'top 70%', toggleActions: 'play none none none' },
+        duration: 0.8, ease: 'power3.out'
+      });
+
+      gsap.from(ctaButtons, {
+        y: 40, opacity: 0, filter: 'blur(10px)',
+        scrollTrigger: { trigger: ctaSection, start: 'top 65%', toggleActions: 'play none none none' },
+        duration: 0.9, ease: 'power3.out'
+      });
+
+      gsap.from(ctaBadges, {
+        y: 20, opacity: 0,
+        scrollTrigger: { trigger: ctaSection, start: 'top 60%', toggleActions: 'play none none none' },
+        duration: 0.6, stagger: 0.08, ease: 'power2.out'
+      });
+    }
+
+    // --- MAGNETIC BUTTONS ---
+    document.querySelectorAll('.magnetic-btn').forEach(btn => {
+      btn.addEventListener('mousemove', (e) => {
+        const rect = btn.getBoundingClientRect();
+        const x = e.clientX - rect.left - rect.width / 2;
+        const y = e.clientY - rect.top - rect.height / 2;
+        gsap.to(btn, { x: x * 0.15, y: y * 0.15, duration: 0.3, ease: 'power2.out' });
+      });
+      btn.addEventListener('mouseleave', () => {
+        gsap.to(btn, { x: 0, y: 0, duration: 0.5, ease: 'elastic.out(1, 0.5)' });
+      });
+    });
+
+    // --- CARD TILT (3D hover) ---
+    document.querySelectorAll('.tilt-card').forEach(card => {
+      card.addEventListener('mousemove', (e) => {
+        const rect = card.getBoundingClientRect();
+        const x = (e.clientX - rect.left) / rect.width - 0.5;
+        const y = (e.clientY - rect.top) / rect.height - 0.5;
+        gsap.to(card, {
+          rotateY: x * 6, rotateX: -y * 6,
+          duration: 0.4, ease: 'power2.out'
+        });
+      });
+      card.addEventListener('mouseleave', () => {
+        gsap.to(card, { rotateY: 0, rotateX: 0, duration: 0.6, ease: 'power2.out' });
+      });
+    });
+
+    return () => {}; // cleanup
+  });
+
+  // ============================================================
+  // TABLET ANIMATIONS (768-1023px)
+  // ============================================================
+  mm.add("(min-width: 768px) and (max-width: 1023px)", () => {
+
+    // Simpler entrance animations without tilt/magnetic
+    ScrollTrigger.batch('.feature-cards .glass-card', {
+      onEnter: (elements) => gsap.from(elements, { y: 50, opacity: 0, duration: 0.8, stagger: 0.08, ease: 'power3.out' }),
+      start: 'top 85%', once: true
+    });
+
+    ScrollTrigger.batch('.module-cards .glass-card', {
+      onEnter: (elements) => gsap.from(elements, { y: 40, opacity: 0, duration: 0.7, stagger: 0.06, ease: 'power3.out' }),
+      start: 'top 85%', once: true
+    });
+
+    gsap.from('.quickstart-steps .glass-card', {
+      scrollTrigger: { trigger: '.quickstart-steps', start: 'top 80%', toggleActions: 'play none none none' },
+      y: 30, opacity: 0, duration: 0.7, stagger: 0.12, ease: 'power2.out'
+    });
+
+    ScrollTrigger.batch('.faq-item', {
+      onEnter: (elements) => gsap.from(elements, { y: 25, opacity: 0, duration: 0.6, stagger: 0.05, ease: 'power2.out' }),
+      start: 'top 90%', once: true
+    });
+
+    const ctaSection = document.querySelector('#cta-bottom');
+    if (ctaSection) {
+      gsap.from(ctaSection.querySelector('.cta-title'), {
+        scrollTrigger: { trigger: ctaSection, start: 'top 80%', toggleActions: 'play none none none' },
+        y: 40, opacity: 0, duration: 0.9, ease: 'power3.out'
+      });
+    }
+
+    return () => {};
+  });
+
+  // ============================================================
+  // MOBILE ANIMATIONS (<768px) - basic fade-in only
+  // ============================================================
+  mm.add("(max-width: 767px)", () => {
+
+    const sections = ['.feature-cards .glass-card', '.module-cards .glass-card', '.quickstart-steps .glass-card', '.faq-item'];
+    sections.forEach(selector => {
+      ScrollTrigger.batch(selector, {
+        onEnter: (elements) => gsap.from(elements, { y: 30, opacity: 0, duration: 0.6, stagger: 0.04, ease: 'power2.out' }),
+        start: 'top 90%', once: true
+      });
+    });
+
+    // Counter section simple entrance
+    ScrollTrigger.batch('.counter-section .glass-card', {
+      onEnter: (elements) => gsap.from(elements, { y: 20, opacity: 0, duration: 0.5, stagger: 0.03, ease: 'power2.out' }),
+      start: 'top 90%', once: true
+    });
+
+    const ctaSection = document.querySelector('#cta-bottom');
+    if (ctaSection) {
+      gsap.from(ctaSection.querySelector('.cta-title'), {
+        scrollTrigger: { trigger: ctaSection, start: 'top 85%', toggleActions: 'play none none none' },
+        y: 30, opacity: 0, duration: 0.7, ease: 'power2.out'
+      });
+    }
+
+    return () => {};
+  });
+
+  // ============================================================
+  // COUNTER ANIMATION (scrub-driven on desktop, triggered on mobile)
+  // ============================================================
+  ScrollTrigger.create({
+    trigger: '.counter-section',
+    start: 'top 75%',
+    once: true,
+    onEnter: () => {
+      document.querySelectorAll('.counter-num').forEach(el => {
+        const target = parseInt(el.dataset.target);
+        const suffix = el.dataset.suffix || '';
+        const isZero = el.dataset.isZero === 'true';
+        if (isZero) { el.textContent = '0' + suffix; return; }
+        const obj = { val: 0 };
+        gsap.to(obj, {
+          val: target, duration: 2.5, ease: 'power2.out',
+          onUpdate: () => { el.textContent = Math.round(obj.val) + suffix; }
+        });
+      });
+    }
+  });
+
+  // ============================================================
+  // SCREENSHOT TAB SWITCHING
+  // ============================================================
+  const tabs = document.querySelectorAll('.screenshot-tab');
+  const panels = document.querySelectorAll('.tab-panel');
+  tabs.forEach(tab => {
+    tab.addEventListener('click', () => {
+      const targetId = tab.dataset.tab;
+      tabs.forEach(t => t.classList.remove('active-tab'));
+      tab.classList.add('active-tab');
+      panels.forEach(panel => {
+        if (panel.id === targetId) {
+          panel.style.position = 'relative';
+          panel.style.top = '0'; panel.style.left = '0'; panel.style.right = '0';
+          gsap.fromTo(panel, { autoAlpha: 0, x: 20 }, { autoAlpha: 1, x: 0, duration: 0.35, ease: 'power2.out' });
+        } else {
+          gsap.to(panel, { autoAlpha: 0, duration: 0.2, ease: 'power2.in',
+            onComplete: () => { panel.style.position = 'absolute'; panel.style.top = '20px'; panel.style.left = '20px'; panel.style.right = '20px'; }
+          });
+        }
+      });
+    });
+  });
+
+  // ============================================================
+  // FAQ ACCORDION
+  // ============================================================
+  const faqItems = document.querySelectorAll('.faq-item');
+  let activeIndex = -1;
+
+  function closeFaq(item) {
+    const answer = item.querySelector('.faq-answer');
+    const icon = item.querySelector('.faq-icon');
+    gsap.to(answer, { height: 0, autoAlpha: 0, duration: 0.4, ease: 'power2.inOut' });
+    gsap.to(icon, { rotation: 0, duration: 0.3, ease: 'power2.inOut' });
+    item.classList.remove('faq-active');
+  }
+
+  function openFaq(item) {
+    const answer = item.querySelector('.faq-answer');
+    const icon = item.querySelector('.faq-icon');
+    item.classList.add('faq-active');
+    gsap.set(answer, { autoAlpha: 1 });
+    gsap.to(answer, { height: 'auto', duration: 0.4, ease: 'power2.inOut' });
+    gsap.to(icon, { rotation: 45, duration: 0.3, ease: 'power2.inOut' });
+
+    // Stagger the answer text lines
+    const answerP = answer.querySelector('p');
+    if (answerP) {
+      gsap.fromTo(answerP, { y: 10, opacity: 0 }, { y: 0, opacity: 1, duration: 0.4, delay: 0.15, ease: 'power2.out' });
+    }
+  }
+
+  faqItems.forEach((item, index) => {
+    item.addEventListener('click', () => {
+      if (activeIndex === index) { closeFaq(item); activeIndex = -1; }
+      else {
+        if (activeIndex >= 0) closeFaq(faqItems[activeIndex]);
+        openFaq(item); activeIndex = index;
+      }
+    });
+  });
+
+})();
+</script>
+
+</body>
+<script>if (window.lucide) lucide.createIcons();</script>
+</html>
